@@ -1,12 +1,13 @@
 <div class="layout">
   <section class="main-panel" aria-label="Transcripción de una oración">
+    <label class="input-label" for="sentence-input">Oración en inglés</label>
     <div class="input-row">
       <textarea
         id="sentence-input"
         class="sentence-input"
         rows="2"
         spellcheck="false"
-        placeholder="Escribí una oración en inglés, p. ej.: I want to go to the station, but there is a strike."
+        placeholder="por ejemplo, I want to go to the station."
         [value]="text()"
         (input)="text.set($any($event.target).value)"
         (keydown)="onKeydown($event)"
@@ -17,22 +18,28 @@
     </div>
 
     <div class="toolbar">
-      <label class="toggle" title="Formas débiles de las function words y r de enlace">
-        <input type="checkbox" [checked]="connected()" (change)="toggleConnected()" />
-        Habla conectada
-      </label>
-      <label
-        class="toggle"
-        title="Asimilación, elisión, r intrusiva y coalescencia entre palabras (optativos en RP)"
-      >
-        <input
-          type="checkbox"
-          [checked]="showProcesses()"
-          [disabled]="!connected()"
-          (change)="showProcesses.set(!showProcesses())"
-        />
-        Procesos del habla conectada
-      </label>
+      <span class="toggle-with-term">
+        <label class="toggle" title="Formas débiles de las palabras gramaticales y r de enlace">
+          <input type="checkbox" [checked]="connected()" (change)="toggleConnected()" />
+          Habla conectada
+        </label>
+        <app-term key="habla-conectada" />
+      </span>
+      <span class="toggle-with-term">
+        <label
+          class="toggle"
+          title="Asimilación, elisión, r intrusiva y coalescencia (optativos en RP)"
+        >
+          <input
+            type="checkbox"
+            [checked]="showProcesses()"
+            [disabled]="!connected()"
+            (change)="showProcesses.set(!showProcesses())"
+          />
+          Mostrar los procesos
+        </label>
+        <app-term key="procesos-habla" />
+      </span>
       <span class="spacer"></span>
       @if (playingMode() === null) {
         @if (api.voiceAvailable()) {
@@ -41,9 +48,13 @@
             class="primary-outline"
             [disabled]="!analysis() || synthesizing()"
             (click)="playVoice()"
-            title="Voz británica (Piper) que lee la oración tal como está transcripta"
+            title="La voz de la app lee la oración tal como está transcripta"
           >
-            {{ synthesizing() ? 'Generando voz…' : '▶ Voz británica' }}
+            @if (synthesizing()) {
+              <span class="spinner small-spinner" aria-hidden="true"></span> Preparando la voz…
+            } @else {
+              <app-icon name="play" size="1em" /> Escuchar la oración
+            }
           </button>
         }
         <button
@@ -51,12 +62,14 @@
           class="secondary"
           [disabled]="!withAudio()"
           (click)="playWords()"
-          title="Encadena las grabaciones de Longman de cada palabra (cada una pronunciada aislada)"
+          title="Grabaciones del diccionario, una palabra por vez (cada una dicha sola)"
         >
-          ▶ Palabra por palabra (Longman)
+          <app-icon name="play" size="1em" /> Palabra por palabra
         </button>
       } @else {
-        <button type="button" class="secondary" (click)="stop()">■ Detener</button>
+        <button type="button" class="secondary" (click)="stop()">
+          <app-icon name="stop" size="1em" /> Detener
+        </button>
       }
     </div>
     @if (voiceError()) {
@@ -65,9 +78,9 @@
 
     @if (progress(); as p) {
       <p class="progress" aria-live="polite">
-        <span class="spinner" aria-hidden="true"></span>
-        Consultando Longman: {{ p.done }} de {{ p.total }} palabras. Mientras tanto se ven las
-        transcripciones del diccionario local.
+        <span class="spinner small-spinner" aria-hidden="true"></span>
+        Confirmando la pronunciación ({{ p.done }} de {{ p.total }})… Mientras tanto ves la
+        pronunciación estimada.
       </p>
     }
 
@@ -120,6 +133,7 @@
           size="large"
         />
         <button type="button" class="secondary small" (click)="copy()">
+          <app-icon [name]="copied() ? 'check' : 'copy'" size="1em" />
           {{ copied() ? 'Copiada' : 'Copiar' }}
         </button>
       </div>
@@ -138,44 +152,56 @@
               }
             </ul>
             <p class="muted small-note">
-              Son optativos en RP y más frecuentes en el habla rápida e informal.
+              Son optativos en RP y más frecuentes cuando se habla rápido y de manera informal.
             </p>
           } @else {
-            <p class="muted small-note">No hay procesos entre palabras en esta oración.</p>
+            <p class="muted small-note">En esta oración no hay procesos entre palabras.</p>
           }
         </div>
       }
 
       <p class="legend">
         <span class="lg lg--weak">débil</span>
+        <app-term key="forma-debil" />
         <span class="lg lg--strong">fuerte</span>
+        <app-term key="forma-fuerte" />
         <span class="lg lg--r">r de enlace</span>
-        <span class="lg lg--approx">aprox. / armada: todavía no verificada en Longman</span>
-        <span>| pausa menor · || fin de oración</span>
+        <app-term key="r-enlace" />
+        <span class="lg lg--approx">estimada / por regla</span>
+        <span>| pausa corta · || fin de oración</span>
       </p>
       <p class="hint">
-        Clic en una palabra para estudiarla (y cambiarle la forma) · doble clic para escucharla.
-        «Voz británica» lee la oración tal como está transcripta, con las formas débiles y fuertes
-        de arriba (es una voz sintética). «Palabra por palabra» usa las grabaciones reales de
-        Longman, pero cada palabra está pronunciada aislada, en su forma de diccionario.
+        Clic en una palabra para estudiarla y cambiarle la forma; doble clic para escucharla.
+        «Escuchar la oración» usa la voz de la app y respeta las formas débiles y fuertes de arriba.
+        «Palabra por palabra» usa las grabaciones del diccionario, donde cada palabra está dicha
+        sola.
       </p>
     } @else {
       <div class="empty">
         <p>
-          Escribí una oración y apretá Enter. Vas a ver cada palabra con sus fonemas: las
-          <strong>function words</strong> (artículos, preposiciones, auxiliares, pronombres…) en
-          forma <span class="lg lg--weak">débil</span> o <span class="lg lg--strong">fuerte</span>
-          según el contexto, y la r de enlace entre vocales.
+          Escribí una oración y apretá Enter. Vas a ver cada palabra con sus sonidos: las
+          <app-term key="function-word">palabras gramaticales</app-term> (artículos, preposiciones,
+          auxiliares, pronombres…) en forma <span class="lg lg--weak">débil</span> o
+          <span class="lg lg--strong">fuerte</span> según el contexto, y la r de enlace entre
+          vocales.
+        </p>
+        <p class="try">
+          Probá con:
+          @for (example of examples; track example) {
+            <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+          }
         </p>
       </div>
     }
   </section>
 
-  <aside class="detail-panel" aria-label="Detalle de la palabra">
+  <aside class="detail-panel" aria-label="La palabra elegida">
     @if (selectedWord(); as w) {
       @if (w.functionWord; as fw) {
         <div class="fw-card">
-          <p class="fw-kicker">Function word · {{ fw.category }}</p>
+          <p class="fw-kicker">
+            Palabra gramatical · {{ fw.category }} <app-term key="function-word" />
+          </p>
           <p class="fw-current">
             En esta oración:
             <span
@@ -227,18 +253,21 @@
           <p class="fw-source">
             {{
               fw.fromLongman
-                ? 'Formas según Longman.'
-                : 'Formas de referencia (Roach). Se reemplazan por las de Longman cuando responde.'
+                ? 'Formas confirmadas con el diccionario Longman.'
+                : 'Formas de referencia (Roach). Se actualizan cuando se confirman con el diccionario.'
             }}
           </p>
         </div>
       }
       @if (w.note) {
-        <p class="note">{{ w.note }} Transcripción aproximada.</p>
+        <p class="note">{{ w.note }} Pronunciación formada por regla.</p>
       }
       <app-word-detail [word]="w.key" [fallbackPron]="w.pron" />
     } @else {
-      <p class="placeholder">Elegí una palabra de la oración para verla en detalle y escucharla.</p>
+      <div class="placeholder">
+        <app-icon name="message" size="2rem" />
+        <p>Elegí una palabra de la oración para verla en detalle y escucharla.</p>
+      </div>
     }
   </aside>
 </div>

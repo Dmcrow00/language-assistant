@@ -52,35 +52,48 @@ puede aparecer el mismo aviso de Windows). Para quitarla alcanza con borrar el a
 ### Datos que guarda
 
 Las palabras ya consultadas en Longman y sus audios quedan en `%APPDATA%\dmc00-language-assistant`
-(así funcionan sin conexión la próxima vez). Borrar esa carpeta deja la aplicación como recién
-instalada.
+(así funcionan sin conexión la próxima vez), junto con las preferencias (tema, tamaño de letra,
+audio lento). Borrar esa carpeta deja la aplicación como recién instalada.
 
 ## Uso
 
 **Generalidades**
 
-- Arriba se elige el menú (**Fonética** o **Gramática**) y debajo, la pantalla. Cada pantalla
-  conserva lo escrito al cambiar de una a otra.
-- **Audio lento** (arriba a la derecha) reproduce todos los audios más despacio, sin cambiar el
-  tono.
-- La primera vez que se usa la voz británica tarda alrededor de un segundo, y el primer análisis
+- Al abrir aparece **Inicio**: «¿Qué querés hacer hoy?», con las herramientas para **Consultar**
+  y las de **Practicar**, **Seguí donde dejaste** (la última pantalla usada) y el **Sonido del
+  día**. La primera vez muestra una bienvenida corta, que se puede volver a ver desde **Ayuda**.
+- El menú de la izquierda tiene las secciones **Fonética** y **Gramática**; las prácticas llevan la
+  etiqueta *Práctica*. Abajo están **Ayuda** (cómo leer una transcripción, etiquetas, atajos y el
+  glosario completo) y **Acerca de la app** (fuentes, créditos y cuántas palabras hay guardadas).
+  Cada pantalla conserva lo escrito al cambiar de una a otra.
+- Cada pantalla empieza con su título, para qué sirve y un **Paso a paso** de tres pasos. Se
+  muestra abierto mientras la herramienta es nueva; después arranca plegado, salvo que se lo deje
+  abierto.
+- Los términos de la materia llevan un **?** al lado: al tocarlo se abre su explicación (se cierra
+  con **Esc** o tocando afuera).
+- Arriba a la derecha: **Audio lento** (todos los audios más despacio, sin cambiar el tono),
+  **Letra A− / A+** (tamaño del texto, útil para proyectar en clase) y **Tema** claro, oscuro o
+  automático (el de Windows). La aplicación recuerda estas preferencias.
+- Etiquetas de las pronunciaciones: **Confirmada** = coincide con el diccionario Longman;
+  **Estimada** = sale del diccionario incluido en la app y se confirma al abrir la palabra con
+  internet; **Por regla** = armada a partir de otra palabra (*watered* ← *water* + -ed).
+- La primera vez que se usa la voz de la app tarda alrededor de un segundo, y el primer análisis
   gramatical, uno o dos; después es instantáneo.
-- Cada palabra nueva se consulta en Longman (como máximo una por segundo) y queda guardada.
-- Etiquetas de las transcripciones: **Longman** = verificada en Longman; **aprox.** = del
-  diccionario abierto Britfone, todavía no verificada; **armada** = formada a partir de otra
-  palabra (*watered* ← *water* + -ed).
+- Cada palabra nueva se confirma con Longman (como máximo una por segundo) y queda guardada.
 
 ### Fonética → Buscar palabra
 
-Transcripción, audio y formas de una palabra.
+Pronunciación británica y americana de una palabra, con audio.
 
-1. Escribir la palabra con su ortografía normal, aunque sea con errores («watre», «recieve»,
-   «fonetik»): la lista muestra palabras parecidas con su transcripción.
+1. Escribir la palabra con su ortografía normal, aunque sea con errores («thougt», «recieve»): la
+   lista muestra palabras parecidas con su transcripción. Sin nada escrito aparecen ejemplos para
+   probar.
 2. Elegir con clic, o moverse con **↑ ↓** y confirmar con **Enter**. Enter sin elegir nada busca en
-   Longman lo escrito tal cual; si no existe, Longman sugiere alternativas («¿Quisiste decir…?»).
-3. La ficha muestra la transcripción británica (RP) y la americana, las formas débil y fuerte si
-   las tiene, una definición corta para distinguir homófonos, **▶ Escuchar** (británico) y **▶**
-   (americano), y **Ver en Longman ↗**.
+   el diccionario lo escrito tal cual; si no existe, sugiere alternativas («¿Quisiste decir…?»).
+3. La ficha muestra la transcripción británica (RP) y la americana, cada una con **Escuchar**; las
+   formas débil y fuerte si las tiene; **Sonido por sonido** (cada símbolo con una palabra de
+   ejemplo que se escucha al tocarlo); una definición corta para distinguir homófonos y **Ver en el
+   diccionario**.
 
 **Esc** borra la búsqueda.
 
@@ -88,66 +101,72 @@ Transcripción, audio y formas de una palabra.
 
 Escribir cómo suena una palabra y encontrar cuál es.
 
-1. Tocar los fonemas en el teclado (ordenado como la tabla fonémica de Underhill). Los diptongos
-   y las africadas son una sola tecla; **ˈ** y **ˌ** marcan el acento.
+1. Tocar los símbolos en el teclado (ordenado como la tabla fonémica de Underhill). Los diptongos
+   y las africadas son una sola tecla; **ˈ** y **ˌ** marcan el acento. Sin nada escrito aparecen
+   ejemplos para probar (/kæt/, /ʃiːp/…).
 2. Los resultados se actualizan solos: **Suena exactamente así** (homófonos) y **Lo más parecido**,
-   comparado fonema por fonema: verde = coincide, naranja = cambiado (en chiquito, lo que se
-   escribió), rojo subrayado = faltó, tachado = sobra.
-3. Clic en una palabra: su ficha de Longman con audio.
-4. **▶ Escuchar lo que escribí**: la voz británica pronuncia exactamente lo escrito, para comparar
-   con la palabra real.
-5. **Clic derecho** sobre una tecla: se escucha la palabra de ejemplo de ese fonema.
+   comparado sonido por sonido: verde = coincide, naranja = cambia (en chiquito, lo que se
+   escribió), rojo subrayado = falta, tachado = sobra.
+3. Clic en una palabra: su ficha con audio.
+4. **Escuchar lo que escribí**: la voz de la app pronuncia exactamente lo escrito, para comparar con
+   la palabra real.
+5. **Clic derecho** sobre una tecla: se escucha la palabra de ejemplo de ese sonido.
 6. **Tener en cuenta el acento**: si se marca el acento en otra sílaba, la palabra queda más lejos.
 
-Con el teclado de la computadora: **Retroceso** borra el último fonema y **Esc** limpia todo.
+Con el teclado de la computadora: **Retroceso** borra el último símbolo y **Esc** borra todo.
 
-### Fonética → Oración
+### Fonética → Transcribir oración
 
 Transcripción de una oración completa, con formas débiles y fuertes.
 
-1. Escribir la oración y apretar **Enter** (**Shift + Enter** para cambiar de renglón). La
-   transcripción aparece enseguida y se va corrigiendo a medida que responde Longman («Consultando
-   Longman: 3 de 9 palabras…»).
-2. Cada palabra muestra su transcripción: violeta = *function word* en forma **débil**, naranja =
-   forma **fuerte**, *r* azul = r de enlace, borde punteado = transcripción aproximada.
-3. **Clic** en una palabra: su ficha y, si es una *function word*, por qué lleva esa forma y un
+1. Escribir la oración (o elegir un ejemplo) y apretar **Enter** (**Shift + Enter** para cambiar de
+   renglón). La transcripción aparece enseguida y se va confirmando con el diccionario
+   («Confirmando la pronunciación (3 de 9)…»).
+2. Cada palabra muestra su transcripción: violeta = palabra gramatical (*function word*) en forma
+   **débil**, naranja = forma **fuerte**, *r* azul = r de enlace, borde punteado = pronunciación
+   estimada o formada por regla.
+3. **Clic** en una palabra: su ficha y, si es una palabra gramatical, por qué lleva esa forma y un
    botón para enfatizarla (forma fuerte) o quitarle el énfasis; la transcripción y la voz cambian.
    **Doble clic**: escucharla.
 4. **Habla conectada** (activada): formas débiles y r de enlace; desactivada, cada palabra en su
-   forma de cita. **Procesos del habla conectada**: marca además asimilación (*ten boys* /tem/),
-   elisión (*next day* /neks/), coalescencia (*don't you* /dəʊntʃu/) y r intrusiva (*idea of*),
-   con la lista de los procesos debajo.
-5. **▶ Voz británica**: lee la oración tal como está transcripta. **▶ Palabra por palabra
-   (Longman)**: encadena las grabaciones reales de cada palabra (pronunciadas aisladas).
-6. **Copiar**: copia la transcripción completa (con | para pausas menores y || para fin de
-   oración).
+   forma de cita. **Mostrar los procesos**: marca además asimilación (*ten boys* /tem/), elisión
+   (*next day* /neks/), coalescencia (*don't you* /dəʊntʃu/) y r intrusiva (*idea of*), con la lista
+   de los procesos debajo.
+5. **Escuchar la oración**: la voz de la app la lee tal como está transcripta. **Palabra por
+   palabra**: encadena las grabaciones del diccionario (cada palabra dicha sola).
+6. **Copiar**: copia la transcripción completa (con | para pausas cortas y || para fin de oración).
 
 ### Fonética → Dictado
 
-1. Elegir el nivel (vocales y diptongos, consonantes, ortografía engañosa, polisílabos y acento,
-   frases con formas débiles) y apretar **Empezar**.
-2. Escuchar (**▶ Escuchar de nuevo** las veces que haga falta) y transcribir con el teclado en
-   pantalla; **Retroceso** borra el último fonema.
-3. **Enter** (o **Corregir**): se muestra la transcripción correcta y la comparación fonema por
-   fonema. **Enter** de nuevo pasa a la siguiente; **Saltear** cambia de palabra.
+1. Elegir el **Nivel** (vocales y diptongos, consonantes, ortografía engañosa, polisílabos y
+   acento, frases con formas débiles) y apretar **Empezar**.
+2. Escuchar (**Escuchar de nuevo** las veces que haga falta) y escribir con el teclado en pantalla;
+   **Retroceso** borra el último símbolo.
+3. **Enter** (o **Comprobar**). Si no está bien, primero llega una **pista**: se marcan en naranja
+   los símbolos para revisar (y dónde falta uno) y se dice cuántos sonidos tiene, sin mostrar la
+   respuesta. Se corrige y se vuelve a comprobar; si sigue sin salir, o con **Ver la respuesta**, se
+   muestra la transcripción correcta comparada sonido por sonido. **Enter** pasa a la siguiente;
+   **Pasar a otra** cambia de palabra sin contarla.
 
-No se tiene en cuenta el acento. Las palabras usan la grabación y la transcripción de Longman.
+Arriba se ven los aciertos de la sesión y abajo, **Para repasar**: los sonidos que más costaron. No
+se tiene en cuenta el acento. Las palabras usan la grabación y la transcripción de Longman.
 
 ### Fonética → Pares mínimos
 
-1. Elegir un contraste a la izquierda (/iː/–/ɪ/, /b/–/v/, /s/–/θ/…); arriba se explica por qué
-   cuesta.
-2. **▶ Escuchar** y elegir cuál de las dos palabras sonó.
-3. Después de responder se ven las dos transcripciones y se puede escuchar cada una.
+1. Elegir los sonidos a la izquierda (/iː/–/ɪ/, /b/–/v/, /s/–/θ/…); arriba se explica por qué
+   cuestan.
+2. **Escuchar** y elegir cuál de las dos palabras sonó.
+3. La respuesta dice qué sonido lleva la palabra (««sheep» lleva /iː/»), muestra las dos
+   transcripciones y permite escuchar cada una.
 
-**Sólo voz sintética** usa la voz británica en lugar de las grabaciones de Longman (sirve sin
-conexión).
+**Usar sólo la voz de la app** reemplaza las grabaciones de Longman (sirve sin internet).
 
-### Gramática → Análisis de oraciones
+### Gramática → Analizar oración
 
 Análisis según Quirk / Greenbaum.
 
 1. Escribir una o más oraciones (o hacer clic en un ejemplo) y apretar **Enter** o **Analizar**.
+   Después del primer análisis los ejemplos quedan en **Ver ejemplos**.
 2. Arriba de cada oración: si es simple, compuesta, compleja o compuesta-compleja, su forma
    (declarativa, interrogativa…) y cuántas subordinadas tiene.
 3. Cada cláusula aparece como una fila de elementos con su color (S, V, Od, Oi, Cs, Co, A), la forma
@@ -160,8 +179,8 @@ Análisis según Quirk / Greenbaum.
 6. A la derecha hay referencias: los elementos, los siete tipos de cláusula (clic en un ejemplo lo
    analiza) y las frases.
 
-Es un análisis automático: puede equivocarse en oraciones ambiguas o poco frecuentes, así que
-conviene usarlo como punto de partida y verificarlo con el criterio de la cátedra.
+La pantalla lo aclara: el análisis lo hace la computadora y puede equivocarse, así que conviene
+compararlo con el propio y con el criterio de la cátedra.
 
 ### Gramática → Grupo verbal
 
@@ -175,18 +194,21 @@ combinaciones de auxiliares y las formas no finitas.
 - **Tabla**: buscar por verbo o significado, filtrar por patrón (cut-cut-cut, keep-kept-kept,
   come-came-come, go-went-gone) y hacer clic en una forma para escucharla.
 - **Práctica**: **Empezar** muestra un verbo (de la lista filtrada); escribir el pasado y el
-  participio, **Enter** corrige y **Enter** de nuevo pasa al siguiente. Se aceptan las variantes
+  participio, **Enter** comprueba y **Enter** de nuevo pasa al siguiente. Se aceptan las variantes
   (*learnt* o *learned*).
 - **Pronunciación de -s y -ed**: escribir un verbo regular (o elegir un ejemplo) para ver cómo
   suenan sus terminaciones (/s/ /z/ /ɪz/, /t/ /d/ /ɪd/) y la regla que lo explica.
 
 ### Gramática → Ejercicios
 
-1. Marcar la función de cada parte con los botones **S V Od Oi Cs Co A**. Lo que aparece en gris es
-   contexto y no se analiza; si el verbo aparece en dos pedazos (*Did … send*), los dos son **V**.
+1. Marcar la función de cada parte con los botones **S V Od Oi Cs Co A** (arriba está qué significa
+   cada uno). Lo que aparece en gris es contexto y no se analiza; si el verbo aparece en dos pedazos
+   (*Did … send*), los dos son **V**.
 2. Elegir **cómo es el sujeto**: expreso, implícito (imperativas) o elíptico (coordinadas).
-3. Elegir el **tipo de cláusula** y apretar **Corregir**: cada parte se pinta de verde o rojo, se
-   muestra la respuesta correcta y la explicación. **Siguiente** pasa a otro ejercicio.
+3. Elegir el **tipo de cláusula** y apretar **Comprobar**. Si hay errores, se marca en naranja qué
+   revisar, sin dar la respuesta, y hay un segundo intento. Después (o con **Ver la respuesta**)
+   cada parte se pinta de verde o rojo, con la función correcta y la explicación. **Siguiente**
+   pasa a otro ejercicio.
 
 Los 38 ejercicios salen en orden aleatorio y arriba se lleva la cuenta de aciertos.
 
@@ -195,9 +217,9 @@ Los 38 ejercicios salen en orden aleatorio y arriba se lleva la cuenta de aciert
 | Qué pasa | Qué hacer |
 | --- | --- |
 | La aplicación no abre | Puede estar abierta (sólo se permite una ventana): buscarla en la barra de tareas. |
-| «No se pudo conectar con Longman» | No hay internet. Lo ya consultado sigue disponible; para lo demás se muestra la transcripción aproximada y se puede escuchar con la voz británica. |
-| No se oye nada | Revisar el volumen de Windows. La primera lectura de la voz británica tarda un segundo. |
-| «El analizador gramatical no está instalado» o no aparece la voz británica | Sólo pasa en una copia de desarrollo armada sin `npm run build:nlp` o sin `npm run fetch-voice`. |
+| «Sin internet: estás viendo una pronunciación estimada» | No hay conexión. Lo ya buscado sigue disponible; para lo demás se muestra la pronunciación estimada y se puede escuchar con la voz de la app. |
+| No se oye nada | Revisar el volumen de Windows. La primera lectura de la voz de la app tarda un segundo. |
+| «El análisis de oraciones no está disponible en esta computadora» o no aparece la voz de la app | Sólo pasa en una copia de desarrollo armada sin `npm run build:nlp` o sin `npm run fetch-voice`. |
 
 ## Compilación
 
@@ -299,10 +321,18 @@ shared/                   Código común a los dos procesos
   grammar.ts              Tipos del análisis gramatical (SVOCA, frases, cláusulas, grupo verbal)
   study-data/             Material de estudio: verbos irregulares, ejercicios, dictado, pares mínimos
 src/app/                  Interfaz (Angular 21, componentes standalone y signals)
-  app.ts                  Menú general (Fonética / Gramática) y submenús
+  app.ts                  Marco: menú lateral, barra superior (audio lento, letra, tema) y pantallas
+  core/navigation.ts      Pantallas de cada sección con su título, objetivo y paso a paso
+  core/preferences.service.ts  Tema, tamaño de letra, audio lento y estado de las guías (guardados)
+  features/home/          Inicio: consultar o practicar, seguí donde dejaste, sonido del día
+  features/help/          Ayuda: cómo leer una transcripción, etiquetas, atajos y glosario
+  features/about/         Acerca de la app: fuentes y créditos
   features/phonetics/     Buscar palabra, teclado, oración, dictado, pares mínimos
   features/grammar/       Análisis de oraciones, grupo verbal, verbos irregulares, ejercicios
-  shared/word-detail/     Ficha de la palabra con audio (la usan varias pantallas)
+  shared/word-detail/     Ficha de la palabra con audio y sonido por sonido (la usan varias pantallas)
+  shared/glossary.ts      Glosario de la materia; shared/term.ts muestra el «?» de cada término
+src/styles.css            Colores (claro y oscuro con light-dark()), tipografías y piezas comunes
+public/theme-init.js      Aplica el tema guardado antes de dibujar la interfaz
 nlp/nlp_server.py         Analizador spaCy (Python): devuelve el árbol de dependencias
 nlp/requirements.lock.txt Versiones fijadas de spaCy, el modelo y PyInstaller
 resources/britfone/       Diccionario abierto Britfone (MIT) que se empaqueta con la app

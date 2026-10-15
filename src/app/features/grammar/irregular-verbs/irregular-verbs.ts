@@ -8,7 +8,9 @@ import {
 } from '../../../../../shared/study-data/irregular-verbs';
 import { AudioPlayerService } from '../../../core/audio-player.service';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { Icon } from '../../../shared/icon';
 import { IpaText } from '../../../shared/ipa-text';
+import { SessionScore } from '../../../shared/session-score';
 
 type FormKey = 'base' | 'past' | 'participle';
 
@@ -32,7 +34,7 @@ const PATTERN_LABELS: Readonly<Record<VerbPattern, string>> = {
  */
 @Component({
   selector: 'app-irregular-verbs',
-  imports: [IpaText],
+  imports: [IpaText, Icon, SessionScore],
   templateUrl: './irregular-verbs.html',
   styleUrl: './irregular-verbs.css',
 })

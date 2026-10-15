@@ -1,15 +1,25 @@
 <section class="panel" aria-label="Ejercicios de análisis">
   <header class="header">
-    <h2>Analizá la cláusula</h2>
-    <span class="muted"
-      >Ejercicio {{ position() + 1 }} de {{ total }} · aciertos {{ score().right }} de
-      {{ score().total }}</span
-    >
+    <div>
+      <h2>Analizá la cláusula</h2>
+      <p class="muted">Ejercicio {{ position() + 1 }} de {{ total }}</p>
+    </div>
+    @if (score().total) {
+      <app-session-score [right]="score().right" [total]="score().total" />
+    }
   </header>
-  <p class="muted instructions">
+  <p class="instructions">
     Elegí la función de cada parte, cómo es el sujeto y el tipo de cláusula. Ojo: el orden no
-    siempre es S V… (preguntas, adverbial adelante, inversión) y en las imperativas y algunas
-    coordinadas el sujeto no está escrito.
+    siempre es S V (preguntas, adverbial adelante, inversión) y a veces el sujeto no está escrito.
+  </p>
+  <p class="roles-legend">
+    @for (role of roles; track role) {
+      <span class="legend-item"
+        ><strong class="role-color role--{{ colorOf(role) }}">{{ role }}</strong>
+        {{ roleNames[role] }}</span
+      >
+    }
+    <app-term key="elementos" />
   </p>
 
   <div class="constituents">
@@ -20,8 +30,9 @@
       @let answer = answers()[i];
       <div
         class="constituent"
-        [class.constituent--right]="checked() && answer === part.role"
-        [class.constituent--wrong]="checked() && answer !== part.role"
+        [class.constituent--right]="done() && answer === part.role"
+        [class.constituent--wrong]="done() && answer !== part.role"
+        [class.constituent--check]="phase() === 'hint' && marks().constituents.has(i)"
       >
         <span class="text">{{ part.text + (last ? (exercise().end ?? '.') : '') }}</span>
         <div class="role-buttons" role="radiogroup" [attr.aria-label]="'Función de ' + part.text">
@@ -33,21 +44,23 @@
               [class.role--chosen]="answer === role"
               [attr.aria-checked]="answer === role"
               [title]="roleNames[role]"
-              [disabled]="checked()"
+              [disabled]="done()"
               (click)="setRole(i, role)"
             >
               {{ role }}
             </button>
           }
         </div>
-        @if (checked() && answer !== part.role) {
+        @if (done() && answer !== part.role) {
           <span class="correction">Era {{ part.role }}: {{ roleNames[part.role] }}</span>
+        } @else if (phase() === 'hint' && marks().constituents.has(i)) {
+          <span class="check-note">Revisá esta parte</span>
         }
       </div>
     }
   </div>
 
-  <h3>¿Cómo es el sujeto?</h3>
+  <h3>¿Cómo es el sujeto? <app-term key="tipos-sujeto" /></h3>
   <div class="choices" role="radiogroup" aria-label="Cómo es el sujeto">
     @for (k of subjectKinds; track k.kind) {
       <button
@@ -55,10 +68,11 @@
         role="radio"
         class="choice"
         [class.choice--chosen]="subjectAnswer() === k.kind"
-        [class.choice--right]="checked() && k.kind === subject()"
-        [class.choice--wrong]="checked() && subjectAnswer() === k.kind && k.kind !== subject()"
+        [class.choice--right]="done() && k.kind === subject()"
+        [class.choice--wrong]="done() && subjectAnswer() === k.kind && k.kind !== subject()"
+        [class.choice--check]="phase() === 'hint' && marks().subject && subjectAnswer() === k.kind"
         [attr.aria-checked]="subjectAnswer() === k.kind"
-        [disabled]="checked()"
+        [disabled]="done()"
         [title]="k.description"
         (click)="setSubject(k.kind)"
       >
@@ -67,7 +81,7 @@
     }
   </div>
 
-  <h3>Tipo de cláusula</h3>
+  <h3>Tipo de cláusula <app-term key="tipos-clausula" /></h3>
   <div class="choices" role="radiogroup" aria-label="Tipo de cláusula">
     @for (p of patterns; track p.pattern) {
       <button
@@ -75,12 +89,15 @@
         role="radio"
         class="choice choice--pattern"
         [class.choice--chosen]="patternAnswer() === p.pattern"
-        [class.choice--right]="checked() && p.pattern === exercise().pattern"
+        [class.choice--right]="done() && p.pattern === exercise().pattern"
         [class.choice--wrong]="
-          checked() && patternAnswer() === p.pattern && p.pattern !== exercise().pattern
+          done() && patternAnswer() === p.pattern && p.pattern !== exercise().pattern
+        "
+        [class.choice--check]="
+          phase() === 'hint' && marks().pattern && patternAnswer() === p.pattern
         "
         [attr.aria-checked]="patternAnswer() === p.pattern"
-        [disabled]="checked()"
+        [disabled]="done()"
         [title]="p.description"
         (click)="setPattern(p.pattern)"
       >
@@ -90,26 +107,62 @@
   </div>
 
   <div class="actions">
-    @if (!checked()) {
-      <button type="button" class="primary" [disabled]="!complete()" (click)="check()">
-        Corregir
-      </button>
-      @if (!complete()) {
-        <span class="muted small"
-          >Falta elegir alguna función, el sujeto o el tipo de cláusula.</span
-        >
-      }
+    @if (phase() === 'hint') {
+      <div class="feedback feedback--hint" role="status">
+        <p class="verdict">
+          <app-icon name="lightbulb" />
+          <span>
+            @if (markCount()) {
+              ¡Casi! Revisá {{ markCount() === 1 ? 'lo marcado' : 'las partes marcadas' }} en
+              naranja y volvé a comprobar.
+            } @else {
+              Cambiaste lo marcado: comprobá de nuevo.
+            }
+          </span>
+        </p>
+      </div>
+    }
+
+    @if (!done()) {
+      <div class="buttons">
+        <button type="button" class="primary" [disabled]="!complete()" (click)="check()">
+          <app-icon name="check" size="1em" /> Comprobar
+        </button>
+        @if (attempts() > 0) {
+          <button type="button" class="secondary" (click)="reveal()">
+            <app-icon name="eye" size="1em" /> Ver la respuesta
+          </button>
+        }
+        @if (!complete()) {
+          <span class="muted small"
+            >Falta elegir alguna función, el sujeto o el tipo de cláusula.</span
+          >
+        }
+      </div>
     } @else {
-      <p class="verdict" [class.ok]="allRight()" [class.bad]="!allRight()">
-        {{ allRight() ? '¡Correcto!' : 'Hay errores: mirá las correcciones.' }}
-      </p>
-      <p class="explanation">
-        <strong
-          >{{ exercise().pattern }} · sujeto {{ subjectLabel(subject()).toLowerCase() }}.</strong
-        >
-        {{ exercise().explanation }}
-      </p>
-      <button type="button" class="primary" (click)="next()">Siguiente</button>
+      <div class="feedback" [class.feedback--ok]="solved()" role="status">
+        <p class="verdict">
+          <app-icon [name]="solved() ? 'check' : 'info'" />
+          <span>
+            @if (solved()) {
+              {{ attempts() > 1 ? '¡Bien! Lo corregiste.' : '¡Muy bien!' }}
+            } @else {
+              Esta es la respuesta: al lado de cada parte está la función.
+            }
+          </span>
+        </p>
+        <p class="explanation">
+          <strong
+            >{{ exercise().pattern }} · sujeto {{ subjectLabel(subject()).toLowerCase() }}.</strong
+          >
+          {{ exercise().explanation }}
+        </p>
+      </div>
+      <div class="buttons">
+        <button type="button" class="primary" (click)="next()">
+          Siguiente <app-icon name="arrow-right" size="1em" />
+        </button>
+      </div>
     }
   </div>
 </section>

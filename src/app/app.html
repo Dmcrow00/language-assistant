@@ -1,101 +1,231 @@
-<header class="header">
+<aside class="sidebar">
   <div class="brand">
     <span class="logo" aria-hidden="true">/ə/</span>
-    <div>
-      <h1>Fonética RP</h1>
-      <p class="subtitle">Fonética y gramática del inglés · Longman</p>
+    <div class="brand-text">
+      <span class="brand-name">Fonética RP</span>
+      <span class="brand-sub">Fonética y gramática del inglés</span>
     </div>
   </div>
 
-  <nav class="sections" role="tablist" aria-label="Secciones">
-    @for (s of sections; track s) {
-      <button
-        type="button"
-        role="tab"
-        class="section"
-        [class.section--active]="section() === s"
-        [attr.aria-selected]="section() === s"
-        (click)="selectSection(s)"
-      >
-        {{ menu[s].label }}
-      </button>
+  <nav class="nav" aria-label="Menú">
+    <button
+      type="button"
+      class="nav-item"
+      [class.nav-item--active]="view() === 'home'"
+      [attr.aria-current]="view() === 'home' ? 'page' : null"
+      title="Inicio"
+      (click)="go('home')"
+    >
+      <app-icon name="home" />
+      <span class="nav-label">Inicio</span>
+    </button>
+
+    @for (section of sections; track section.id) {
+      <p class="nav-heading">
+        <span class="nav-label">{{ section.label }}</span>
+      </p>
+      @for (item of section.tools; track item.id) {
+        <button
+          type="button"
+          class="nav-item"
+          [class.nav-item--active]="view() === item.id"
+          [attr.aria-current]="view() === item.id ? 'page' : null"
+          [title]="item.label"
+          (click)="go(item.id)"
+        >
+          <app-icon [name]="item.icon" />
+          <span class="nav-label">{{ item.label }}</span>
+          @if (item.practice) {
+            <span class="nav-tag">Práctica</span>
+          }
+        </button>
+      }
     }
   </nav>
 
-  <label class="slow" title="Reproduce los audios más despacio, sin cambiar el tono">
-    <input type="checkbox" [checked]="audio.slow()" (change)="audio.slow.set(!audio.slow())" />
-    Audio lento
-  </label>
-</header>
-
-<nav class="subnav" role="tablist" [attr.aria-label]="menu[section()].label">
-  @for (item of menu[section()].items; track item.id) {
+  <div class="nav-footer">
     <button
       type="button"
-      role="tab"
-      class="tab"
-      [class.tab--active]="view() === item.id"
-      [attr.aria-selected]="view() === item.id"
-      [title]="item.description"
-      (click)="selectView(item.id)"
+      class="nav-item nav-item--small"
+      [class.nav-item--active]="view() === 'help'"
+      [attr.aria-current]="view() === 'help' ? 'page' : null"
+      title="Ayuda"
+      (click)="go('help')"
     >
-      {{ item.label }}
+      <app-icon name="help" />
+      <span class="nav-label">Ayuda</span>
     </button>
-  }
-</nav>
-
-@if (!api.available) {
-  <div class="banner">
-    La interfaz está abierta fuera de la aplicación de escritorio. Iniciala con
-    <code>npm start</code> o <code>npm run dev</code>.
+    <button
+      type="button"
+      class="nav-item nav-item--small"
+      [class.nav-item--active]="view() === 'about'"
+      [attr.aria-current]="view() === 'about' ? 'page' : null"
+      title="Acerca de la app"
+      (click)="go('about')"
+    >
+      <app-icon name="info" />
+      <span class="nav-label">Acerca de la app</span>
+    </button>
   </div>
-}
+</aside>
 
-<main class="content">
-  @if (isOpen('spelling')) {
-    <app-spelling-search class="panel" [hidden]="view() !== 'spelling'" />
-  }
-  @if (isOpen('keyboard')) {
-    <app-phonemic-keyboard
-      class="panel"
-      [hidden]="view() !== 'keyboard'"
-      [active]="view() === 'keyboard'"
-    />
-  }
-  @if (isOpen('sentence')) {
-    <app-sentence-transcriber class="panel" [hidden]="view() !== 'sentence'" />
-  }
-  @if (isOpen('dictation')) {
-    <app-dictation
-      class="panel"
-      [hidden]="view() !== 'dictation'"
-      [active]="view() === 'dictation'"
-    />
-  }
-  @if (isOpen('pairs')) {
-    <app-minimal-pairs class="panel" [hidden]="view() !== 'pairs'" />
-  }
-  @if (isOpen('analysis')) {
-    <app-sentence-analysis class="panel" [hidden]="view() !== 'analysis'" />
-  }
-  @if (isOpen('verb-phrases')) {
-    <app-verb-phrases class="panel" [hidden]="view() !== 'verb-phrases'" />
-  }
-  @if (isOpen('irregular')) {
-    <app-irregular-verbs class="panel" [hidden]="view() !== 'irregular'" />
-  }
-  @if (isOpen('exercises')) {
-    <app-grammar-exercises class="panel" [hidden]="view() !== 'exercises'" />
-  }
-</main>
+<div class="main">
+  <header class="topbar">
+    <p class="breadcrumb">
+      @if (tool()) {
+        <span>{{ sectionLabel() }}</span>
+        <app-icon name="chevron-right" size="1em" />
+      }
+      <strong>{{ pageLabel() }}</strong>
+    </p>
 
-<footer class="status">
-  @if (api.lexiconInfo(); as info) {
-    Diccionario local: {{ info.total.toLocaleString('es-AR') }} palabras ·
-    {{ info.fromLdoce.toLocaleString('es-AR') }} verificadas en Longman
+    <div class="tools">
+      <button
+        type="button"
+        class="switch"
+        role="switch"
+        [attr.aria-checked]="audio.slow()"
+        title="Los audios suenan más despacio, sin cambiar el tono"
+        (click)="audio.slow.set(!audio.slow())"
+      >
+        <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+        Audio lento
+      </button>
+
+      <div class="group" role="group" aria-label="Tamaño de letra">
+        <span class="group-label">Letra</span>
+        <button
+          type="button"
+          class="tool-button"
+          [disabled]="!prefs.canShrink()"
+          [title]="'Achicar la letra (ahora ' + prefs.fontPercent() + ' %)'"
+          aria-label="Achicar la letra"
+          (click)="prefs.shrinkFont()"
+        >
+          A−
+        </button>
+        <button
+          type="button"
+          class="tool-button tool-button--big"
+          [disabled]="!prefs.canGrow()"
+          [title]="'Agrandar la letra (ahora ' + prefs.fontPercent() + ' %)'"
+          aria-label="Agrandar la letra"
+          (click)="prefs.growFont()"
+        >
+          A+
+        </button>
+      </div>
+
+      <div class="group" role="radiogroup" aria-label="Tema">
+        <span class="group-label">Tema</span>
+        <div class="segmented">
+          @for (t of themes; track t.id) {
+            <button
+              type="button"
+              role="radio"
+              class="segment"
+              [class.segment--active]="prefs.theme() === t.id"
+              [attr.aria-checked]="prefs.theme() === t.id"
+              [attr.aria-label]="t.label"
+              [title]="t.label"
+              (click)="prefs.theme.set(t.id)"
+            >
+              <app-icon [name]="t.icon" />
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+
+  @if (!api.available) {
+    <div class="banner">
+      La interfaz está abierta fuera de la aplicación de escritorio. Iniciala con
+      <code>npm start</code> o <code>npm run dev</code>.
+    </div>
   }
-  <span class="credits">
-    Longman Dictionary of Contemporary English Online · Britfone (MIT) · Voz: Piper «Cori» ·
-    Análisis gramatical: spaCy (MIT)
-  </span>
-</footer>
+
+  <main class="content">
+    @if (tool(); as t) {
+      <div class="intro">
+        <div class="intro-text">
+          <h1>{{ t.title }}</h1>
+          <p>{{ t.objective }}</p>
+        </div>
+        <button
+          type="button"
+          class="secondary small guide-toggle"
+          [attr.aria-expanded]="guideOpen()"
+          aria-controls="paso-a-paso"
+          (click)="toggleGuide()"
+        >
+          <app-icon name="steps" />
+          Paso a paso
+          <app-icon
+            name="chevron-down"
+            class="chevron"
+            [class.chevron--open]="guideOpen()"
+            size="1em"
+          />
+        </button>
+      </div>
+      @if (guideOpen()) {
+        <ol class="steps" id="paso-a-paso">
+          @for (step of t.steps; track $index) {
+            <li>
+              <span class="step-number" aria-hidden="true">{{ $index + 1 }}</span>
+              <span>{{ step }}</span>
+            </li>
+          }
+        </ol>
+      }
+    }
+
+    <div class="screens">
+      @if (isOpen('home')) {
+        <app-home class="screen" [hidden]="view() !== 'home'" />
+      }
+      @if (isOpen('help')) {
+        <app-help class="screen" [hidden]="view() !== 'help'" />
+      }
+      @if (isOpen('about')) {
+        <app-about class="screen" [hidden]="view() !== 'about'" />
+      }
+      @if (isOpen('spelling')) {
+        <app-spelling-search class="screen" [hidden]="view() !== 'spelling'" />
+      }
+      @if (isOpen('keyboard')) {
+        <app-phonemic-keyboard
+          class="screen"
+          [hidden]="view() !== 'keyboard'"
+          [active]="view() === 'keyboard'"
+        />
+      }
+      @if (isOpen('sentence')) {
+        <app-sentence-transcriber class="screen" [hidden]="view() !== 'sentence'" />
+      }
+      @if (isOpen('dictation')) {
+        <app-dictation
+          class="screen"
+          [hidden]="view() !== 'dictation'"
+          [active]="view() === 'dictation'"
+        />
+      }
+      @if (isOpen('pairs')) {
+        <app-minimal-pairs class="screen" [hidden]="view() !== 'pairs'" />
+      }
+      @if (isOpen('analysis')) {
+        <app-sentence-analysis class="screen" [hidden]="view() !== 'analysis'" />
+      }
+      @if (isOpen('verb-phrases')) {
+        <app-verb-phrases class="screen" [hidden]="view() !== 'verb-phrases'" />
+      }
+      @if (isOpen('irregular')) {
+        <app-irregular-verbs class="screen" [hidden]="view() !== 'irregular'" />
+      }
+      @if (isOpen('exercises')) {
+        <app-grammar-exercises class="screen" [hidden]="view() !== 'exercises'" />
+      }
+    </div>
+  </main>
+</div>

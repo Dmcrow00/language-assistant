@@ -6,6 +6,9 @@ import {
   PRIMARY_STRESS,
   SECONDARY_STRESS,
 } from '../../../../../shared/phoneme-inventory';
+import { describePhoneme } from '../../../core/phoneme-examples.service';
+import { Icon } from '../../../shared/icon';
+import { Term } from '../../../shared/term';
 
 /**
  * Teclado en pantalla con los 44 fonemas del RP, ordenados como la tabla fonémica de
@@ -36,7 +39,7 @@ const toInfo = (rows: string[][]): PhonemeInfo[][] =>
 
 @Component({
   selector: 'app-ipa-keyboard',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, Icon, Term],
   templateUrl: './ipa-keyboard.html',
   styleUrl: './ipa-keyboard.css',
 })
@@ -56,9 +59,8 @@ export class IpaKeyboard {
   protected readonly secondaryStress = SECONDARY_STRESS;
 
   protected tooltip(p: PhonemeInfo): string {
-    const kind =
-      p.category === 'consonant' ? `${p.keyword} ${p.voiced ? 'sonora' : 'sorda'}` : p.keyword;
-    return `/${p.symbol}/ — ${kind} — como en «${p.example}». Clic derecho: escuchar «${p.example}».`;
+    const set = p.category === 'consonant' ? '' : ` (${p.keyword})`;
+    return `/${p.symbol}/${set}: ${describePhoneme(p)}, como en «${p.example}». Clic derecho: escuchar «${p.example}».`;
   }
 
   protected requestExample(event: MouseEvent, p: PhonemeInfo): void {

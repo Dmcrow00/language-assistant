@@ -1,4 +1,4 @@
-import { ipcMain, IpcMainInvokeEvent, shell } from 'electron';
+import { ipcMain, IpcMainInvokeEvent, nativeTheme, shell } from 'electron';
 import { IPC, LdoceLookup, PhonemeSearchOptions } from '../shared/fonetica-api';
 import { PHONEMES, PRIMARY_STRESS, SECONDARY_STRESS } from '../shared/phoneme-inventory';
 import { Lexicon, normalizeKey } from './core/lexicon';
@@ -130,6 +130,12 @@ export function registerIpc({ lexicon, ldoce, voice, nlp, isTrustedSender }: Ipc
   handle(IPC.speakPhonemes, (pron, options) =>
     requireVoice().synthesize(`${wordToEspeak(text(pron, 200), 'ensure')}.`, speech(options)),
   );
+
+  handle(IPC.setTheme, (theme) => {
+    if (theme !== 'system' && theme !== 'light' && theme !== 'dark')
+      throw new Error('Tema inválido');
+    nativeTheme.themeSource = theme;
+  });
 
   handle(IPC.openInBrowser, async (url) => {
     const target = new URL(text(url, 300));

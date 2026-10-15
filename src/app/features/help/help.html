@@ -1,0 +1,106 @@
+<div class="help">
+  <header class="hero">
+    <h1>Ayuda</h1>
+    <p>
+      Cómo se leen las transcripciones, qué significan los colores y los términos de la materia.
+    </p>
+    <button type="button" class="secondary small" (click)="showWelcome()">
+      <app-icon name="retry" size="1em" />
+      Ver la bienvenida otra vez
+    </button>
+  </header>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="leer">
+      <h2 id="leer">Cómo se lee una transcripción</h2>
+      <dl class="reading">
+        <dt><app-ipa-text pron="θɔːt" /></dt>
+        <dd>Va entre barras, con un símbolo por cada sonido: <em>thought</em>.</dd>
+        <dt><span class="ipa">ː</span></dt>
+        <dd>Vocal larga: compará <app-ipa-text pron="ʃɒt" /> y <app-ipa-text pron="ʃɔːt" />.</dd>
+        <dt><span class="ipa">ˈ ˌ</span></dt>
+        <dd>
+          Acento: va antes de la sílaba que se dice con más fuerza (<span class="ipa">ˌ</span> es un
+          acento más suave): <app-ipa-text pron="ˌedʒʊˈkeɪʃən" />.
+        </dd>
+        <dt><app-ipa-text pron="ˈtemp(ə)rəri" [slashes]="false" /></dt>
+        <dd>El sonido en cursiva es opcional: algunos hablantes lo pronuncian y otros no.</dd>
+      </dl>
+    </section>
+
+    <section class="card" aria-labelledby="colores">
+      <h2 id="colores">Etiquetas y colores</h2>
+      <ul class="labels">
+        <li>
+          <span class="badge badge--ok"><app-icon name="check" size="0.95em" />Confirmada</span>
+          Coincide con el diccionario Longman y queda guardada en esta computadora.
+        </li>
+        <li>
+          <span class="badge badge--warn">Estimada</span>
+          Sale del diccionario que trae la app; se confirma al abrir la palabra con internet.
+        </li>
+        <li>
+          <span class="badge badge--info">Por regla</span>
+          La app la armó a partir de otra palabra (plural, pasado, -ing…).
+        </li>
+        <li>
+          <span class="swatch swatch--weak">débil</span>
+          Palabra gramatical sin énfasis (forma débil).
+        </li>
+        <li>
+          <span class="swatch swatch--strong">fuerte</span>
+          Palabra gramatical con énfasis o al final (forma fuerte).
+        </li>
+        <li>
+          <span class="swatch swatch--changed">ɪ</span>
+          En las comparaciones, en naranja lo que cambia y en rojo lo que falta.
+        </li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="atajos">
+      <h2 id="atajos">Atajos de teclado</h2>
+      <dl class="keys">
+        <dt><kbd>Enter</kbd></dt>
+        <dd>Buscar, transcribir, analizar o comprobar, según la pantalla.</dd>
+        <dt><kbd>↑</kbd> <kbd>↓</kbd></dt>
+        <dd>Moverse por la lista de palabras parecidas.</dd>
+        <dt><kbd>Retroceso</kbd></dt>
+        <dd>Borrar el último símbolo en el teclado fonético y en el dictado.</dd>
+        <dt><kbd>Esc</kbd></dt>
+        <dd>Borrar todo lo escrito y cerrar las explicaciones.</dd>
+        <dt>Clic derecho</dt>
+        <dd>Sobre un símbolo del teclado: escuchar una palabra de ejemplo.</dd>
+        <dt>Doble clic</dt>
+        <dd>Sobre una palabra de una oración transcripta: escucharla.</dd>
+      </dl>
+    </section>
+  </div>
+
+  <section class="card glossary" aria-labelledby="glosario">
+    <div class="glossary-header">
+      <h2 id="glosario">Glosario</h2>
+      <input
+        type="search"
+        class="filter"
+        placeholder="Buscar un término…"
+        aria-label="Buscar en el glosario"
+        [value]="filter()"
+        (input)="filter.set($any($event.target).value)"
+      />
+    </div>
+    @for (g of groups(); track g.group) {
+      <h3>{{ g.group }}</h3>
+      <dl class="entries">
+        @for (e of g.entries; track e.term) {
+          <div class="entry">
+            <dt>{{ e.term }}</dt>
+            <dd>{{ e.definition }}</dd>
+          </div>
+        }
+      </dl>
+    } @empty {
+      <p class="muted">No hay términos con «{{ filter() }}».</p>
+    }
+  </section>
+</div>

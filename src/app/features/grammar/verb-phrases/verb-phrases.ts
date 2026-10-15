@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import type { VerbPhraseAnalysis } from '../../../../../shared/grammar';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { Term } from '../../../shared/term';
 import { VerbPhraseView } from '../shared/verb-phrase-view';
 
 /**
@@ -10,7 +11,7 @@ import { VerbPhraseView } from '../shared/verb-phrase-view';
  */
 @Component({
   selector: 'app-verb-phrases',
-  imports: [VerbPhraseView],
+  imports: [VerbPhraseView, Term],
   templateUrl: './verb-phrases.html',
   styleUrl: './verb-phrases.css',
 })
@@ -22,6 +23,8 @@ export class VerbPhrases {
   protected readonly analyzed = signal(false);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** El error técnico, sólo para el globo de ayuda. */
+  protected readonly errorDetail = signal<string | null>(null);
 
   /** Una oración por cada combinación interesante; un clic la analiza. */
   protected readonly examples = [
@@ -79,7 +82,8 @@ export class VerbPhrases {
       );
       this.analyzed.set(true);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : String(error));
+      this.error.set('No se pudo analizar la oración. Probá de nuevo en un momento.');
+      this.errorDetail.set(error instanceof Error ? error.message : String(error));
     } finally {
       this.loading.set(false);
     }

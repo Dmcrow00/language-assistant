@@ -1,5 +1,6 @@
 import { Component, computed, HostListener, inject, input, signal } from '@angular/core';
-import type { TranscriptionCheck } from '../../../../../shared/fonetica-api';
+import type { AlignmentStep, TranscriptionCheck } from '../../../../../shared/fonetica-api';
+import { PRIMARY_STRESS, SECONDARY_STRESS } from '../../../../../shared/phoneme-inventory';
 import {
   DICTATION_LEVELS,
   DictationLevel,
@@ -7,7 +8,10 @@ import {
 import { AudioPlayerService } from '../../../core/audio-player.service';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
 import { AlignmentView } from '../../../shared/alignment-view';
+import { Icon } from '../../../shared/icon';
 import { IpaText } from '../../../shared/ipa-text';
+import { SessionScore } from '../../../shared/session-score';
+import { SourceBadge } from '../../../shared/source-badge';
 import { IpaKeyboard } from '../phonemic-keyboard/ipa-keyboard';
 
 interface DictationItem {
@@ -21,12 +25,20 @@ interface DictationItem {
 }
 
 /**
+ * answering: escribiendo · hint: el primer intento no salió y se marca qué revisar, sin dar la
+ * respuesta · done: acertó o se mostró la respuesta.
+ */
+type Phase = 'answering' | 'hint' | 'done';
+
+/**
  * Fonética → Dictado: se escucha una palabra o frase, el alumno la transcribe con el teclado
- * fonético y se corrige fonema por fonema. Las frases se transcriben con formas débiles.
+ * fonético y se comprueba fonema por fonema. Si no sale al primer intento, se marcan los
+ * símbolos para revisar (pista) y puede corregir antes de ver la respuesta. Las frases se
+ * transcriben con formas débiles.
  */
 @Component({
   selector: 'app-dictation',
-  imports: [IpaKeyboard, IpaText, AlignmentView],
+  imports: [IpaKeyboard, IpaText, AlignmentView, Icon, SessionScore, SourceBadge],
   templateUrl: './dictation.html',
   styleUrl: './dictation.css',
 })
@@ -41,14 +53,34 @@ export class Dictation {
   protected readonly item = signal<DictationItem | null>(null);
   protected readonly loading = signal(false);
   protected readonly tokens = signal<string[]>([]);
+  protected readonly phase = signal<Phase>('answering');
+  protected readonly attempts = signal(0);
   protected readonly result = signal<TranscriptionCheck | null>(null);
+  /** Acertó (en el primer intento o después de la pista) sin ver la respuesta. */
+  protected readonly solved = signal(false);
   protected readonly score = signal({ right: 0, total: 0 });
   protected readonly message = signal<string | null>(null);
+  /** Sonidos que más costaron en la sesión, para repasar. */
+  private readonly missed = signal<ReadonlyMap<string, number>>(new Map());
 
   protected readonly written = computed(() => this.tokens().join(''));
+  /** Cuántos sonidos tiene la respuesta (sin contar los acentos), para la pista. */
+  protected readonly soundCount = computed(
+    () =>
+      this.result()?.alignment.filter((s) => s.op !== 'extra' && !isStress(s.expected)).length ?? 0,
+  );
+  protected readonly toReview = computed(() =>
+    [...this.missed()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([symbol]) => symbol),
+  );
+
   private lastText: string | null = null;
 
-  protected chooseLevel(level: DictationLevel): void {
+  protected chooseLevelById(id: string): void {
+    const level = DICTATION_LEVELS.find((l) => l.id === id);
+    if (!level) return;
     this.level.set(level);
     void this.next();
   }
@@ -59,6 +91,9 @@ export class Dictation {
     this.lastText = text;
     this.tokens.set([]);
     this.result.set(null);
+    this.phase.set('answering');
+    this.attempts.set(0);
+    this.solved.set(false);
     this.message.set(null);
     this.loading.set(true);
     try {
@@ -95,24 +130,51 @@ export class Dictation {
   }
 
   protected press(symbol: string): void {
-    if (this.result()) return;
+    if (this.phase() === 'done') return;
+    this.phase.set('answering');
     this.tokens.update((t) => [...t, symbol]);
   }
 
   protected backspace(): void {
-    if (!this.result()) this.tokens.update((t) => t.slice(0, -1));
+    if (this.phase() === 'done') return;
+    this.phase.set('answering');
+    this.tokens.update((t) => t.slice(0, -1));
   }
 
   protected clear(): void {
-    if (!this.result()) this.tokens.set([]);
+    if (this.phase() === 'done') return;
+    this.phase.set('answering');
+    this.tokens.set([]);
   }
 
   protected async check(): Promise<void> {
     const item = this.item();
-    if (!item || !this.tokens().length || this.result()) return;
+    if (!item || !this.tokens().length || this.phase() !== 'answering') return;
     const result = await this.api.checkTranscription(this.tokens(), item.target);
     this.result.set(result);
-    this.score.update((s) => ({ right: s.right + (result.exact ? 1 : 0), total: s.total + 1 }));
+    this.attempts.update((n) => n + 1);
+    if (result.exact) {
+      this.solved.set(true);
+      this.finish(true);
+    } else if (this.attempts() === 1) {
+      this.phase.set('hint');
+    } else {
+      this.finish(false);
+    }
+  }
+
+  /** Muestra la respuesta sin otro intento. */
+  protected reveal(): void {
+    const item = this.item();
+    if (!item || this.phase() === 'done') return;
+    if (!this.result()) {
+      void this.api.checkTranscription(this.tokens(), item.target).then((r) => {
+        this.result.set(r);
+        this.finish(false);
+      });
+      return;
+    }
+    this.finish(false);
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -125,9 +187,30 @@ export class Dictation {
       this.backspace();
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      if (this.result()) void this.next();
+      if (this.phase() === 'done') void this.next();
       else void this.check();
     }
+  }
+
+  private finish(right: boolean): void {
+    this.phase.set('done');
+    this.score.update((s) => ({ right: s.right + (right ? 1 : 0), total: s.total + 1 }));
+    if (right) return;
+    const missed = (this.result()?.alignment ?? [])
+      .filter((s) => (s.op === 'substituted' || s.op === 'missing') && !isStress(s.expected))
+      .map((s) => s.expected!);
+    if (missed.length) {
+      this.missed.update((map) => {
+        const next = new Map(map);
+        for (const symbol of missed) next.set(symbol, (next.get(symbol) ?? 0) + 1);
+        return next;
+      });
+    }
+  }
+
+  /** Para la pista: los símbolos del alumno, marcados, sin mostrar los correctos. */
+  protected isOk(step: AlignmentStep): boolean {
+    return step.op === 'match';
   }
 
   /** Palabra: se verifica en Longman (transcripción y grabación real); si no responde, la local. */
@@ -149,7 +232,7 @@ export class Dictation {
     return { text, target: local?.prons[0] ?? '', verified: false, phrase: false };
   }
 
-  /** Frase: la transcripción de la pestaña Oración, con formas débiles y r de enlace. */
+  /** Frase: la transcripción de la pantalla Oración, con formas débiles y r de enlace. */
   private async loadPhrase(text: string): Promise<DictationItem> {
     const analysis = await this.api.analyzeSentence(text, {
       connected: true,
@@ -159,4 +242,8 @@ export class Dictation {
     const target = analysis.transcription.replace(/^\/|\/$/g, '').replace(/\s*\|+\s*/g, ' ');
     return { text, target, verified: false, phrase: true };
   }
+}
+
+function isStress(symbol: string | undefined): boolean {
+  return symbol === PRIMARY_STRESS || symbol === SECONDARY_STRESS;
 }

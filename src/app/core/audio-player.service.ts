@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { FoneticaApiService } from './fonetica-api.service';
+import { PreferencesService } from './preferences.service';
 
 /**
  * Reproduce dos tipos de audio:
@@ -14,8 +15,8 @@ export class AudioPlayerService {
   private readonly blobUrls = new Map<string, string>();
   private current: HTMLAudioElement | null = null;
 
-  /** Reproducción lenta, sin cambiar el tono, para escuchar con detalle. */
-  readonly slow = signal(false);
+  /** Reproducción lenta, sin cambiar el tono, para escuchar con detalle (queda guardada). */
+  readonly slow = inject(PreferencesService).slowAudio;
   /** Qué se está reproduciendo (URL de Longman o una clave de la voz), para resaltar el botón. */
   readonly playing = signal<string | null>(null);
 

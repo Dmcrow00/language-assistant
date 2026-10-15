@@ -1,0 +1,138 @@
+<div class="home">
+  <header class="hero">
+    <h1>¿Qué querés hacer hoy?</h1>
+    <p>Consultá cómo se pronuncia o cómo se analiza algo, o practicá lo que estás estudiando.</p>
+  </header>
+
+  @if (!prefs.welcomeDone()) {
+    <section class="welcome" aria-labelledby="bienvenida">
+      <h2 id="bienvenida">Te damos la bienvenida</h2>
+      <ol class="welcome-steps">
+        <li>
+          <span class="step-number" aria-hidden="true">1</span>
+          <div>
+            <strong>Consultar o practicar</strong>
+            <p>
+              En <em>Consultar</em> buscás palabras, transcribís y analizás oraciones. En
+              <em>Practicar</em> hacés dictados y ejercicios, y la app te dice cómo te fue.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="step-number" aria-hidden="true">2</span>
+          <div>
+            <strong>Cómo se lee una transcripción</strong>
+            <p>
+              Va entre barras, con un símbolo por sonido: <span class="ipa">/θɔːt/</span>. Los dos
+              puntos <span class="ipa">ː</span> marcan una vocal larga y
+              <span class="ipa">ˈ</span> va antes de la sílaba acentuada.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="step-number" aria-hidden="true">3</span>
+          <div>
+            <strong>¿Confirmada o estimada?</strong>
+            <p>
+              <span class="badge badge--ok">Confirmada</span> coincide con el diccionario Longman;
+              <span class="badge badge--warn">Estimada</span> todavía no se confirmó y se confirma
+              al abrir la palabra con internet.
+            </p>
+          </div>
+        </li>
+      </ol>
+      <div class="welcome-actions">
+        <button type="button" class="primary" (click)="prefs.welcomeDone.set(true)">
+          <app-icon name="check" />
+          Entendido
+        </button>
+        <span class="muted small">Podés volver a verla desde Ayuda.</span>
+      </div>
+    </section>
+  } @else if (nav.lastTool(); as last) {
+    <section class="resume" aria-label="Seguí donde dejaste">
+      <span class="resume-icon" [class.resume-icon--grammar]="last.section === 'grammar'">
+        <app-icon [name]="last.icon" size="1.5rem" />
+      </span>
+      <div class="resume-text">
+        <p class="kicker">Seguí donde dejaste</p>
+        <p class="resume-title">{{ last.title }}</p>
+        <p class="muted">{{ last.objective }}</p>
+      </div>
+      <button type="button" class="primary" (click)="open(last)">
+        Continuar
+        <app-icon name="arrow-right" />
+      </button>
+    </section>
+  }
+
+  <div class="columns">
+    <section aria-labelledby="consultar">
+      <h2 id="consultar"><app-icon name="book" size="1.4rem" /> Consultar</h2>
+      <div class="cards">
+        @for (tool of consult; track tool.id) {
+          <button type="button" class="card" (click)="open(tool)">
+            <span class="card-icon" [class.card-icon--grammar]="tool.section === 'grammar'">
+              <app-icon [name]="tool.icon" size="1.4rem" />
+            </span>
+            <span class="card-text">
+              <strong>{{ tool.title }}</strong>
+              <span>{{ tool.summary }}</span>
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <section aria-labelledby="practicar">
+      <h2 id="practicar"><app-icon name="pencil" size="1.4rem" /> Practicar</h2>
+      <div class="cards">
+        @for (tool of practice; track tool.id) {
+          <button type="button" class="card" (click)="open(tool)">
+            <span class="card-icon" [class.card-icon--grammar]="tool.section === 'grammar'">
+              <app-icon [name]="tool.icon" size="1.4rem" />
+            </span>
+            <span class="card-text">
+              <strong>{{ tool.title }}</strong>
+              <span>{{ tool.summary }}</span>
+            </span>
+          </button>
+        }
+      </div>
+
+      <section class="sound" aria-labelledby="sonido-del-dia">
+        <span class="sound-symbol">{{ sound().symbol }}</span>
+        <div class="sound-text">
+          <p class="kicker" id="sonido-del-dia">
+            <app-icon name="sparkle" size="1em" /> Sonido del día
+          </p>
+          <p class="sound-title">
+            /{{ sound().symbol }}/, {{ soundDescription() }}, como en
+            <em>{{ sound().example }}</em>
+          </p>
+          @if (soundError()) {
+            <p class="error">{{ soundError() }}</p>
+          }
+        </div>
+        <div class="sound-actions">
+          <button
+            type="button"
+            class="primary"
+            [class.playing]="audio.playing() === soundKey()"
+            (click)="playSound()"
+          >
+            <app-icon name="play" size="1em" />
+            Escuchar «{{ sound().example }}»
+          </button>
+          <button type="button" class="link" (click)="anotherSound()">Ver otro sonido</button>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <p class="footnote muted small">
+    ¿Una palabra con <app-term key="vocal-larga">vocal larga</app-term> o una
+    <app-term key="forma-debil">forma débil</app-term>? Tocá el <strong>?</strong> que acompaña a
+    los términos de la materia para ver qué significan.
+  </p>
+</div>

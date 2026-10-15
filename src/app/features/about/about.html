@@ -1,0 +1,51 @@
+<div class="about">
+  <header class="hero">
+    <span class="logo" aria-hidden="true">/ə/</span>
+    <div>
+      <h1>Fonética RP</h1>
+      <p class="muted">Versión {{ version }}</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Para qué es</h2>
+    <p>
+      Una herramienta de estudio para estudiantes del profesorado de inglés: la pronunciación del
+      inglés británico (RP) con transcripciones y audio, y el análisis gramatical de oraciones según
+      Quirk y Greenbaum.
+    </p>
+    @if (api.lexiconInfo(); as info) {
+      <p>
+        El diccionario de la app tiene
+        <strong>{{ info.total.toLocaleString('es-AR') }} palabras</strong>; de ellas,
+        <strong>{{ info.fromLdoce.toLocaleString('es-AR') }}</strong> ya están confirmadas con
+        Longman y guardadas en esta computadora, así que se pueden consultar sin internet.
+      </p>
+    }
+  </section>
+
+  <section class="card">
+    <h2>De dónde salen los datos</h2>
+    <dl class="credits">
+      <dt>Longman Dictionary of Contemporary English Online (Pearson)</dt>
+      <dd>
+        Transcripciones y grabaciones confirmadas. Se consultan de a una palabra, sólo cuando hace
+        falta, y quedan guardadas en esta computadora. Uso educativo.
+      </dd>
+      <dt>Britfone (licencia MIT)</dt>
+      <dd>Diccionario británico incluido en la app: de ahí salen las pronunciaciones estimadas.</dd>
+      <dt>Voz «Cori» de Piper</dt>
+      <dd>
+        Voz británica que funciona sin internet, entrenada con grabaciones de dominio público de
+        LibriVox.
+      </dd>
+      <dt>spaCy (licencia MIT)</dt>
+      <dd>Reconoce las palabras y su función para el análisis gramatical.</dd>
+      <dt>Charis SIL y Atkinson Hyperlegible (SIL Open Font License)</dt>
+      <dd>
+        Tipografías para los símbolos fonéticos y para el resto del texto, elegidas para que se lean
+        con claridad.
+      </dd>
+    </dl>
+  </section>
+</div>

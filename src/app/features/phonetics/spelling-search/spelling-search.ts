@@ -1,17 +1,19 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import type { SpellingHit } from '../../../../../shared/fonetica-api';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { Icon } from '../../../shared/icon';
 import { IpaText } from '../../../shared/ipa-text';
+import { SourceBadge } from '../../../shared/source-badge';
 import { WordDetail } from '../../../shared/word-detail/word-detail';
 
 /**
- * Pestaña 1: el alumno escribe la palabra con su ortografía normal. Mientras escribe ve
- * palabras parecidas del diccionario local (sirve aunque la haya escrito mal) y al elegir
- * una se consulta Longman para ver la transcripción oficial y escucharla.
+ * Fonética → Buscar palabra: el alumno escribe la palabra con su ortografía normal. Mientras
+ * escribe ve palabras parecidas del diccionario local (sirve aunque la haya escrito mal) y al
+ * elegir una se consulta Longman para confirmar la transcripción y escucharla.
  */
 @Component({
   selector: 'app-spelling-search',
-  imports: [IpaText, WordDetail],
+  imports: [Icon, IpaText, SourceBadge, WordDetail],
   templateUrl: './spelling-search.html',
   styleUrl: './spelling-search.css',
 })
@@ -27,6 +29,11 @@ export class SpellingSearch {
     return this.hits().find((h) => h.word.toLowerCase() === word)?.prons[0] ?? null;
   });
   protected readonly hasExactMatch = computed(() => this.hits()[0]?.kind === 'exact');
+  protected readonly hasEstimated = computed(() =>
+    this.hits().some((h) => h.source === 'britfone'),
+  );
+  /** Palabras cuya ortografía no anticipa la pronunciación. */
+  protected readonly examples = ['thought', 'schedule', 'colonel', 'island', 'recipe'];
 
   private searchTimer: ReturnType<typeof setTimeout> | undefined;
   private searchId = 0;
@@ -59,6 +66,11 @@ export class SpellingSearch {
 
   protected select(word: string): void {
     if (word) this.selected.set(word);
+  }
+
+  /** Un ejemplo de «Probá con»: se busca y se abre. */
+  protected useExample(word: string): void {
+    this.requestWord(word);
   }
 
   /** Sugerencia de Longman ("¿Quisiste decir…?"): pasa al buscador y se consulta. */

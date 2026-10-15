@@ -1,4 +1,13 @@
-import { app, BrowserWindow, IpcMainInvokeEvent, Menu, net, protocol, shell } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  IpcMainInvokeEvent,
+  Menu,
+  nativeTheme,
+  net,
+  protocol,
+  shell,
+} from 'electron';
 import { readFileSync } from 'node:fs';
 import { join, normalize, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -73,7 +82,7 @@ function createWindow(): void {
     minWidth: 960,
     minHeight: 640,
     title: 'Fonética RP',
-    backgroundColor: '#f6f4ef',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#0e1724' : '#f2f5f9',
     show: false,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),

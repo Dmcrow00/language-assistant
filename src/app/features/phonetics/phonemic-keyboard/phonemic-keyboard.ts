@@ -3,25 +3,30 @@ import type { PhonemeMatch } from '../../../../../shared/fonetica-api';
 import type { PhonemeInfo } from '../../../../../shared/phoneme-inventory';
 import { AudioPlayerService } from '../../../core/audio-player.service';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { PhonemeExamplesService } from '../../../core/phoneme-examples.service';
 import { AlignmentView } from '../../../shared/alignment-view';
+import { Icon } from '../../../shared/icon';
 import { IpaText } from '../../../shared/ipa-text';
+import { SourceBadge } from '../../../shared/source-badge';
+import { Term } from '../../../shared/term';
 import { WordDetail } from '../../../shared/word-detail/word-detail';
 import { IpaKeyboard } from './ipa-keyboard';
 
 /**
- * Pestaña 2: el alumno escribe con el teclado fonético cómo cree que suena una palabra.
+ * Fonética → Teclado fonético: el alumno escribe con símbolos cómo cree que suena una palabra.
  * Se compara contra todo el diccionario local y se muestran primero las coincidencias
  * exactas (homófonos) y después las más cercanas, marcando fonema por fonema qué cambió.
  */
 @Component({
   selector: 'app-phonemic-keyboard',
-  imports: [IpaKeyboard, IpaText, AlignmentView, WordDetail],
+  imports: [IpaKeyboard, IpaText, AlignmentView, WordDetail, Icon, SourceBadge, Term],
   templateUrl: './phonemic-keyboard.html',
   styleUrl: './phonemic-keyboard.css',
 })
 export class PhonemicKeyboard {
   protected readonly api = inject(FoneticaApiService);
   private readonly audio = inject(AudioPlayerService);
+  private readonly examplesAudio = inject(PhonemeExamplesService);
 
   /** Si la pestaña está visible (las dos quedan montadas para no perder lo escrito). */
   readonly active = input(false);
@@ -36,6 +41,12 @@ export class PhonemicKeyboard {
   protected readonly written = computed(() => this.tokens().join(''));
   protected readonly exact = computed(() => this.matches().filter((m) => m.exact));
   protected readonly near = computed(() => this.matches().filter((m) => !m.exact));
+  /** «Probá con»: una palabra conocida y una con el error típico de vocal. */
+  protected readonly examples: readonly string[][] = [
+    ['k', 'æ', 't'],
+    ['ʃ', 'iː', 'p'],
+    ['ð', 'ɪ', 's'],
+  ];
 
   private searchId = 0;
 
@@ -60,6 +71,12 @@ export class PhonemicKeyboard {
     void this.search();
   }
 
+  protected useExample(tokens: readonly string[]): void {
+    this.tokens.set([...tokens]);
+    this.selected.set(null);
+    void this.search();
+  }
+
   protected select(match: PhonemeMatch): void {
     this.selected.set(match);
   }
@@ -75,20 +92,14 @@ export class PhonemicKeyboard {
     }
   }
 
-  /** Clic derecho en una tecla: se busca la palabra de ejemplo en Longman y se reproduce. */
+  /** Clic derecho en una tecla: se escucha la palabra de ejemplo de ese sonido. */
   protected async playExample(p: PhonemeInfo): Promise<void> {
     this.exampleMessage.set(`/${p.symbol}/ como en «${p.example}»…`);
     try {
-      const lookup = await this.api.lookupLdoce(p.example);
-      const url = lookup.entries.find((e) => e.audioBrE)?.audioBrE;
-      if (url) {
-        await this.audio.play(url);
-        this.exampleMessage.set(`/${p.symbol}/ como en «${p.example}»`);
-      } else {
-        this.exampleMessage.set(`No hay audio de «${p.example}» (¿sin conexión?).`);
-      }
+      await this.examplesAudio.play(p);
+      this.exampleMessage.set(`/${p.symbol}/ como en «${p.example}»`);
     } catch {
-      this.exampleMessage.set(`No se pudo reproducir «${p.example}».`);
+      this.exampleMessage.set(`No hay audio de «${p.example}» por ahora.`);
     }
   }
 

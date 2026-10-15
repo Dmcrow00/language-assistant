@@ -1,92 +1,117 @@
 @let s = state();
 @if (s.status === 'idle') {
   <div class="placeholder">
-    <p>Elegí una palabra para ver su transcripción y escucharla.</p>
+    <app-icon name="search" size="2rem" />
+    <p>Elegí una palabra para ver cómo se pronuncia y escucharla.</p>
   </div>
 } @else if (s.status === 'loading') {
   <div class="placeholder" aria-live="polite">
     <span class="spinner" aria-hidden="true"></span>
-    <p>Buscando «{{ s.word }}» en Longman…</p>
+    <p>Buscando «{{ s.word }}» en el diccionario…</p>
   </div>
 } @else if (s.status === 'error') {
-  <div class="notice notice--bad">No se pudo consultar «{{ s.word }}»: {{ s.message }}</div>
+  <div class="notice notice--bad" [title]="s.message">
+    <p>No pudimos buscar «{{ s.word }}». Probá de nuevo en un momento.</p>
+    <p>
+      <button type="button" class="secondary small" (click)="retry()">
+        <app-icon name="retry" size="1em" /> Volver a intentar
+      </button>
+    </p>
+  </div>
 } @else {
   @switch (s.lookup.status) {
     @case ('found') {
       @for (group of groups(); track $index) {
         <article class="entry">
-          <h2 class="headword">{{ group.headword }}</h2>
+          <header class="entry-header">
+            <h2 class="headword">{{ group.headword }}</h2>
+            <app-source-badge source="ldoce" />
+          </header>
+
+          <div class="accents">
+            @if (group.pronBrE) {
+              <div class="accent-card">
+                <p class="accent-label">
+                  Británico (RP) <app-term key="rp" />
+                  @if (group.forms) {
+                    <span class="form-tag">forma {{ formLabel(group.forms, 0) }}</span>
+                  }
+                </p>
+                <app-ipa-text [pron]="group.pronBrE" size="large" [wrap]="true" />
+                @if (group.audioBrE) {
+                  <button
+                    type="button"
+                    class="primary"
+                    [class.playing]="audio.playing() === group.audioBrE"
+                    (click)="play(group.audioBrE)"
+                    title="Grabación del diccionario, pronunciación británica"
+                  >
+                    <app-icon name="play" size="1em" /> Escuchar
+                  </button>
+                }
+                @if (group.forms && group.forms.length > 1) {
+                  <ul class="forms">
+                    @for (form of group.forms.slice(1); track $index) {
+                      <li>
+                        <span class="form-tag" [class.form-tag--strong]="isStrong(form)"
+                          >forma {{ formLabel(group.forms, $index + 1) }}</span
+                        >
+                        <app-ipa-text [pron]="form.pron" />
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+            } @else {
+              <div class="accent-card">
+                <p class="muted">El diccionario no trae la transcripción de esta entrada.</p>
+                @if (group.audioBrE) {
+                  <button type="button" class="primary" (click)="play(group.audioBrE)">
+                    <app-icon name="play" size="1em" /> Escuchar
+                  </button>
+                }
+              </div>
+            }
+
+            @if (group.pronAmE) {
+              <div class="accent-card">
+                <p class="accent-label">Americano</p>
+                <app-ipa-text [pron]="group.pronAmE" size="large" [wrap]="true" />
+                @if (group.audioAmE) {
+                  <button
+                    type="button"
+                    class="secondary"
+                    [class.playing]="audio.playing() === group.audioAmE"
+                    (click)="play(group.audioAmE)"
+                    title="Grabación del diccionario, pronunciación americana"
+                  >
+                    <app-icon name="play" size="1em" /> Escuchar
+                  </button>
+                }
+              </div>
+            }
+          </div>
 
           @if (group.pronBrE) {
-            <div class="pron-row pron-row--main">
-              <span class="accent-tag" title="British English — Received Pronunciation"
-                >UK · RP</span
-              >
-              @if (group.forms) {
-                <span class="form-tag">{{ formLabel(group.forms, 0) }}</span>
-              }
-              <app-ipa-text [pron]="group.pronBrE" size="large" />
-              @if (group.audioBrE) {
-                <button
-                  type="button"
-                  class="play"
-                  [class.play--active]="audio.playing() === group.audioBrE"
-                  (click)="play(group.audioBrE)"
-                  title="Escuchar la pronunciación británica"
-                >
-                  <span aria-hidden="true">▶</span> Escuchar
-                </button>
-              }
-            </div>
-            @if (group.forms) {
-              @for (form of group.forms.slice(1); track $index) {
-                <div class="pron-row pron-row--form">
-                  <span class="form-tag" [class.form-tag--strong]="isStrong(form)">{{
-                    formLabel(group.forms, $index + 1)
-                  }}</span>
-                  <app-ipa-text [pron]="form.pron" />
-                </div>
-              }
-            }
-          } @else {
-            <p class="muted">Longman no muestra transcripción para esta entrada.</p>
-            @if (group.audioBrE) {
-              <button type="button" class="play" (click)="play(group.audioBrE)">
-                <span aria-hidden="true">▶</span> Escuchar
-              </button>
-            }
+            <ng-container
+              *ngTemplateOutlet="sounds; context: { $implicit: soundsOf(group.pronBrE) }"
+            />
           }
 
-          @if (group.pronAmE) {
-            <div class="pron-row">
-              <span class="accent-tag accent-tag--us" title="American English">US</span>
-              <app-ipa-text [pron]="group.pronAmE" />
-              @if (group.audioAmE) {
-                <button
-                  type="button"
-                  class="play play--small"
-                  [class.play--active]="audio.playing() === group.audioAmE"
-                  (click)="play(group.audioAmE)"
-                  title="Escuchar la pronunciación americana"
-                >
-                  <span aria-hidden="true">▶</span>
-                </button>
+          @if (hasSenses(group)) {
+            <ul class="senses">
+              @for (sense of group.senses; track $index) {
+                <li>
+                  @if (sense.pos) {
+                    <span class="pos">{{ sense.pos }}</span>
+                  }
+                  @if (sense.definition) {
+                    <span class="definition">{{ sense.definition }}</span>
+                  }
+                </li>
               }
-            </div>
+            </ul>
           }
-
-          <ul class="senses">
-            @for (sense of group.senses; track $index) {
-              <li>
-                @if (sense.pos) {
-                  <span class="pos">{{ sense.pos }}</span>
-                }
-                @if (sense.definition) {
-                  <span class="definition">{{ sense.definition }}</span>
-                }
-              </li>
-            }
-          </ul>
         </article>
       }
 
@@ -95,13 +120,15 @@
       }
 
       <footer class="source">
-        Fuente: Longman Dictionary of Contemporary English Online
-        @if (s.lookup.fromCache) {
-          <span class="muted">(guardado en este equipo)</span>
-        }
+        <span>
+          Fuente: diccionario Longman
+          @if (s.lookup.fromCache) {
+            · guardada en esta computadora
+          }
+        </span>
         @if (s.lookup.pageUrl) {
           <button type="button" class="link" (click)="openInBrowser(s.lookup.pageUrl)">
-            Ver en Longman ↗
+            Ver en el diccionario <app-icon name="external" size="0.9em" />
           </button>
         }
       </footer>
@@ -109,7 +136,7 @@
 
     @case ('suggestions') {
       <div class="notice">
-        <p>«{{ s.lookup.query }}» no está en Longman. ¿Quisiste decir…?</p>
+        <p>«{{ s.lookup.query }}» no está en el diccionario. ¿Quisiste decir…?</p>
         <div class="chips">
           @for (suggestion of s.lookup.suggestions; track suggestion) {
             <button type="button" class="chip" (click)="wordRequested.emit(suggestion)">
@@ -121,52 +148,78 @@
     }
 
     @case ('not-found') {
-      <div class="notice">«{{ s.lookup.query }}» no aparece en Longman.</div>
+      <div class="notice">«{{ s.lookup.query }}» no aparece en el diccionario.</div>
     }
 
     @case ('offline') {
-      <div class="notice notice--bad">
-        <p>
-          No se pudo conectar con Longman. Las palabras ya consultadas siguen disponibles sin
-          conexión.
-        </p>
-        @if (s.lookup.message) {
-          <p class="muted small">{{ s.lookup.message }}</p>
-        }
-      </div>
+      @if (fallbackPron()) {
+        <div class="notice notice--warn" [title]="s.lookup.message ?? ''">
+          Sin internet: estás viendo una pronunciación estimada. Lo que ya buscaste funciona igual.
+        </div>
+      } @else {
+        <div class="notice notice--warn" [title]="s.lookup.message ?? ''">
+          Sin internet no podemos buscar «{{ s.lookup.query }}». Las palabras que ya buscaste siguen
+          disponibles.
+        </div>
+      }
     }
   }
 
-  <!-- Sin Longman (no está o no hay conexión): la transcripción local y la voz británica. -->
+  <!-- Sin el diccionario (no está o no hay conexión): la pronunciación estimada y la voz de la app. -->
   @if (
     (s.lookup.status === 'offline' || s.lookup.status === 'not-found') && fallbackPron();
     as pron
   ) {
     <article class="entry">
-      <h2 class="headword">{{ s.lookup.query }}</h2>
-      <div class="pron-row pron-row--main">
-        <span
-          class="accent-tag"
-          title="Transcripción del diccionario local, no verificada en Longman"
-          >aprox.</span
-        >
-        <app-ipa-text [pron]="pron" size="large" />
-        @if (api.voiceAvailable()) {
-          <button
-            type="button"
-            class="play"
-            [class.play--active]="audio.playing() === 'fallback:' + pron"
-            (click)="speakFallback(pron)"
-            title="Voz británica sintética (Piper), generada a partir de la transcripción"
-          >
-            <span aria-hidden="true">▶</span> Voz británica
-          </button>
-        }
+      <header class="entry-header">
+        <h2 class="headword">{{ s.lookup.query }}</h2>
+        <app-source-badge source="britfone" />
+      </header>
+      <div class="accents">
+        <div class="accent-card">
+          <p class="accent-label">Británico (RP) <app-term key="rp" /></p>
+          <app-ipa-text [pron]="pron" size="large" [wrap]="true" />
+          @if (api.voiceAvailable()) {
+            <button
+              type="button"
+              class="primary"
+              [class.playing]="audio.playing() === 'fallback:' + pron"
+              (click)="speakFallback(pron)"
+              title="Voz de la app, generada a partir de la transcripción"
+            >
+              <app-icon name="play" size="1em" /> Escuchar
+            </button>
+            <span class="muted small">Voz de la app</span>
+          }
+        </div>
       </div>
-      <p class="muted small">Transcripción aproximada, no verificada en Longman.</p>
+      <ng-container *ngTemplateOutlet="sounds; context: { $implicit: soundsOf(pron) }" />
     </article>
     @if (audioError()) {
       <div class="notice notice--bad">{{ audioError() }}</div>
     }
   }
 }
+
+<ng-template #sounds let-list>
+  @if (list.length) {
+    <h3 class="sounds-title">Sonido por sonido</h3>
+    <div class="sounds">
+      @for (p of list; track p.symbol) {
+        <button
+          type="button"
+          class="sound"
+          [class.playing]="audio.playing() === examples.key(p)"
+          [title]="soundTitle(p)"
+          (click)="playExample(p)"
+        >
+          <span class="sound-symbol">{{ p.symbol }}</span>
+          <span class="sound-example">como en {{ p.example }}</span>
+        </button>
+      }
+    </div>
+    @if (exampleError()) {
+      <p class="muted small">{{ exampleError() }}</p>
+    }
+  }
+</ng-template>

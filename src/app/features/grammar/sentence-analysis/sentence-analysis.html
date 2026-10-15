@@ -2,17 +2,17 @@
   <section class="main-panel" aria-label="Análisis de oraciones">
     @if (!api.grammarAvailable()) {
       <div class="notice notice--bad">
-        El analizador gramatical no está instalado. En desarrollo se arma con
-        <code>npm run build:nlp</code>.
+        El análisis de oraciones no está disponible en esta computadora. Avisale a tu docente.
       </div>
     }
 
+    <label class="input-label" for="grammar-input">Oración en inglés</label>
     <div class="input-row">
       <textarea
         id="grammar-input"
         rows="2"
         spellcheck="false"
-        placeholder="Escribí una o más oraciones en inglés, p. ej.: The man who lives next door is a doctor."
+        placeholder="por ejemplo, The man who lives next door is a doctor."
         [value]="text()"
         (input)="text.set($any($event.target).value)"
         (keydown)="onKeydown($event)"
@@ -27,22 +27,35 @@
       </button>
     </div>
 
-    <div class="examples">
-      <span class="muted">Ejemplos:</span>
-      @for (example of examples; track example) {
-        <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
-      }
-    </div>
+    @if (analysis()) {
+      <details class="examples-more">
+        <summary>Ver ejemplos</summary>
+        <div class="examples">
+          @for (example of examples; track example) {
+            <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+          }
+        </div>
+      </details>
+    } @else {
+      <div class="examples">
+        <span class="muted">Probá con:</span>
+        @for (example of examples; track example) {
+          <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+        }
+      </div>
+    }
 
     @if (error()) {
-      <div class="notice notice--bad">{{ error() }}</div>
+      <div class="notice notice--bad" [title]="errorDetail() ?? ''">{{ error() }}</div>
     }
 
     @if (analysis(); as a) {
-      <p class="disclaimer">
-        Análisis automático (spaCy) según Quirk / Greenbaum. Puede equivocarse en oraciones ambiguas
-        o poco frecuentes: usalo como punto de partida y verificalo con el criterio de la cátedra.
-        Clic en cada elemento para ver su estructura.
+      <p class="notice disclaimer">
+        <app-icon name="info" size="1.1em" />
+        <span>
+          Este análisis lo hace la computadora y puede equivocarse: comparalo con el tuyo. Hacé clic
+          en cada elemento para ver cómo está formado.
+        </span>
       </p>
 
       @for (sentence of a.sentences; track $index) {
@@ -50,9 +63,10 @@
           <header class="sentence-header">
             <h2>{{ sentence.text }}</h2>
             <div class="badges">
-              <span class="badge badge--accent" [title]="structureLabel(sentence.structure)"
+              <span class="badge badge--info" [title]="structureLabel(sentence.structure)"
                 >oración {{ sentence.structure }}</span
               >
+              <app-term key="tipos-oracion" />
               <span class="badge">{{ sentence.form }}</span>
               @if (sentence.subordinateClauses) {
                 <span class="badge"
@@ -61,7 +75,7 @@
                 >
               }
             </div>
-            <p class="muted small">{{ structureLabel(sentence.structure) }}</p>
+            <p class="structure-note">{{ structureLabel(sentence.structure) }}</p>
           </header>
 
           <label class="toggle">
@@ -88,7 +102,7 @@
           }
 
           @if (sentence.verbPhrases.length) {
-            <h3 class="section-title">Grupos verbales</h3>
+            <h3 class="section-title">Grupos verbales <app-term key="grupo-verbal" /></h3>
             <div class="verb-phrases">
               @for (vp of sentence.verbPhrases; track $index) {
                 <app-verb-phrase-view [phrase]="vp" />
@@ -100,15 +114,15 @@
     } @else if (!loading()) {
       <p class="empty">
         Escribí una oración y apretá Enter. Vas a ver si es simple, compuesta o compleja, cada
-        cláusula con sus elementos (sujeto, verbo, objetos, complementos y adverbiales) y su patrón,
-        la forma de cada elemento (NP, VP, AdjP, AdvP, PP o cláusula) y los grupos verbales con su
-        tiempo, aspecto y voz.
+        cláusula con sus elementos (sujeto, verbo, objetos, complementos y adverbiales) y su tipo,
+        cómo está formado cada elemento (NP, VP, AdjP, AdvP, PP o cláusula) y los grupos verbales
+        con su tiempo, aspecto y voz.
       </p>
     }
   </section>
 
   <aside class="reference" aria-label="Referencias">
-    <h3>Elementos de la cláusula</h3>
+    <h3>Elementos de la cláusula <app-term key="elementos" /></h3>
     <ul class="roles">
       @for (r of roles; track r.role) {
         <li class="ref-role element--{{ r.colorClass }}">
@@ -116,9 +130,9 @@
         </li>
       }
     </ul>
-    <p class="muted small">A* = adverbial obligatorio. Línea punteada = adverbial opcional.</p>
+    <p class="ref-note">A* = adverbial obligatorio. Línea punteada = adverbial opcional.</p>
 
-    <h3>Los siete tipos de cláusula</h3>
+    <h3>Los siete tipos de cláusula <app-term key="tipos-clausula" /></h3>
     <ul class="patterns">
       @for (p of patterns; track p.pattern) {
         <li>
@@ -130,7 +144,7 @@
       }
     </ul>
 
-    <h3>Frases</h3>
+    <h3>Frases <app-term key="frase" /></h3>
     <ul class="phrases">
       <li>
         <strong>NP</strong> frase nominal: determinante + premodificador + núcleo + posmodificador

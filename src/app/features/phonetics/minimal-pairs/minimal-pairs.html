@@ -1,6 +1,6 @@
 <div class="layout">
-  <aside class="panel sets" aria-label="Contrastes">
-    <h3>Contrastes</h3>
+  <aside class="panel sets" aria-label="Sonidos para practicar">
+    <h3>Elegí los sonidos</h3>
     <ul>
       @for (s of sets; track s.id) {
         <li>
@@ -8,6 +8,7 @@
             type="button"
             class="set"
             [class.set--active]="s.id === set().id"
+            [attr.aria-pressed]="s.id === set().id"
             (click)="chooseSet(s)"
           >
             <span class="ipa">/{{ s.contrast[0] }}/ – /{{ s.contrast[1] }}/</span>
@@ -23,8 +24,11 @@
       <h2>
         <span class="ipa">/{{ set().contrast[0] }}/</span> o
         <span class="ipa">/{{ set().contrast[1] }}/</span>
+        <app-term key="par-minimo" />
       </h2>
-      <span class="score">Aciertos: {{ score().right }} de {{ score().total }}</span>
+      @if (score().total) {
+        <app-session-score [right]="score().right" [total]="score().total" />
+      }
     </header>
     <p class="hint">{{ set().hint }}</p>
 
@@ -34,13 +38,15 @@
         [checked]="syntheticOnly()"
         (change)="syntheticOnly.set(!syntheticOnly())"
       />
-      Sólo voz sintética (sin conexión)
+      Usar sólo la voz de la app (sirve sin internet)
     </label>
 
     @if (round(); as r) {
       <div class="question">
-        <button type="button" class="listen" (click)="playAnswer()">▶ Escuchar</button>
-        <p class="muted">¿Qué palabra escuchaste?</p>
+        <button type="button" class="primary listen" (click)="playAnswer()">
+          <app-icon name="play" size="1em" /> Escuchar
+        </button>
+        <p class="ask">¿Qué palabra escuchaste?</p>
         <div class="options">
           @for (word of r.pair; track word; let i = $index) {
             <button
@@ -59,21 +65,37 @@
           }
         </div>
         @if (r.chosen !== null) {
-          <p class="verdict" [class.ok]="r.chosen === r.answer" [class.bad]="r.chosen !== r.answer">
-            {{ r.chosen === r.answer ? '¡Bien!' : 'Era «' + r.pair[r.answer] + '».' }}
-          </p>
-          <div class="compare">
-            @for (word of r.pair; track word) {
-              <button type="button" class="secondary" (click)="say(word)">▶ {{ word }}</button>
-            }
-            <button type="button" class="primary" (click)="next()">Siguiente</button>
+          <div class="feedback" [class.feedback--ok]="r.chosen === r.answer" role="status">
+            <p class="verdict">
+              <app-icon [name]="r.chosen === r.answer ? 'check' : 'info'" />
+              <span>
+                @if (r.chosen === r.answer) {
+                  ¡Muy bien! «{{ r.pair[r.answer] }}» {{ soundNote(r.answer) }}.
+                } @else {
+                  Era «{{ r.pair[r.answer] }}», que {{ soundNote(r.answer) }}. Escuchá las dos y
+                  compará.
+                }
+              </span>
+            </p>
+            <div class="compare">
+              @for (word of r.pair; track word) {
+                <button type="button" class="secondary" (click)="say(word)">
+                  <app-icon name="play" size="1em" /> {{ word }}
+                </button>
+              }
+              <button type="button" class="primary" (click)="next()">
+                Siguiente <app-icon name="arrow-right" size="1em" />
+              </button>
+            </div>
           </div>
         }
       </div>
     } @else {
       <div class="start">
-        <p>Suena una de las dos palabras y elegís cuál fue.</p>
-        <button type="button" class="primary" (click)="next()">Empezar</button>
+        <p>Suena una de las dos palabras y elegís cuál escuchaste.</p>
+        <button type="button" class="primary" (click)="next()">
+          <app-icon name="play" size="1em" /> Empezar
+        </button>
       </div>
     }
     @if (message()) {

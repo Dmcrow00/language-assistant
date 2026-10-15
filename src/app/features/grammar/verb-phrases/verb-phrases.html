@@ -1,10 +1,18 @@
 <div class="layout">
   <section class="panel" aria-label="Análisis del grupo verbal">
+    @if (!api.grammarAvailable()) {
+      <div class="notice notice--bad">
+        El análisis de oraciones no está disponible en esta computadora. Avisale a tu docente.
+      </div>
+    }
+
+    <label class="input-label" for="verb-phrase-input">Oración en inglés</label>
     <div class="input-row">
       <textarea
+        id="verb-phrase-input"
         rows="2"
         spellcheck="false"
-        placeholder="Escribí una o más oraciones, p. ej.: The report will have been finished by Friday."
+        placeholder="por ejemplo, The report will have been finished by Friday."
         [value]="text()"
         (input)="text.set($any($event.target).value)"
         (keydown)="onKeydown($event)"
@@ -19,14 +27,26 @@
       </button>
     </div>
 
-    <div class="examples">
-      @for (example of examples; track example) {
-        <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
-      }
-    </div>
+    @if (analyzed()) {
+      <details class="examples-more">
+        <summary>Ver ejemplos</summary>
+        <div class="examples">
+          @for (example of examples; track example) {
+            <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+          }
+        </div>
+      </details>
+    } @else {
+      <div class="examples">
+        <span class="muted">Probá con:</span>
+        @for (example of examples; track example) {
+          <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+        }
+      </div>
+    }
 
     @if (error()) {
-      <div class="notice notice--bad">{{ error() }}</div>
+      <div class="notice notice--bad" [title]="errorDetail() ?? ''">{{ error() }}</div>
     }
 
     @if (analyzed()) {
@@ -40,21 +60,21 @@
           }
         </ul>
       } @else {
-        <p class="muted">No se encontraron grupos verbales.</p>
+        <p class="empty">No encontramos grupos verbales en lo que escribiste.</p>
       }
     } @else {
-      <p class="muted">
-        Cada grupo verbal se desarma en sus partes: auxiliar modal, auxiliar de perfecto (have), de
-        progresivo (be + -ing), de pasiva (be + -ed) y verbo léxico; con su nombre en inglés (p. ej.
-        <em>present perfect progressive</em>) y si es finito o no finito (to-infinitive, -ing
-        participle, -ed participle).
+      <p class="empty">
+        Cada <app-term key="grupo-verbal">grupo verbal</app-term> se desarma en sus partes: auxiliar
+        modal, auxiliar de perfecto (have), de progresivo (be + -ing), de pasiva (be + -ed) y verbo
+        léxico. Vas a ver su nombre en inglés (por ejemplo, <em>present perfect progressive</em>) y
+        si es finito o no finito (to-infinitive, -ing participle, -ed participle).
       </p>
     }
   </section>
 
   <aside class="panel reference" aria-label="Combinaciones de auxiliares">
-    <h3>Auxiliares (Quirk)</h3>
-    <p class="muted small">Siempre en este orden: modal → perfect → progressive → passive.</p>
+    <h3>Auxiliares (Quirk) <app-term key="aspecto" /></h3>
+    <p class="ref-note">Siempre en este orden: modal → perfect → progressive → passive.</p>
     <table>
       <tbody>
         @for (c of combinations; track c.name) {
@@ -67,7 +87,7 @@
         }
       </tbody>
     </table>
-    <h3>Formas no finitas</h3>
+    <h3>Formas no finitas <app-term key="finito" /></h3>
     <ul>
       <li><strong>to-infinitive</strong>: <em>to write</em>, <em>to have written</em></li>
       <li><strong>bare infinitive</strong>: <em>(can) write</em></li>

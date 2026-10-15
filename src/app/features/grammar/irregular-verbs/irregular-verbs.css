@@ -12,11 +12,11 @@
 }
 
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
   padding: 16px 18px;
   overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
 }
 
 .side {
@@ -49,35 +49,22 @@ input:focus {
 }
 
 .toolbar input {
-  min-width: 220px;
+  flex: 1 1 260px;
+  max-width: 420px;
 }
 
 .patterns,
 .examples {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
 }
 
-.chip {
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text-soft);
-  font: inherit;
-  font-size: 0.82rem;
-  cursor: pointer;
-}
-
-.chip:hover,
-.chip--active {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.chip--active {
-  background: var(--accent-soft);
+.count {
+  margin: 10px 0 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 table {
@@ -139,10 +126,16 @@ td {
 
 h3 {
   margin: 0 0 10px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: 1rem;
+}
+
+.practice-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 6px;
 }
 
 .prompt {
@@ -162,18 +155,31 @@ h3 {
   font-size: 0.85rem;
 }
 
-.primary {
-  padding: 8px 16px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
+.feedback {
+  margin: 4px 0 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.feedback--ok {
+  background: var(--ok-bg);
+}
+
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.feedback--ok .verdict {
+  color: var(--ok);
 }
 
 .result {
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -222,12 +228,4 @@ h3 {
 .rule {
   color: var(--text-soft);
   font-size: 0.85rem;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.small {
-  font-size: 0.82rem;
 }

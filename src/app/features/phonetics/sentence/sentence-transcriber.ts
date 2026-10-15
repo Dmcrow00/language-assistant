@@ -8,11 +8,13 @@ import type {
 } from '../../../../../shared/fonetica-api';
 import { AudioPlayerService } from '../../../core/audio-player.service';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { Icon } from '../../../shared/icon';
 import { IpaText } from '../../../shared/ipa-text';
+import { Term } from '../../../shared/term';
 import { WordDetail } from '../../../shared/word-detail/word-detail';
 
 /**
- * Pestaña 3: el alumno escribe una oración y la ve transcripta palabra por palabra, con las
+ * Fonética → Transcribir oración: el alumno escribe una oración y la ve transcripta palabra por palabra, con las
  * function words en forma fuerte o débil según el contexto y la r de enlace.
  *
  * La transcripción aparece enseguida con lo que hay en el equipo y se va corrigiendo a medida
@@ -20,7 +22,7 @@ import { WordDetail } from '../../../shared/word-detail/word-detail';
  */
 @Component({
   selector: 'app-sentence-transcriber',
-  imports: [IpaText, WordDetail],
+  imports: [IpaText, WordDetail, Icon, Term],
   templateUrl: './sentence-transcriber.html',
   styleUrl: './sentence-transcriber.css',
 })
@@ -29,6 +31,12 @@ export class SentenceTranscriber {
   private readonly audio = inject(AudioPlayerService);
 
   protected readonly text = signal('');
+  /** «Probá con»: oraciones con formas débiles, una fuerte al final y r de enlace. */
+  protected readonly examples = [
+    'I want to go to the station.',
+    'Where are you from?',
+    'There are four apples for you and her.',
+  ];
   /** La oración que se transcribió (el campo puede seguir editándose). */
   private readonly submitted = signal('');
   protected readonly connected = signal(true);
@@ -68,6 +76,11 @@ export class SentenceTranscriber {
       event.preventDefault();
       void this.transcribe();
     }
+  }
+
+  protected useExample(sentence: string): void {
+    this.text.set(sentence);
+    void this.transcribe();
   }
 
   protected async transcribe(): Promise<void> {
@@ -214,9 +227,9 @@ export class SentenceTranscriber {
       const label = word.functionWord.form === 'weak' ? 'débil' : 'fuerte';
       return word.functionWord.forced ? `${label} · elegida` : label;
     }
-    if (word.source === 'britfone') return 'aprox.';
-    if (word.source === 'derived') return 'armada';
-    if (!word.pron) return 'sin datos';
+    if (word.source === 'britfone') return 'estimada';
+    if (word.source === 'derived') return 'por regla';
+    if (!word.pron) return 'desconocida';
     return '';
   }
 
