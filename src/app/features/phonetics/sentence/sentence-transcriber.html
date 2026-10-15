@@ -1,0 +1,244 @@
+<div class="layout">
+  <section class="main-panel" aria-label="Transcripción de una oración">
+    <div class="input-row">
+      <textarea
+        id="sentence-input"
+        class="sentence-input"
+        rows="2"
+        spellcheck="false"
+        placeholder="Escribí una oración en inglés, p. ej.: I want to go to the station, but there is a strike."
+        [value]="text()"
+        (input)="text.set($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      ></textarea>
+      <button type="button" class="primary" [disabled]="!text().trim()" (click)="transcribe()">
+        Transcribir
+      </button>
+    </div>
+
+    <div class="toolbar">
+      <label class="toggle" title="Formas débiles de las function words y r de enlace">
+        <input type="checkbox" [checked]="connected()" (change)="toggleConnected()" />
+        Habla conectada
+      </label>
+      <label
+        class="toggle"
+        title="Asimilación, elisión, r intrusiva y coalescencia entre palabras (optativos en RP)"
+      >
+        <input
+          type="checkbox"
+          [checked]="showProcesses()"
+          [disabled]="!connected()"
+          (change)="showProcesses.set(!showProcesses())"
+        />
+        Procesos del habla conectada
+      </label>
+      <span class="spacer"></span>
+      @if (playingMode() === null) {
+        @if (api.voiceAvailable()) {
+          <button
+            type="button"
+            class="primary-outline"
+            [disabled]="!analysis() || synthesizing()"
+            (click)="playVoice()"
+            title="Voz británica (Piper) que lee la oración tal como está transcripta"
+          >
+            {{ synthesizing() ? 'Generando voz…' : '▶ Voz británica' }}
+          </button>
+        }
+        <button
+          type="button"
+          class="secondary"
+          [disabled]="!withAudio()"
+          (click)="playWords()"
+          title="Encadena las grabaciones de Longman de cada palabra (cada una pronunciada aislada)"
+        >
+          ▶ Palabra por palabra (Longman)
+        </button>
+      } @else {
+        <button type="button" class="secondary" (click)="stop()">■ Detener</button>
+      }
+    </div>
+    @if (voiceError()) {
+      <p class="voice-error">{{ voiceError() }}</p>
+    }
+
+    @if (progress(); as p) {
+      <p class="progress" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        Consultando Longman: {{ p.done }} de {{ p.total }} palabras. Mientras tanto se ven las
+        transcripciones del diccionario local.
+      </p>
+    }
+
+    @if (analysis(); as a) {
+      <div class="words" role="list">
+        @for (w of a.words; track w.index; let last = $last) {
+          <button
+            type="button"
+            role="listitem"
+            class="word"
+            [class.word--weak]="w.functionWord?.form === 'weak'"
+            [class.word--strong]="w.functionWord?.form === 'strong'"
+            [class.word--approx]="w.source === 'britfone' || w.source === 'derived'"
+            [class.word--unknown]="!w.pron"
+            [class.word--selected]="w.index === selectedIndex()"
+            [class.word--playing]="w.index === playingIndex()"
+            [class.word--process]="showProcesses() && connected() && !!w.connectedPron"
+            [attr.title]="showProcesses() && connected() ? processesOf(w.index) || null : null"
+            (click)="select(w.index)"
+            (dblclick)="playWord(w)"
+          >
+            <span class="spelling">{{ w.text }}</span>
+            <span class="pron">
+              @if (w.pron && showProcesses() && connected() && w.connectedPron) {
+                <app-ipa-text [pron]="w.connectedPron" [slashes]="false" />
+              } @else if (w.pron) {
+                <app-ipa-text [pron]="w.pron" [slashes]="false" />
+                @if (w.linkingR) {
+                  <span class="linking-r" title="r de enlace: se pronuncia porque sigue una vocal"
+                    >r</span
+                  >
+                }
+              } @else {
+                ?
+              }
+            </span>
+            <span class="tag">{{ tag(w) }}</span>
+          </button>
+          @if (w.pauseAfter && !last) {
+            <span class="pause" title="Pausa">{{ w.pauseAfter }}</span>
+          }
+        }
+      </div>
+
+      <div class="transcription">
+        <app-ipa-text
+          [pron]="showProcesses() && connected() ? a.connectedTranscription : a.transcription"
+          [slashes]="false"
+          [wrap]="true"
+          size="large"
+        />
+        <button type="button" class="secondary small" (click)="copy()">
+          {{ copied() ? 'Copiada' : 'Copiar' }}
+        </button>
+      </div>
+
+      @if (showProcesses() && connected()) {
+        <div class="processes">
+          @if (a.processes.length) {
+            <h3 class="processes-title">Procesos posibles en esta oración</h3>
+            <ul>
+              @for (p of a.processes; track $index) {
+                <li>
+                  <span class="process-kind">{{ p.label }}</span>
+                  <span class="process-words">{{ p.words }}</span>
+                  <span class="process-detail">{{ p.detail }}</span>
+                </li>
+              }
+            </ul>
+            <p class="muted small-note">
+              Son optativos en RP y más frecuentes en el habla rápida e informal.
+            </p>
+          } @else {
+            <p class="muted small-note">No hay procesos entre palabras en esta oración.</p>
+          }
+        </div>
+      }
+
+      <p class="legend">
+        <span class="lg lg--weak">débil</span>
+        <span class="lg lg--strong">fuerte</span>
+        <span class="lg lg--r">r de enlace</span>
+        <span class="lg lg--approx">aprox. / armada: todavía no verificada en Longman</span>
+        <span>| pausa menor · || fin de oración</span>
+      </p>
+      <p class="hint">
+        Clic en una palabra para estudiarla (y cambiarle la forma) · doble clic para escucharla.
+        «Voz británica» lee la oración tal como está transcripta, con las formas débiles y fuertes
+        de arriba (es una voz sintética). «Palabra por palabra» usa las grabaciones reales de
+        Longman, pero cada palabra está pronunciada aislada, en su forma de diccionario.
+      </p>
+    } @else {
+      <div class="empty">
+        <p>
+          Escribí una oración y apretá Enter. Vas a ver cada palabra con sus fonemas: las
+          <strong>function words</strong> (artículos, preposiciones, auxiliares, pronombres…) en
+          forma <span class="lg lg--weak">débil</span> o <span class="lg lg--strong">fuerte</span>
+          según el contexto, y la r de enlace entre vocales.
+        </p>
+      </div>
+    }
+  </section>
+
+  <aside class="detail-panel" aria-label="Detalle de la palabra">
+    @if (selectedWord(); as w) {
+      @if (w.functionWord; as fw) {
+        <div class="fw-card">
+          <p class="fw-kicker">Function word · {{ fw.category }}</p>
+          <p class="fw-current">
+            En esta oración:
+            <span
+              class="lg"
+              [class.lg--weak]="fw.form === 'weak'"
+              [class.lg--strong]="fw.form === 'strong'"
+            >
+              forma {{ fw.form === 'weak' ? 'débil' : 'fuerte' }}
+            </span>
+            <app-ipa-text [pron]="(w.pron ?? '') + (w.linkingR ? 'r' : '')" size="large" />
+          </p>
+          <p class="fw-reason">{{ fw.reason }}</p>
+          @if (fw.ambiguous && !fw.forced) {
+            <p class="fw-warning">Depende del sentido: {{ fw.ambiguous }}</p>
+          }
+
+          <dl class="fw-forms">
+            <dt>Débil</dt>
+            <dd>
+              @for (form of fw.weak; track form; let lastForm = $last) {
+                <app-ipa-text [pron]="form" />{{ lastForm ? '' : ' · ' }}
+              }
+            </dd>
+            @if (fw.weakBeforeVowel) {
+              <dt>Débil ante vocal</dt>
+              <dd><app-ipa-text [pron]="fw.weakBeforeVowel" /></dd>
+            }
+            <dt>Fuerte</dt>
+            <dd><app-ipa-text [pron]="fw.strong" /></dd>
+          </dl>
+
+          @if (connected()) {
+            <div class="fw-actions">
+              @if (fw.forced) {
+                <button type="button" class="secondary small" (click)="setForm(w.index, null)">
+                  Volver a la forma automática
+                </button>
+              } @else if (fw.form === 'weak') {
+                <button type="button" class="secondary small" (click)="setForm(w.index, 'strong')">
+                  Enfatizarla (forma fuerte)
+                </button>
+              } @else {
+                <button type="button" class="secondary small" (click)="setForm(w.index, 'weak')">
+                  Sin énfasis (forma débil)
+                </button>
+              }
+            </div>
+          }
+          <p class="fw-source">
+            {{
+              fw.fromLongman
+                ? 'Formas según Longman.'
+                : 'Formas de referencia (Roach). Se reemplazan por las de Longman cuando responde.'
+            }}
+          </p>
+        </div>
+      }
+      @if (w.note) {
+        <p class="note">{{ w.note }} Transcripción aproximada.</p>
+      }
+      <app-word-detail [word]="w.key" [fallbackPron]="w.pron" />
+    } @else {
+      <p class="placeholder">Elegí una palabra de la oración para verla en detalle y escucharla.</p>
+    }
+  </aside>
+</div>

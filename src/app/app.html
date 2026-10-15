@@ -1,0 +1,101 @@
+<header class="header">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">/ə/</span>
+    <div>
+      <h1>Fonética RP</h1>
+      <p class="subtitle">Fonética y gramática del inglés · Longman</p>
+    </div>
+  </div>
+
+  <nav class="sections" role="tablist" aria-label="Secciones">
+    @for (s of sections; track s) {
+      <button
+        type="button"
+        role="tab"
+        class="section"
+        [class.section--active]="section() === s"
+        [attr.aria-selected]="section() === s"
+        (click)="selectSection(s)"
+      >
+        {{ menu[s].label }}
+      </button>
+    }
+  </nav>
+
+  <label class="slow" title="Reproduce los audios más despacio, sin cambiar el tono">
+    <input type="checkbox" [checked]="audio.slow()" (change)="audio.slow.set(!audio.slow())" />
+    Audio lento
+  </label>
+</header>
+
+<nav class="subnav" role="tablist" [attr.aria-label]="menu[section()].label">
+  @for (item of menu[section()].items; track item.id) {
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab--active]="view() === item.id"
+      [attr.aria-selected]="view() === item.id"
+      [title]="item.description"
+      (click)="selectView(item.id)"
+    >
+      {{ item.label }}
+    </button>
+  }
+</nav>
+
+@if (!api.available) {
+  <div class="banner">
+    La interfaz está abierta fuera de la aplicación de escritorio. Iniciala con
+    <code>npm start</code> o <code>npm run dev</code>.
+  </div>
+}
+
+<main class="content">
+  @if (isOpen('spelling')) {
+    <app-spelling-search class="panel" [hidden]="view() !== 'spelling'" />
+  }
+  @if (isOpen('keyboard')) {
+    <app-phonemic-keyboard
+      class="panel"
+      [hidden]="view() !== 'keyboard'"
+      [active]="view() === 'keyboard'"
+    />
+  }
+  @if (isOpen('sentence')) {
+    <app-sentence-transcriber class="panel" [hidden]="view() !== 'sentence'" />
+  }
+  @if (isOpen('dictation')) {
+    <app-dictation
+      class="panel"
+      [hidden]="view() !== 'dictation'"
+      [active]="view() === 'dictation'"
+    />
+  }
+  @if (isOpen('pairs')) {
+    <app-minimal-pairs class="panel" [hidden]="view() !== 'pairs'" />
+  }
+  @if (isOpen('analysis')) {
+    <app-sentence-analysis class="panel" [hidden]="view() !== 'analysis'" />
+  }
+  @if (isOpen('verb-phrases')) {
+    <app-verb-phrases class="panel" [hidden]="view() !== 'verb-phrases'" />
+  }
+  @if (isOpen('irregular')) {
+    <app-irregular-verbs class="panel" [hidden]="view() !== 'irregular'" />
+  }
+  @if (isOpen('exercises')) {
+    <app-grammar-exercises class="panel" [hidden]="view() !== 'exercises'" />
+  }
+</main>
+
+<footer class="status">
+  @if (api.lexiconInfo(); as info) {
+    Diccionario local: {{ info.total.toLocaleString('es-AR') }} palabras ·
+    {{ info.fromLdoce.toLocaleString('es-AR') }} verificadas en Longman
+  }
+  <span class="credits">
+    Longman Dictionary of Contemporary English Online · Britfone (MIT) · Voz: Piper «Cori» ·
+    Análisis gramatical: spaCy (MIT)
+  </span>
+</footer>

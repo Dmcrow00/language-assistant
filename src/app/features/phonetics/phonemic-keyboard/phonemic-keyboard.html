@@ -1,0 +1,116 @@
+<div class="layout">
+  <section class="input-panel" aria-label="Escritura fonémica">
+    <div class="display" aria-live="polite">
+      <span class="slash">/</span>
+      @if (tokens().length) {
+        <span class="written">{{ written() }}</span>
+      } @else {
+        <span class="placeholder">tocá los fonemas…</span>
+      }
+      <span class="caret" aria-hidden="true"></span>
+      <span class="slash">/</span>
+      @if (api.voiceAvailable()) {
+        <button
+          type="button"
+          class="speak"
+          [disabled]="!tokens().length"
+          (click)="speakWritten()"
+          title="La voz británica pronuncia exactamente lo que escribiste"
+        >
+          ▶ Escuchar lo que escribí
+        </button>
+      }
+    </div>
+
+    <div class="options">
+      <label class="toggle">
+        <input type="checkbox" [checked]="useStress()" (change)="toggleStress()" />
+        Tener en cuenta el acento (ˈ)
+      </label>
+      <span class="hint">Clic derecho sobre una tecla: escuchar la palabra de ejemplo</span>
+      @if (exampleMessage()) {
+        <span class="example-msg">{{ exampleMessage() }}</span>
+      }
+    </div>
+
+    <app-ipa-keyboard
+      (pressed)="press($event)"
+      (backspace)="backspace()"
+      (clear)="clear()"
+      (exampleRequested)="playExample($event)"
+    />
+  </section>
+
+  <div class="side">
+    <section class="results-panel" aria-label="Palabras que suenan así">
+      @if (!tokens().length) {
+        <p class="muted">
+          Escribí cómo creés que suena una palabra. Se compara con todo el diccionario y se muestran
+          las que suenan igual y las más parecidas.
+        </p>
+      } @else {
+        @if (exact().length) {
+          <h3 class="group-title">Suena exactamente así</h3>
+          <ul class="matches">
+            @for (m of exact(); track m.word) {
+              <li
+                class="match match--exact"
+                [class.match--selected]="m.word === selected()?.word"
+                (click)="select(m)"
+              >
+                <span class="match-word">{{ m.word }}</span>
+                <app-ipa-text [pron]="m.pron" />
+                @if (m.stressMismatch) {
+                  <span class="tag tag--warn" title="Marcaste el acento en otra sílaba"
+                    >acento</span
+                  >
+                }
+                @if (m.source === 'ldoce') {
+                  <span class="tag tag--ldoce">Longman</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+
+        <h3 class="group-title">{{ exact().length ? 'También parecidas' : 'Lo más parecido' }}</h3>
+        @if (!near().length) {
+          <p class="muted">No hay otras palabras cercanas.</p>
+        }
+        <ul class="matches">
+          @for (m of near(); track m.word) {
+            <li
+              class="match"
+              [class.match--selected]="m.word === selected()?.word"
+              (click)="select(m)"
+            >
+              <span class="match-word">{{ m.word }}</span>
+              <app-alignment-view [steps]="m.alignment" />
+              <span class="closeness" [title]="'Distancia ' + m.distance">{{
+                closeness(m.distance)
+              }}</span>
+              @if (m.stressMismatch) {
+                <span class="tag tag--warn" title="Marcaste el acento en otra sílaba">acento</span>
+              }
+            </li>
+          }
+        </ul>
+
+        <p class="legend">
+          <span class="lg lg--match">coincide</span>
+          <span class="lg lg--sub">cambiado<sub>lo que escribiste</sub></span>
+          <span class="lg lg--missing">faltó</span>
+          <span class="lg lg--extra">sobra</span>
+        </p>
+      }
+    </section>
+
+    <section class="detail-panel" aria-label="Detalle de la palabra">
+      <app-word-detail
+        [word]="selected()?.word ?? null"
+        [fallbackPron]="selected()?.pron ?? null"
+        (lookedUp)="refresh()"
+      />
+    </section>
+  </div>
+</div>

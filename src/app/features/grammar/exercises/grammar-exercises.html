@@ -1,0 +1,115 @@
+<section class="panel" aria-label="Ejercicios de análisis">
+  <header class="header">
+    <h2>Analizá la cláusula</h2>
+    <span class="muted"
+      >Ejercicio {{ position() + 1 }} de {{ total }} · aciertos {{ score().right }} de
+      {{ score().total }}</span
+    >
+  </header>
+  <p class="muted instructions">
+    Elegí la función de cada parte, cómo es el sujeto y el tipo de cláusula. Ojo: el orden no
+    siempre es S V… (preguntas, adverbial adelante, inversión) y en las imperativas y algunas
+    coordinadas el sujeto no está escrito.
+  </p>
+
+  <div class="constituents">
+    @if (exercise().context; as context) {
+      <span class="context" title="Contexto: esta parte no se analiza">{{ context }}</span>
+    }
+    @for (part of exercise().constituents; track $index; let i = $index; let last = $last) {
+      @let answer = answers()[i];
+      <div
+        class="constituent"
+        [class.constituent--right]="checked() && answer === part.role"
+        [class.constituent--wrong]="checked() && answer !== part.role"
+      >
+        <span class="text">{{ part.text + (last ? (exercise().end ?? '.') : '') }}</span>
+        <div class="role-buttons" role="radiogroup" [attr.aria-label]="'Función de ' + part.text">
+          @for (role of roles; track role) {
+            <button
+              type="button"
+              role="radio"
+              class="role role--{{ colorOf(role) }}"
+              [class.role--chosen]="answer === role"
+              [attr.aria-checked]="answer === role"
+              [title]="roleNames[role]"
+              [disabled]="checked()"
+              (click)="setRole(i, role)"
+            >
+              {{ role }}
+            </button>
+          }
+        </div>
+        @if (checked() && answer !== part.role) {
+          <span class="correction">Era {{ part.role }}: {{ roleNames[part.role] }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  <h3>¿Cómo es el sujeto?</h3>
+  <div class="choices" role="radiogroup" aria-label="Cómo es el sujeto">
+    @for (k of subjectKinds; track k.kind) {
+      <button
+        type="button"
+        role="radio"
+        class="choice"
+        [class.choice--chosen]="subjectAnswer() === k.kind"
+        [class.choice--right]="checked() && k.kind === subject()"
+        [class.choice--wrong]="checked() && subjectAnswer() === k.kind && k.kind !== subject()"
+        [attr.aria-checked]="subjectAnswer() === k.kind"
+        [disabled]="checked()"
+        [title]="k.description"
+        (click)="setSubject(k.kind)"
+      >
+        {{ k.label }}
+      </button>
+    }
+  </div>
+
+  <h3>Tipo de cláusula</h3>
+  <div class="choices" role="radiogroup" aria-label="Tipo de cláusula">
+    @for (p of patterns; track p.pattern) {
+      <button
+        type="button"
+        role="radio"
+        class="choice choice--pattern"
+        [class.choice--chosen]="patternAnswer() === p.pattern"
+        [class.choice--right]="checked() && p.pattern === exercise().pattern"
+        [class.choice--wrong]="
+          checked() && patternAnswer() === p.pattern && p.pattern !== exercise().pattern
+        "
+        [attr.aria-checked]="patternAnswer() === p.pattern"
+        [disabled]="checked()"
+        [title]="p.description"
+        (click)="setPattern(p.pattern)"
+      >
+        {{ p.pattern }}
+      </button>
+    }
+  </div>
+
+  <div class="actions">
+    @if (!checked()) {
+      <button type="button" class="primary" [disabled]="!complete()" (click)="check()">
+        Corregir
+      </button>
+      @if (!complete()) {
+        <span class="muted small"
+          >Falta elegir alguna función, el sujeto o el tipo de cláusula.</span
+        >
+      }
+    } @else {
+      <p class="verdict" [class.ok]="allRight()" [class.bad]="!allRight()">
+        {{ allRight() ? '¡Correcto!' : 'Hay errores: mirá las correcciones.' }}
+      </p>
+      <p class="explanation">
+        <strong
+          >{{ exercise().pattern }} · sujeto {{ subjectLabel(subject()).toLowerCase() }}.</strong
+        >
+        {{ exercise().explanation }}
+      </p>
+      <button type="button" class="primary" (click)="next()">Siguiente</button>
+    }
+  </div>
+</section>

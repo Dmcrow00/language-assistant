@@ -1,0 +1,89 @@
+<div class="layout">
+  <section class="panel main" aria-label="Dictado fonético">
+    <div class="levels">
+      @for (l of levels; track l.id) {
+        <button
+          type="button"
+          class="chip"
+          [class.chip--active]="l.id === level().id"
+          [title]="l.description"
+          (click)="chooseLevel(l)"
+        >
+          {{ l.label }}
+        </button>
+      }
+    </div>
+    <p class="muted small">{{ level().description }}</p>
+
+    @if (!item() && !loading()) {
+      <div class="start">
+        <p>
+          Escuchá {{ level().phrases ? 'la frase' : 'la palabra' }} y transcribila con el teclado.
+          Enter corrige y pasa a la siguiente.
+        </p>
+        <button type="button" class="primary" (click)="next()">Empezar</button>
+      </div>
+    } @else {
+      <div class="controls">
+        <button type="button" class="primary" [disabled]="loading()" (click)="play()">
+          {{ loading() ? 'Preparando…' : '▶ Escuchar de nuevo' }}
+        </button>
+        <span class="muted small">
+          @if (item(); as it) {
+            {{ it.audioUrl ? 'Grabación real de Longman' : 'Voz británica sintética' }}
+          }
+        </span>
+        <span class="score">Aciertos: {{ score().right }} de {{ score().total }}</span>
+      </div>
+
+      <div class="display" aria-live="polite">
+        <span class="slash">/</span>
+        @if (tokens().length) {
+          <span class="written">{{ written() }}</span>
+        } @else {
+          <span class="placeholder">transcribí lo que escuchás…</span>
+        }
+        <span class="slash">/</span>
+      </div>
+
+      @if (result(); as r) {
+        <div class="result" [class.result--ok]="r.exact">
+          <p class="verdict">
+            {{ r.exact ? '¡Exacto!' : 'Casi: mirá qué fonemas cambian.' }}
+            <span class="answer">«{{ item()?.text }}»</span>
+          </p>
+          <div class="row">
+            <span class="label">Correcta</span>
+            <app-ipa-text [pron]="item()?.target ?? ''" size="large" />
+            @if (!item()?.verified) {
+              <span class="tag" title="Transcripción del diccionario local o armada por la app"
+                >aprox.</span
+              >
+            }
+          </div>
+          @if (!r.exact) {
+            <div class="row">
+              <span class="label">Tu transcripción</span>
+              <app-alignment-view [steps]="r.alignment" />
+            </div>
+          }
+          <button type="button" class="primary" (click)="next()">Siguiente</button>
+        </div>
+      } @else {
+        <div class="actions">
+          <button type="button" class="primary" [disabled]="!tokens().length" (click)="check()">
+            Corregir
+          </button>
+          <button type="button" class="secondary" (click)="next()">Saltear</button>
+        </div>
+      }
+      @if (message()) {
+        <p class="error">{{ message() }}</p>
+      }
+    }
+  </section>
+
+  <section class="panel keyboard-panel" aria-label="Teclado fonético">
+    <app-ipa-keyboard (pressed)="press($event)" (backspace)="backspace()" (clear)="clear()" />
+  </section>
+</div>

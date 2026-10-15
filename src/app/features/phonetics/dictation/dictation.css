@@ -1,0 +1,180 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(380px, 1fr) auto;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+.panel {
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  overflow: auto;
+}
+
+.levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.chip:hover,
+.chip--active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip--active {
+  background: var(--accent-soft);
+  font-weight: 700;
+}
+
+.start {
+  margin-top: 30px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 14px;
+}
+
+.score {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+.primary,
+.secondary {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary {
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.secondary {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 6px 16px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: var(--bg);
+  font-family: var(--font-ipa);
+  font-size: 2.2rem;
+}
+
+.slash {
+  color: var(--muted);
+}
+
+.placeholder {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 1.05rem;
+  font-style: italic;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.result {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--warn-bg);
+}
+
+.result--ok {
+  background: var(--ok-bg);
+}
+
+.verdict {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.answer {
+  margin-left: 8px;
+  color: var(--accent);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.2rem;
+}
+
+.label {
+  min-width: 130px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tag {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.error {
+  color: var(--bad);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}

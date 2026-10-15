@@ -1,0 +1,159 @@
+<div class="layout">
+  <section class="panel table-panel" aria-label="Tabla de verbos irregulares">
+    <div class="toolbar">
+      <input
+        type="search"
+        placeholder="Buscar verbo o significado…"
+        [value]="filter()"
+        (input)="filter.set($any($event.target).value)"
+      />
+      <div class="patterns">
+        @for (p of patterns; track p) {
+          <button
+            type="button"
+            class="chip"
+            [class.chip--active]="pattern() === p"
+            (click)="togglePattern(p)"
+          >
+            {{ patternLabels[p] }}
+          </button>
+        }
+      </div>
+    </div>
+    <p class="muted small">
+      {{ visible().length }} verbos. Clic en una forma para escucharla con la voz británica.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Base</th>
+          <th>Pasado</th>
+          <th>Participio</th>
+          <th>Significado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of visible(); track row.verb.base) {
+          <tr>
+            @for (key of ['base', 'past', 'participle']; track key) {
+              <td>
+                @for (form of $any(row.forms)[key]; track form.spelling) {
+                  <button type="button" class="form" (click)="speak(form.pron)">
+                    <span class="spelling">{{ form.spelling }}</span>
+                    @if (form.pron) {
+                      <app-ipa-text [pron]="form.pron" />
+                    }
+                  </button>
+                }
+              </td>
+            }
+            <td class="meaning">
+              {{ row.verb.meaning }}
+              @if (row.verb.note) {
+                <span class="note">{{ row.verb.note }}</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <aside class="side">
+    <section class="panel" aria-label="Práctica">
+      <h3>Práctica</h3>
+      @if (practice(); as p) {
+        <p class="prompt">
+          <strong>{{ p.row.verb.base }}</strong>
+          <span class="muted">({{ p.row.verb.meaning }})</span>
+        </p>
+        <div class="answers">
+          <label
+            >Pasado
+            <input
+              [value]="p.past"
+              [disabled]="p.checked"
+              (input)="setAnswer('past', $any($event.target).value)"
+              (keydown)="onPracticeKey($event)"
+          /></label>
+          <label
+            >Participio
+            <input
+              [value]="p.participle"
+              [disabled]="p.checked"
+              (input)="setAnswer('participle', $any($event.target).value)"
+              (keydown)="onPracticeKey($event)"
+          /></label>
+        </div>
+        @if (p.checked) {
+          <p class="result">
+            <span
+              [class.ok]="isRight(p.row.verb.past, p.past)"
+              [class.bad]="!isRight(p.row.verb.past, p.past)"
+            >
+              {{ p.row.verb.past }}
+            </span>
+            ·
+            <span
+              [class.ok]="isRight(p.row.verb.participle, p.participle)"
+              [class.bad]="!isRight(p.row.verb.participle, p.participle)"
+            >
+              {{ p.row.verb.participle }}
+            </span>
+          </p>
+          <button type="button" class="primary" (click)="nextPractice()">Siguiente</button>
+        } @else {
+          <button type="button" class="primary" (click)="checkPractice()">Corregir</button>
+        }
+        <p class="muted small">Aciertos: {{ score().right }} de {{ score().total }}</p>
+      } @else {
+        <p class="muted small">
+          Se muestra un verbo (de la lista filtrada) y escribís el pasado y el participio.
+        </p>
+        <button type="button" class="primary" (click)="nextPractice()">Empezar</button>
+      }
+    </section>
+
+    <section class="panel" aria-label="Terminaciones -s y -ed">
+      <h3>Pronunciación de -s y -ed</h3>
+      <div class="inflect-row">
+        <input
+          placeholder="Verbo regular, p. ej. watch"
+          [value]="regular()"
+          (input)="regular.set($any($event.target).value)"
+          (keydown.enter)="inflect()"
+        />
+        <button type="button" class="primary" (click)="inflect()">Ver</button>
+      </div>
+      <div class="examples">
+        @for (ex of regularExamples; track ex) {
+          <button type="button" class="chip" (click)="inflect(ex)">{{ ex }}</button>
+        }
+      </div>
+      @if (inflection(); as inf) {
+        @if (inf.basePron) {
+          <div class="inflection">
+            <p>
+              <strong>{{ inf.base }}</strong> <app-ipa-text [pron]="inf.basePron" />
+            </p>
+            @for (f of [inf.s, inf.ed]; track $index) {
+              @if (f) {
+                <div class="inflected">
+                  <button type="button" class="form" (click)="speak(f.pron)">
+                    <span class="spelling">{{ f.spelling }}</span>
+                    <app-ipa-text [pron]="f.pron" />
+                  </button>
+                  <span class="ending">{{ f.ending }}</span>
+                  <span class="rule">{{ f.rule }}</span>
+                </div>
+              }
+            }
+          </div>
+        } @else {
+          <p class="muted small">«{{ inf.base }}» no está en el diccionario local.</p>
+        }
+      }
+    </section>
+  </aside>
+</div>

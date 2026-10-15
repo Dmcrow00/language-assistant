@@ -1,0 +1,103 @@
+<div class="keyboard" role="group" aria-label="Teclado fonético RP">
+  <div class="vowels">
+    <fieldset class="block">
+      <legend>Monoptongos</legend>
+      @for (row of monophthongs; track $index) {
+        <div class="row">
+          @for (p of row; track p.symbol) {
+            <ng-container *ngTemplateOutlet="key; context: { $implicit: p }" />
+          }
+        </div>
+      }
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>Diptongos</legend>
+      @for (row of diphthongs; track $index) {
+        <div class="row">
+          @for (p of row; track p.symbol) {
+            <ng-container *ngTemplateOutlet="key; context: { $implicit: p }" />
+          }
+        </div>
+      }
+    </fieldset>
+
+    <fieldset class="block block--extra">
+      <legend>Débiles y acento</legend>
+      <div class="row">
+        @for (p of weakVowels; track p.symbol) {
+          <ng-container *ngTemplateOutlet="key; context: { $implicit: p }" />
+        }
+      </div>
+      <div class="row">
+        <button
+          type="button"
+          class="key key--mark"
+          title="Acento principal: va antes de la sílaba acentuada"
+          (click)="pressed.emit(primaryStress)"
+        >
+          <span class="symbol">{{ primaryStress }}</span
+          ><span class="example">principal</span>
+        </button>
+        <button
+          type="button"
+          class="key key--mark"
+          title="Acento secundario"
+          (click)="pressed.emit(secondaryStress)"
+        >
+          <span class="symbol">{{ secondaryStress }}</span
+          ><span class="example">secundario</span>
+        </button>
+      </div>
+    </fieldset>
+  </div>
+
+  <fieldset class="block">
+    <legend>
+      Consonantes <span class="legend-note">(claras: sordas · oscuras: sonoras)</span>
+    </legend>
+    @for (row of consonants; track $index) {
+      <div class="row">
+        @for (p of row; track p.symbol) {
+          <ng-container *ngTemplateOutlet="key; context: { $implicit: p }" />
+        }
+      </div>
+    }
+  </fieldset>
+
+  <div class="actions">
+    <button
+      type="button"
+      class="action"
+      (click)="backspace.emit()"
+      title="Borrar el último fonema (tecla Retroceso)"
+    >
+      ⌫ Borrar
+    </button>
+    <button
+      type="button"
+      class="action action--danger"
+      (click)="clear.emit()"
+      title="Empezar de nuevo (tecla Esc)"
+    >
+      Limpiar
+    </button>
+  </div>
+</div>
+
+<ng-template #key let-p>
+  <button
+    type="button"
+    class="key"
+    [class.key--vowel]="p.category !== 'consonant'"
+    [class.key--diphthong]="p.category === 'diphthong'"
+    [class.key--voiced]="p.voiced === true"
+    [class.key--voiceless]="p.voiced === false"
+    [title]="tooltip(p)"
+    (click)="pressed.emit(p.symbol)"
+    (contextmenu)="requestExample($event, p)"
+  >
+    <span class="symbol">{{ p.symbol }}</span>
+    <span class="example">{{ p.example }}</span>
+  </button>
+</ng-template>

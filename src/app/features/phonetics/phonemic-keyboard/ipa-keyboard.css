@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.keyboard {
+  display: grid;
+  gap: 12px;
+}
+
+.vowels {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.block {
+  margin: 0;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 0;
+}
+
+legend {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.legend-note {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 54px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    transform 0.06s ease,
+    border-color 0.1s ease;
+}
+
+.key:hover {
+  border-color: var(--accent);
+}
+
+.key:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.symbol {
+  font-family: var(--font-ipa);
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.example {
+  color: var(--muted);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.key--vowel {
+  background: var(--vowel-bg);
+}
+
+.key--diphthong {
+  background: var(--diphthong-bg);
+}
+
+.key--voiceless {
+  background: var(--voiceless-bg);
+}
+
+.key--voiced {
+  background: var(--voiced-bg);
+}
+
+.key--mark {
+  width: 78px;
+  background: var(--surface-2);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.action {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.action:hover {
+  border-color: var(--accent);
+}
+
+.action--danger:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+}

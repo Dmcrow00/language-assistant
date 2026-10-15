@@ -1,0 +1,78 @@
+<div class="layout">
+  <section class="panel" aria-label="Análisis del grupo verbal">
+    <div class="input-row">
+      <textarea
+        rows="2"
+        spellcheck="false"
+        placeholder="Escribí una o más oraciones, p. ej.: The report will have been finished by Friday."
+        [value]="text()"
+        (input)="text.set($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      ></textarea>
+      <button
+        type="button"
+        class="primary"
+        [disabled]="!text().trim() || loading() || !api.grammarAvailable()"
+        (click)="analyze()"
+      >
+        {{ loading() ? 'Analizando…' : 'Analizar' }}
+      </button>
+    </div>
+
+    <div class="examples">
+      @for (example of examples; track example) {
+        <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="notice notice--bad">{{ error() }}</div>
+    }
+
+    @if (analyzed()) {
+      @if (phrases().length) {
+        <ul class="results">
+          @for (item of phrases(); track $index) {
+            <li>
+              <p class="sentence">{{ item.sentence }}</p>
+              <app-verb-phrase-view [phrase]="item.phrase" />
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="muted">No se encontraron grupos verbales.</p>
+      }
+    } @else {
+      <p class="muted">
+        Cada grupo verbal se desarma en sus partes: auxiliar modal, auxiliar de perfecto (have), de
+        progresivo (be + -ing), de pasiva (be + -ed) y verbo léxico; con su nombre en inglés (p. ej.
+        <em>present perfect progressive</em>) y si es finito o no finito (to-infinitive, -ing
+        participle, -ed participle).
+      </p>
+    }
+  </section>
+
+  <aside class="panel reference" aria-label="Combinaciones de auxiliares">
+    <h3>Auxiliares (Quirk)</h3>
+    <p class="muted small">Siempre en este orden: modal → perfect → progressive → passive.</p>
+    <table>
+      <tbody>
+        @for (c of combinations; track c.name) {
+          <tr>
+            <th>{{ c.name }}</th>
+            <td>
+              {{ c.form }}<br /><em>{{ c.example }}</em>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <h3>Formas no finitas</h3>
+    <ul>
+      <li><strong>to-infinitive</strong>: <em>to write</em>, <em>to have written</em></li>
+      <li><strong>bare infinitive</strong>: <em>(can) write</em></li>
+      <li><strong>-ing participle</strong>: <em>writing</em>, <em>having written</em></li>
+      <li><strong>-ed participle</strong>: <em>written</em></li>
+    </ul>
+  </aside>
+</div>

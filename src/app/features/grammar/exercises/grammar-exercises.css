@@ -1,0 +1,222 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.panel {
+  height: 100%;
+  overflow: auto;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+h3 {
+  margin: 22px 0 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.instructions {
+  margin: 6px 0 18px;
+}
+
+.constituents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.constituent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.constituent--right {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.constituent--wrong {
+  border-color: var(--bad);
+  background: var(--bad-bg);
+}
+
+.text {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.role-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 260px;
+}
+
+.role {
+  min-width: 34px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--role-color, var(--text));
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.role--chosen {
+  background: var(--role-color, var(--accent));
+  border-color: var(--role-color, var(--accent));
+  color: var(--surface);
+}
+
+.role:disabled {
+  cursor: default;
+}
+
+.role--S {
+  --role-color: var(--role-S);
+}
+.role--V {
+  --role-color: var(--role-V);
+}
+.role--O {
+  --role-color: var(--role-O);
+}
+.role--Oi {
+  --role-color: var(--role-Oi);
+}
+.role--C {
+  --role-color: var(--role-C);
+}
+.role--A {
+  --role-color: var(--role-A);
+}
+
+.correction {
+  color: var(--bad);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.choice {
+  padding: 8px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.choice--pattern {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.choice--chosen {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.choice--right {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.choice--wrong {
+  border-color: var(--bad);
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.context {
+  align-self: center;
+  color: var(--muted);
+  font-size: 1.2rem;
+  font-style: italic;
+}
+
+.end {
+  color: var(--muted);
+}
+
+.actions {
+  margin-top: 22px;
+}
+
+.primary {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.verdict {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.explanation {
+  max-width: 720px;
+  line-height: 1.5;
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.bad {
+  color: var(--bad);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  margin-left: 10px;
+  font-size: 0.85rem;
+}

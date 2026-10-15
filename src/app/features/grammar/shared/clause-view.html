@@ -1,0 +1,74 @@
+<div class="clause" [class.clause--nested]="depth() > 0">
+  <div class="clause-header">
+    <span class="clause-label">{{ clause().label }}</span>
+    @if (clause().coordinator) {
+      <span class="coordinator">coordinante «{{ clause().coordinator }}»</span>
+    }
+    <span
+      class="pattern"
+      [title]="
+        patternInfo() ? patternInfo()!.description + ' · p. ej. ' + patternInfo()!.example : ''
+      "
+      >{{ clause().pattern }}</span
+    >
+    @if (patternInfo(); as info) {
+      <span class="pattern-description">{{ info.description }}</span>
+    }
+  </div>
+  @if (clause().patternNote) {
+    <p class="note">{{ clause().patternNote }}</p>
+  }
+
+  <div class="elements" role="list">
+    @for (element of clause().elements; track $index; let i = $index) {
+      <button
+        type="button"
+        role="listitem"
+        class="element element--{{ roleClass(element) }}"
+        [class.element--selected]="selected() === i"
+        [class.element--optional]="element.role === 'A' && element.obligatory === false"
+        (click)="toggle(i)"
+        [title]="roleName(element) + ' · ' + element.formLabel"
+      >
+        <span class="role">{{ element.role }}{{ element.obligatory ? '*' : '' }}</span>
+        <span class="text">{{ element.text }}</span>
+        <span class="form">{{ element.form === 'clause' ? 'cláusula' : element.form }}</span>
+      </button>
+    }
+  </div>
+
+  @if (selectedElement(); as element) {
+    <div class="detail element--{{ roleClass(element) }}">
+      <p class="detail-title">
+        <strong>{{ roleName(element) }}</strong> · {{ element.formLabel }}
+      </p>
+      @if (element.note) {
+        <p class="note">{{ element.note }}</p>
+      }
+      @if (element.role === 'V' && clause().verbPhrase; as vp) {
+        <app-verb-phrase-view [phrase]="vp" />
+      }
+      @if (element.structure?.length) {
+        <div class="structure">
+          @for (part of element.structure; track $index) {
+            <div
+              class="part"
+              [class.part--head]="part.role === 'núcleo' || part.role === 'preposición'"
+            >
+              <span class="part-role">{{ part.role }}</span>
+              <span class="part-text">{{ part.text }}</span>
+            </div>
+          }
+        </div>
+        @for (part of element.structure; track $index) {
+          @if (part.clause) {
+            <app-clause-view [clause]="part.clause" [depth]="depth() + 1" />
+          }
+        }
+      }
+      @if (element.clause) {
+        <app-clause-view [clause]="element.clause" [depth]="depth() + 1" />
+      }
+    </div>
+  }
+</div>

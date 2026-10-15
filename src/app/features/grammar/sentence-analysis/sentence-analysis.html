@@ -1,0 +1,144 @@
+<div class="layout">
+  <section class="main-panel" aria-label="Análisis de oraciones">
+    @if (!api.grammarAvailable()) {
+      <div class="notice notice--bad">
+        El analizador gramatical no está instalado. En desarrollo se arma con
+        <code>npm run build:nlp</code>.
+      </div>
+    }
+
+    <div class="input-row">
+      <textarea
+        id="grammar-input"
+        rows="2"
+        spellcheck="false"
+        placeholder="Escribí una o más oraciones en inglés, p. ej.: The man who lives next door is a doctor."
+        [value]="text()"
+        (input)="text.set($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      ></textarea>
+      <button
+        type="button"
+        class="primary"
+        [disabled]="!text().trim() || loading() || !api.grammarAvailable()"
+        (click)="analyze()"
+      >
+        {{ loading() ? 'Analizando…' : 'Analizar' }}
+      </button>
+    </div>
+
+    <div class="examples">
+      <span class="muted">Ejemplos:</span>
+      @for (example of examples; track example) {
+        <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="notice notice--bad">{{ error() }}</div>
+    }
+
+    @if (analysis(); as a) {
+      <p class="disclaimer">
+        Análisis automático (spaCy) según Quirk / Greenbaum. Puede equivocarse en oraciones ambiguas
+        o poco frecuentes: usalo como punto de partida y verificalo con el criterio de la cátedra.
+        Clic en cada elemento para ver su estructura.
+      </p>
+
+      @for (sentence of a.sentences; track $index) {
+        <article class="sentence">
+          <header class="sentence-header">
+            <h2>{{ sentence.text }}</h2>
+            <div class="badges">
+              <span class="badge badge--accent" [title]="structureLabel(sentence.structure)"
+                >oración {{ sentence.structure }}</span
+              >
+              <span class="badge">{{ sentence.form }}</span>
+              @if (sentence.subordinateClauses) {
+                <span class="badge"
+                  >{{ sentence.subordinateClauses }}
+                  {{ sentence.subordinateClauses === 1 ? 'subordinada' : 'subordinadas' }}</span
+                >
+              }
+            </div>
+            <p class="muted small">{{ structureLabel(sentence.structure) }}</p>
+          </header>
+
+          <label class="toggle">
+            <input
+              type="checkbox"
+              [checked]="showWordClasses()"
+              (change)="showWordClasses.set(!showWordClasses())"
+            />
+            Clases de palabras
+          </label>
+          @if (showWordClasses()) {
+            <div class="word-classes">
+              @for (token of tokensOf(a, sentence.span.start, sentence.span.end); track $index) {
+                <span class="word wc--{{ wordClassKey(token) }}" [title]="'lema: ' + token.lemma">
+                  <span class="word-text">{{ token.text }}</span>
+                  <span class="word-class">{{ token.wordClass }}</span>
+                </span>
+              }
+            </div>
+          }
+
+          @for (clause of sentence.clauses; track $index) {
+            <app-clause-view [clause]="clause" />
+          }
+
+          @if (sentence.verbPhrases.length) {
+            <h3 class="section-title">Grupos verbales</h3>
+            <div class="verb-phrases">
+              @for (vp of sentence.verbPhrases; track $index) {
+                <app-verb-phrase-view [phrase]="vp" />
+              }
+            </div>
+          }
+        </article>
+      }
+    } @else if (!loading()) {
+      <p class="empty">
+        Escribí una oración y apretá Enter. Vas a ver si es simple, compuesta o compleja, cada
+        cláusula con sus elementos (sujeto, verbo, objetos, complementos y adverbiales) y su patrón,
+        la forma de cada elemento (NP, VP, AdjP, AdvP, PP o cláusula) y los grupos verbales con su
+        tiempo, aspecto y voz.
+      </p>
+    }
+  </section>
+
+  <aside class="reference" aria-label="Referencias">
+    <h3>Elementos de la cláusula</h3>
+    <ul class="roles">
+      @for (r of roles; track r.role) {
+        <li class="ref-role element--{{ r.colorClass }}">
+          <strong>{{ r.role }}</strong> {{ r.name }}
+        </li>
+      }
+    </ul>
+    <p class="muted small">A* = adverbial obligatorio. Línea punteada = adverbial opcional.</p>
+
+    <h3>Los siete tipos de cláusula</h3>
+    <ul class="patterns">
+      @for (p of patterns; track p.pattern) {
+        <li>
+          <strong>{{ p.pattern }}</strong> {{ p.description }}
+          <button type="button" class="link" (click)="useExample(p.example)">
+            {{ p.example }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    <h3>Frases</h3>
+    <ul class="phrases">
+      <li>
+        <strong>NP</strong> frase nominal: determinante + premodificador + núcleo + posmodificador
+      </li>
+      <li><strong>VP</strong> frase verbal: auxiliares + verbo léxico</li>
+      <li><strong>AdjP</strong> frase adjetiva</li>
+      <li><strong>AdvP</strong> frase adverbial</li>
+      <li><strong>PP</strong> frase preposicional: preposición + complemento</li>
+    </ul>
+  </aside>
+</div>

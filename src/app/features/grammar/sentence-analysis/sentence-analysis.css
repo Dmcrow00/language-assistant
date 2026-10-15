@@ -1,0 +1,289 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 330px);
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+.main-panel,
+.reference {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  overflow: auto;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+textarea {
+  flex: 1;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.1rem;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.primary {
+  padding: 0 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 14px;
+  font-size: 0.85rem;
+}
+
+.chip {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.disclaimer {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.sentence {
+  display: grid;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+
+.sentence-header h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badge--accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.word-classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border-bottom: 3px solid var(--wc, var(--muted));
+}
+
+.word-text {
+  font-weight: 700;
+}
+
+.word-class {
+  color: var(--muted);
+  font-size: 0.68rem;
+  max-width: 120px;
+  text-align: center;
+}
+
+.wc--noun,
+.wc--propn {
+  --wc: var(--role-S);
+}
+.wc--verb,
+.wc--aux {
+  --wc: var(--role-V);
+}
+.wc--adj {
+  --wc: var(--role-C);
+}
+.wc--adv {
+  --wc: var(--role-A);
+}
+.wc--adp {
+  --wc: var(--role-Oi);
+}
+.wc--pron,
+.wc--det {
+  --wc: var(--role-O);
+}
+
+.section-title {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.verb-phrases {
+  display: grid;
+  gap: 10px;
+}
+
+.reference h3 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.reference ul {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 0.88rem;
+}
+
+.ref-role {
+  padding-left: 8px;
+  border-left: 4px solid var(--role-color, var(--muted));
+}
+
+.ref-role strong {
+  display: inline-block;
+  min-width: 26px;
+  color: var(--role-color);
+}
+
+.element--S {
+  --role-color: var(--role-S);
+}
+.element--V {
+  --role-color: var(--role-V);
+}
+.element--O {
+  --role-color: var(--role-O);
+}
+.element--Oi {
+  --role-color: var(--role-Oi);
+}
+.element--C {
+  --role-color: var(--role-C);
+}
+.element--A {
+  --role-color: var(--role-A);
+}
+
+.patterns strong,
+.phrases strong {
+  display: inline-block;
+  min-width: 46px;
+  color: var(--accent);
+}
+
+.link {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-soft);
+  font: inherit;
+  font-style: italic;
+  text-align: left;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.notice {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.notice--bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  margin: 6px 0 0;
+  font-size: 0.82rem;
+}
+
+.empty {
+  color: var(--muted);
+  line-height: 1.5;
+}

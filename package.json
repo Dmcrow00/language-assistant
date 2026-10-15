@@ -1,0 +1,107 @@
+{
+  "name": "dmc00-language-assistant",
+  "version": "0.0.1",
+  "description": "Estudio de fonética del inglés británico (RP) para profesorados: búsqueda por ortografía y por fonemas, con transcripciones y audio de Longman.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dmcrow00/language-assistant.git"
+  },
+  "private": true,
+  "main": "dist-electron/electron/main.js",
+  "scripts": {
+    "ng": "ng",
+    "build:web": "ng build",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "build": "npm run build:web && npm run build:electron",
+    "start": "npm run build && electron .",
+    "dev": "npm run build:electron && concurrently -k -n web,app -c blue,green \"ng serve --port 4200\" \"wait-on http-get://localhost:4200 && electron . --dev-url=http://localhost:4200\"",
+    "test": "ng test --watch=false",
+    "test:core": "npm run build:electron && node --test \"dist-electron/electron/test/*.test.js\"",
+    "fetch-voice": "node scripts/fetch-voice.mjs",
+    "build:nlp": "node scripts/build-nlp.mjs",
+    "dist": "npm run fetch-voice && npm run build:nlp && npm run build && electron-builder --win"
+  },
+  "packageManager": "npm@11.6.0",
+  "dependencies": {
+    "node-html-parser": "^9.0.4",
+    "onnxruntime-node": "^1.30.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.26",
+    "@angular/cli": "^21.2.26",
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/compiler-cli": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@fontsource/charis-sil": "^5.3.0",
+    "@types/node": "^22.20.5",
+    "concurrently": "^10.0.6",
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3",
+    "jsdom": "^28.0.0",
+    "phonemizer": "^1.2.1",
+    "prettier": "^3.8.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8",
+    "wait-on": "^9.5.1"
+  },
+  "build": {
+    "appId": "ar.edu.profesorado.fonetica-rp",
+    "productName": "Fonética RP",
+    "copyright": "Uso educativo",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/dmc00-language-assistant/browser/**",
+      "dist-electron/**",
+      "!dist-electron/electron/test/**",
+      "!**/*.map",
+      "package.json",
+      "!node_modules/onnxruntime-node/bin/napi-v6/{darwin,linux}/**",
+      "!node_modules/onnxruntime-node/bin/napi-v6/win32/arm64/**",
+      "!node_modules/onnxruntime-node/bin/napi-v6/win32/x64/{DirectML,dxcompiler,dxil}.dll"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/britfone",
+        "to": "britfone"
+      },
+      {
+        "from": "resources/piper",
+        "to": "piper",
+        "filter": [
+          "*.onnx",
+          "*.onnx.json",
+          "MODEL_CARD"
+        ]
+      },
+      {
+        "from": "resources/nlp",
+        "to": "nlp"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "executableName": "FoneticaRP",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "FoneticaRP-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "FoneticaRP-Portable-${version}.${ext}"
+    },
+    "asarUnpack": [
+      "node_modules/onnxruntime-node/**"
+    ]
+  }
+}

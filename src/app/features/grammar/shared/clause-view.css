@@ -1,0 +1,172 @@
+:host {
+  display: block;
+}
+
+.clause {
+  display: grid;
+  gap: 10px;
+}
+
+.clause--nested {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--border);
+  border-radius: 0 10px 10px 0;
+  background: var(--bg);
+}
+
+.clause-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.clause-label {
+  font-weight: 700;
+}
+
+.coordinator {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.pattern {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.pattern-description {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.note {
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-size: 0.85rem;
+}
+
+.elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.element {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 56px;
+  padding: 6px 10px 6px 10px;
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--role-color, var(--muted));
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.element:hover {
+  border-color: var(--role-color, var(--accent));
+}
+
+.element--selected {
+  box-shadow: 0 0 0 2px var(--role-color, var(--accent));
+}
+
+.element--optional {
+  border-style: dashed;
+  border-top-style: solid;
+}
+
+.role {
+  color: var(--role-color, var(--muted));
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.text {
+  font-size: 1.02rem;
+}
+
+.form {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.element--S {
+  --role-color: var(--role-S);
+}
+.element--V {
+  --role-color: var(--role-V);
+}
+.element--O {
+  --role-color: var(--role-O);
+}
+.element--Oi {
+  --role-color: var(--role-Oi);
+}
+.element--C {
+  --role-color: var(--role-C);
+}
+.element--A {
+  --role-color: var(--role-A);
+}
+
+.detail {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--role-color, var(--accent));
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.detail-title {
+  margin: 0 0 8px;
+}
+
+.detail .note {
+  margin-bottom: 8px;
+}
+
+.structure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.part {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.part--head {
+  outline: 2px solid var(--role-color, var(--accent));
+}
+
+.part-role {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.part-text {
+  font-weight: 600;
+}

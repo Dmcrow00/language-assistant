@@ -1,0 +1,172 @@
+@let s = state();
+@if (s.status === 'idle') {
+  <div class="placeholder">
+    <p>Elegí una palabra para ver su transcripción y escucharla.</p>
+  </div>
+} @else if (s.status === 'loading') {
+  <div class="placeholder" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Buscando «{{ s.word }}» en Longman…</p>
+  </div>
+} @else if (s.status === 'error') {
+  <div class="notice notice--bad">No se pudo consultar «{{ s.word }}»: {{ s.message }}</div>
+} @else {
+  @switch (s.lookup.status) {
+    @case ('found') {
+      @for (group of groups(); track $index) {
+        <article class="entry">
+          <h2 class="headword">{{ group.headword }}</h2>
+
+          @if (group.pronBrE) {
+            <div class="pron-row pron-row--main">
+              <span class="accent-tag" title="British English — Received Pronunciation"
+                >UK · RP</span
+              >
+              @if (group.forms) {
+                <span class="form-tag">{{ formLabel(group.forms, 0) }}</span>
+              }
+              <app-ipa-text [pron]="group.pronBrE" size="large" />
+              @if (group.audioBrE) {
+                <button
+                  type="button"
+                  class="play"
+                  [class.play--active]="audio.playing() === group.audioBrE"
+                  (click)="play(group.audioBrE)"
+                  title="Escuchar la pronunciación británica"
+                >
+                  <span aria-hidden="true">▶</span> Escuchar
+                </button>
+              }
+            </div>
+            @if (group.forms) {
+              @for (form of group.forms.slice(1); track $index) {
+                <div class="pron-row pron-row--form">
+                  <span class="form-tag" [class.form-tag--strong]="isStrong(form)">{{
+                    formLabel(group.forms, $index + 1)
+                  }}</span>
+                  <app-ipa-text [pron]="form.pron" />
+                </div>
+              }
+            }
+          } @else {
+            <p class="muted">Longman no muestra transcripción para esta entrada.</p>
+            @if (group.audioBrE) {
+              <button type="button" class="play" (click)="play(group.audioBrE)">
+                <span aria-hidden="true">▶</span> Escuchar
+              </button>
+            }
+          }
+
+          @if (group.pronAmE) {
+            <div class="pron-row">
+              <span class="accent-tag accent-tag--us" title="American English">US</span>
+              <app-ipa-text [pron]="group.pronAmE" />
+              @if (group.audioAmE) {
+                <button
+                  type="button"
+                  class="play play--small"
+                  [class.play--active]="audio.playing() === group.audioAmE"
+                  (click)="play(group.audioAmE)"
+                  title="Escuchar la pronunciación americana"
+                >
+                  <span aria-hidden="true">▶</span>
+                </button>
+              }
+            </div>
+          }
+
+          <ul class="senses">
+            @for (sense of group.senses; track $index) {
+              <li>
+                @if (sense.pos) {
+                  <span class="pos">{{ sense.pos }}</span>
+                }
+                @if (sense.definition) {
+                  <span class="definition">{{ sense.definition }}</span>
+                }
+              </li>
+            }
+          </ul>
+        </article>
+      }
+
+      @if (audioError()) {
+        <div class="notice notice--bad">{{ audioError() }}</div>
+      }
+
+      <footer class="source">
+        Fuente: Longman Dictionary of Contemporary English Online
+        @if (s.lookup.fromCache) {
+          <span class="muted">(guardado en este equipo)</span>
+        }
+        @if (s.lookup.pageUrl) {
+          <button type="button" class="link" (click)="openInBrowser(s.lookup.pageUrl)">
+            Ver en Longman ↗
+          </button>
+        }
+      </footer>
+    }
+
+    @case ('suggestions') {
+      <div class="notice">
+        <p>«{{ s.lookup.query }}» no está en Longman. ¿Quisiste decir…?</p>
+        <div class="chips">
+          @for (suggestion of s.lookup.suggestions; track suggestion) {
+            <button type="button" class="chip" (click)="wordRequested.emit(suggestion)">
+              {{ suggestion }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @case ('not-found') {
+      <div class="notice">«{{ s.lookup.query }}» no aparece en Longman.</div>
+    }
+
+    @case ('offline') {
+      <div class="notice notice--bad">
+        <p>
+          No se pudo conectar con Longman. Las palabras ya consultadas siguen disponibles sin
+          conexión.
+        </p>
+        @if (s.lookup.message) {
+          <p class="muted small">{{ s.lookup.message }}</p>
+        }
+      </div>
+    }
+  }
+
+  <!-- Sin Longman (no está o no hay conexión): la transcripción local y la voz británica. -->
+  @if (
+    (s.lookup.status === 'offline' || s.lookup.status === 'not-found') && fallbackPron();
+    as pron
+  ) {
+    <article class="entry">
+      <h2 class="headword">{{ s.lookup.query }}</h2>
+      <div class="pron-row pron-row--main">
+        <span
+          class="accent-tag"
+          title="Transcripción del diccionario local, no verificada en Longman"
+          >aprox.</span
+        >
+        <app-ipa-text [pron]="pron" size="large" />
+        @if (api.voiceAvailable()) {
+          <button
+            type="button"
+            class="play"
+            [class.play--active]="audio.playing() === 'fallback:' + pron"
+            (click)="speakFallback(pron)"
+            title="Voz británica sintética (Piper), generada a partir de la transcripción"
+          >
+            <span aria-hidden="true">▶</span> Voz británica
+          </button>
+        }
+      </div>
+      <p class="muted small">Transcripción aproximada, no verificada en Longman.</p>
+    </article>
+    @if (audioError()) {
+      <div class="notice notice--bad">{{ audioError() }}</div>
+    }
+  }
+}
