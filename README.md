@@ -3,80 +3,272 @@
 Repositorio: https://github.com/Dmcrow00/language-assistant (carpeta local `dmc00-language-assistant`).
 Ramas: `main` (versiones estables) y `develop` (desarrollo de nuevas funciones).
 
-Aplicación de escritorio para estudiar la fonética (inglés británico, Received Pronunciation) y la
-gramática del inglés en el profesorado. Tiene dos menús.
+Aplicación de escritorio (Windows) para estudiar la fonética del inglés británico (Received
+Pronunciation) y la gramática del inglés en el profesorado. Tiene dos menús:
 
-### Fonética
+- **Fonética**: buscar una palabra (transcripción y audio de Longman), teclado fonético para
+  escribir cómo suena una palabra, transcripción de oraciones con formas débiles y fuertes y
+  habla conectada, dictado fonético y pares mínimos.
+- **Gramática** (Quirk / Greenbaum): análisis de oraciones (SVOCA, tipos de cláusula, frases y
+  subordinadas), grupo verbal, verbos irregulares y ejercicios de análisis.
 
-1. **Buscar palabra**: el alumno escribe la palabra con su ortografía normal. Mientras escribe ve
-   palabras parecidas con su transcripción (sirve aunque la escriba mal: «watre», «recieve»,
-   «fonetik»). Al elegir una se consulta Longman y se muestra la palabra, la transcripción RP (con
-   sus formas débil y fuerte si las tiene), la variante americana, una definición corta y los
-   botones para escuchar el audio británico y el americano. Si la palabra no existe, Longman
-   sugiere alternativas («¿Quisiste decir…?»).
-2. **Teclado fonético**: un teclado en pantalla con los 44 fonemas del RP, ordenado como la tabla
-   fonémica de Underhill (British Council), más las vocales débiles /i/ y /u/ y las marcas de
-   acento. El alumno escribe cómo cree que suena una palabra y la app la compara con todo el
-   diccionario: primero las que suenan exactamente así (homófonos) y después las más cercanas,
-   marcando fonema por fonema qué coincide, qué cambió, qué faltó y qué sobra. «Escuchar lo que
-   escribí» pronuncia con la voz británica exactamente esa transcripción. Clic derecho sobre una
-   tecla reproduce la palabra de ejemplo de ese fonema.
-3. **Oración**: la oración transcripta palabra por palabra y completa (lista para copiar, con |
-   para pausas menores y || para fin de oración). Las *function words* aparecen en **forma débil o
-   fuerte** según el contexto y la r de enlace se marca entre vocales. «Procesos del habla
-   conectada» marca además asimilación (*ten boys* /tem/), elisión (*next day* /neks/), coalescencia
-   (*don't you* /dəʊntʃu/) y r intrusiva (*idea of*). Clic en una palabra: ficha de Longman y, si es
-   una function word, por qué lleva esa forma y un botón para enfatizarla o quitarle el énfasis. Se
-   escucha con la **voz británica** (lee la transcripción tal como está) o palabra por palabra con
-   las grabaciones de Longman.
-4. **Dictado**: se escucha una palabra o frase y el alumno la transcribe con el teclado; se corrige
-   fonema por fonema. Niveles: vocales y diptongos, consonantes, ortografía engañosa, polisílabos y
-   frases con formas débiles. Las palabras usan la grabación y la transcripción de Longman.
-5. **Pares mínimos**: suena una de dos palabras (*ship / sheep*, *berry / very*…) y el alumno elige
-   cuál fue. 16 contrastes pensados para hispanohablantes, con una explicación de cada uno.
+Contenido: [Instalación](#instalación) · [Uso](#uso) · [Compilación](#compilación) ·
+[Cómo está armada](#cómo-está-armada)
 
-### Gramática (Quirk / Greenbaum)
+## Instalación
 
-1. **Análisis de oraciones**: tipo de oración (simple, compuesta, compleja, compuesta-compleja) y
-   forma (declarativa, interrogativa, imperativa, exclamativa); cada cláusula con sus elementos
-   **S V O C A** y su tipo (los siete patrones: SV, SVO, SVC, SVA, SVOO, SVOC, SVOA); la forma de
-   cada elemento (NP, VP, AdjP, AdvP, PP o cláusula) y su estructura interna (determinante,
-   premodificador, núcleo, posmodificador); las cláusulas subordinadas (nominales, adverbiales,
-   relativas, finitas y no finitas), analizadas a su vez; las clases de palabras y los grupos
-   verbales.
-2. **Grupo verbal**: cada verbo desarmado en modal, auxiliar de perfecto, de progresivo, de pasiva y
-   verbo léxico, con su nombre (*present perfect progressive passive*) y si es finito o no finito.
-3. **Verbos irregulares**: unos 140 verbos con sus tres formas, transcripción y audio (incluidos los
-   engañosos: *read* /riːd/ /red/ /red/), filtros por patrón (cut-cut-cut, keep-kept-kept,
-   come-came-come, go-went-gone), práctica, y la pronunciación de **-s** (/s/ /z/ /ɪz/) y **-ed**
-   (/t/ /d/ /ɪd/) de cualquier verbo regular con la regla que la explica.
-4. **Ejercicios**: el alumno asigna la función de cada constituyente, dice cómo es el sujeto
-   (expreso, implícito o elíptico) y elige el tipo de cláusula; 38 oraciones con respuestas
-   escritas a mano y la explicación de cada una. Además del orden canónico hay preguntas (con el
-   verbo partido: *Did … send*), adverbiales adelantados e inversión (*In the corner stood an old
-   piano*), sujeto vacío (*It is raining*), imperativas (sujeto implícito *you*) y coordinadas con
-   sujeto elíptico. Recuerdan que en inglés no hay sujeto tácito como en castellano: una cláusula
-   finita lleva sujeto expreso, salvo esos casos.
+Para alumnos y docentes que sólo quieren usar la aplicación.
 
-El audio se puede reproducir más lento, sin cambiar el tono, con «Audio lento».
+**Requisitos**: Windows 10 u 11 de 64 bits y unos 700 MB libres. Hace falta conexión a internet
+sólo para consultar en Longman palabras que todavía no se buscaron; lo ya consultado, la voz
+británica, el análisis gramatical y las prácticas funcionan sin conexión.
 
-## Comandos
+Hay dos versiones; las dos hacen lo mismo:
 
-Requiere Node 22.12 o superior y, para armar el analizador gramatical, Python 3.12.
+| Archivo | Cuándo usarlo |
+| --- | --- |
+| `FoneticaRP-Setup-x.y.z.exe` | Instalador. Queda en el menú Inicio y abre más rápido. Recomendado para la computadora personal. |
+| `FoneticaRP-Portable-x.y.z.exe` | No se instala: se abre con doble clic desde cualquier carpeta o pendrive. Tarda unos segundos más en abrir porque se descomprime cada vez. Útil en computadoras de laboratorio. |
+
+Los dos archivos se generan con `npm run dist` (ver [Compilación](#compilación)) y quedan en la
+carpeta `release/`. Para repartirlos, se pueden publicar como *Release* en GitHub o compartir por
+el campus o una carpeta en la nube.
+
+### Con el instalador
+
+1. Doble clic en `FoneticaRP-Setup-x.y.z.exe`.
+2. Windows puede mostrar «Windows protegió su PC» porque el ejecutable no tiene firma digital:
+   elegir **Más información → Ejecutar de todas formas**.
+3. Elegir la carpeta de instalación (se instala para el usuario actual, sin permisos de
+   administrador) y terminar. Quedan accesos directos en el escritorio y en el menú Inicio.
+
+Para desinstalar: **Configuración de Windows → Aplicaciones → Fonética RP → Desinstalar**.
+
+### Con la versión portable
+
+Copiar `FoneticaRP-Portable-x.y.z.exe` donde se quiera y abrirlo con doble clic (la primera vez
+puede aparecer el mismo aviso de Windows). Para quitarla alcanza con borrar el archivo.
+
+### Datos que guarda
+
+Las palabras ya consultadas en Longman y sus audios quedan en `%APPDATA%\dmc00-language-assistant`
+(así funcionan sin conexión la próxima vez). Borrar esa carpeta deja la aplicación como recién
+instalada.
+
+## Uso
+
+**Generalidades**
+
+- Arriba se elige el menú (**Fonética** o **Gramática**) y debajo, la pantalla. Cada pantalla
+  conserva lo escrito al cambiar de una a otra.
+- **Audio lento** (arriba a la derecha) reproduce todos los audios más despacio, sin cambiar el
+  tono.
+- La primera vez que se usa la voz británica tarda alrededor de un segundo, y el primer análisis
+  gramatical, uno o dos; después es instantáneo.
+- Cada palabra nueva se consulta en Longman (como máximo una por segundo) y queda guardada.
+- Etiquetas de las transcripciones: **Longman** = verificada en Longman; **aprox.** = del
+  diccionario abierto Britfone, todavía no verificada; **armada** = formada a partir de otra
+  palabra (*watered* ← *water* + -ed).
+
+### Fonética → Buscar palabra
+
+Transcripción, audio y formas de una palabra.
+
+1. Escribir la palabra con su ortografía normal, aunque sea con errores («watre», «recieve»,
+   «fonetik»): la lista muestra palabras parecidas con su transcripción.
+2. Elegir con clic, o moverse con **↑ ↓** y confirmar con **Enter**. Enter sin elegir nada busca en
+   Longman lo escrito tal cual; si no existe, Longman sugiere alternativas («¿Quisiste decir…?»).
+3. La ficha muestra la transcripción británica (RP) y la americana, las formas débil y fuerte si
+   las tiene, una definición corta para distinguir homófonos, **▶ Escuchar** (británico) y **▶**
+   (americano), y **Ver en Longman ↗**.
+
+**Esc** borra la búsqueda.
+
+### Fonética → Teclado fonético
+
+Escribir cómo suena una palabra y encontrar cuál es.
+
+1. Tocar los fonemas en el teclado (ordenado como la tabla fonémica de Underhill). Los diptongos
+   y las africadas son una sola tecla; **ˈ** y **ˌ** marcan el acento.
+2. Los resultados se actualizan solos: **Suena exactamente así** (homófonos) y **Lo más parecido**,
+   comparado fonema por fonema: verde = coincide, naranja = cambiado (en chiquito, lo que se
+   escribió), rojo subrayado = faltó, tachado = sobra.
+3. Clic en una palabra: su ficha de Longman con audio.
+4. **▶ Escuchar lo que escribí**: la voz británica pronuncia exactamente lo escrito, para comparar
+   con la palabra real.
+5. **Clic derecho** sobre una tecla: se escucha la palabra de ejemplo de ese fonema.
+6. **Tener en cuenta el acento**: si se marca el acento en otra sílaba, la palabra queda más lejos.
+
+Con el teclado de la computadora: **Retroceso** borra el último fonema y **Esc** limpia todo.
+
+### Fonética → Oración
+
+Transcripción de una oración completa, con formas débiles y fuertes.
+
+1. Escribir la oración y apretar **Enter** (**Shift + Enter** para cambiar de renglón). La
+   transcripción aparece enseguida y se va corrigiendo a medida que responde Longman («Consultando
+   Longman: 3 de 9 palabras…»).
+2. Cada palabra muestra su transcripción: violeta = *function word* en forma **débil**, naranja =
+   forma **fuerte**, *r* azul = r de enlace, borde punteado = transcripción aproximada.
+3. **Clic** en una palabra: su ficha y, si es una *function word*, por qué lleva esa forma y un
+   botón para enfatizarla (forma fuerte) o quitarle el énfasis; la transcripción y la voz cambian.
+   **Doble clic**: escucharla.
+4. **Habla conectada** (activada): formas débiles y r de enlace; desactivada, cada palabra en su
+   forma de cita. **Procesos del habla conectada**: marca además asimilación (*ten boys* /tem/),
+   elisión (*next day* /neks/), coalescencia (*don't you* /dəʊntʃu/) y r intrusiva (*idea of*),
+   con la lista de los procesos debajo.
+5. **▶ Voz británica**: lee la oración tal como está transcripta. **▶ Palabra por palabra
+   (Longman)**: encadena las grabaciones reales de cada palabra (pronunciadas aisladas).
+6. **Copiar**: copia la transcripción completa (con | para pausas menores y || para fin de
+   oración).
+
+### Fonética → Dictado
+
+1. Elegir el nivel (vocales y diptongos, consonantes, ortografía engañosa, polisílabos y acento,
+   frases con formas débiles) y apretar **Empezar**.
+2. Escuchar (**▶ Escuchar de nuevo** las veces que haga falta) y transcribir con el teclado en
+   pantalla; **Retroceso** borra el último fonema.
+3. **Enter** (o **Corregir**): se muestra la transcripción correcta y la comparación fonema por
+   fonema. **Enter** de nuevo pasa a la siguiente; **Saltear** cambia de palabra.
+
+No se tiene en cuenta el acento. Las palabras usan la grabación y la transcripción de Longman.
+
+### Fonética → Pares mínimos
+
+1. Elegir un contraste a la izquierda (/iː/–/ɪ/, /b/–/v/, /s/–/θ/…); arriba se explica por qué
+   cuesta.
+2. **▶ Escuchar** y elegir cuál de las dos palabras sonó.
+3. Después de responder se ven las dos transcripciones y se puede escuchar cada una.
+
+**Sólo voz sintética** usa la voz británica en lugar de las grabaciones de Longman (sirve sin
+conexión).
+
+### Gramática → Análisis de oraciones
+
+Análisis según Quirk / Greenbaum.
+
+1. Escribir una o más oraciones (o hacer clic en un ejemplo) y apretar **Enter** o **Analizar**.
+2. Arriba de cada oración: si es simple, compuesta, compleja o compuesta-compleja, su forma
+   (declarativa, interrogativa…) y cuántas subordinadas tiene.
+3. Cada cláusula aparece como una fila de elementos con su color (S, V, Od, Oi, Cs, Co, A), la forma
+   de cada uno (NP, VP, AdjP, AdvP, PP o cláusula) y el tipo de cláusula (SV, SVO, SVC, SVA, SVOO,
+   SVOC, SVOA). **A\*** = adverbial obligatorio; borde punteado = adverbial opcional.
+4. **Clic** en un elemento: su estructura (determinante, premodificador, núcleo, posmodificador) y,
+   si es o contiene una cláusula (relativa, adverbial, no finita…), su análisis completo, que a su
+   vez se puede desplegar.
+5. **Clases de palabras** muestra la clase de cada palabra; al final están los grupos verbales.
+6. A la derecha hay referencias: los elementos, los siete tipos de cláusula (clic en un ejemplo lo
+   analiza) y las frases.
+
+Es un análisis automático: puede equivocarse en oraciones ambiguas o poco frecuentes, así que
+conviene usarlo como punto de partida y verificarlo con el criterio de la cátedra.
+
+### Gramática → Grupo verbal
+
+Escribir una o más oraciones (o hacer clic en un ejemplo): cada grupo verbal aparece desarmado en
+sus partes (modal, auxiliar de perfecto, de progresivo, de pasiva, verbo léxico) con su nombre en
+inglés (*present perfect progressive passive*) y la explicación. A la derecha están las
+combinaciones de auxiliares y las formas no finitas.
+
+### Gramática → Verbos irregulares
+
+- **Tabla**: buscar por verbo o significado, filtrar por patrón (cut-cut-cut, keep-kept-kept,
+  come-came-come, go-went-gone) y hacer clic en una forma para escucharla.
+- **Práctica**: **Empezar** muestra un verbo (de la lista filtrada); escribir el pasado y el
+  participio, **Enter** corrige y **Enter** de nuevo pasa al siguiente. Se aceptan las variantes
+  (*learnt* o *learned*).
+- **Pronunciación de -s y -ed**: escribir un verbo regular (o elegir un ejemplo) para ver cómo
+  suenan sus terminaciones (/s/ /z/ /ɪz/, /t/ /d/ /ɪd/) y la regla que lo explica.
+
+### Gramática → Ejercicios
+
+1. Marcar la función de cada parte con los botones **S V Od Oi Cs Co A**. Lo que aparece en gris es
+   contexto y no se analiza; si el verbo aparece en dos pedazos (*Did … send*), los dos son **V**.
+2. Elegir **cómo es el sujeto**: expreso, implícito (imperativas) o elíptico (coordinadas).
+3. Elegir el **tipo de cláusula** y apretar **Corregir**: cada parte se pinta de verde o rojo, se
+   muestra la respuesta correcta y la explicación. **Siguiente** pasa a otro ejercicio.
+
+Los 38 ejercicios salen en orden aleatorio y arriba se lleva la cuenta de aciertos.
+
+### Si algo no funciona
+
+| Qué pasa | Qué hacer |
+| --- | --- |
+| La aplicación no abre | Puede estar abierta (sólo se permite una ventana): buscarla en la barra de tareas. |
+| «No se pudo conectar con Longman» | No hay internet. Lo ya consultado sigue disponible; para lo demás se muestra la transcripción aproximada y se puede escuchar con la voz británica. |
+| No se oye nada | Revisar el volumen de Windows. La primera lectura de la voz británica tarda un segundo. |
+| «El analizador gramatical no está instalado» o no aparece la voz británica | Sólo pasa en una copia de desarrollo armada sin `npm run build:nlp` o sin `npm run fetch-voice`. |
+
+## Compilación
+
+Para quien vaya a modificar la aplicación o generar el instalador.
+
+**Requisitos**
+
+- Windows 10 u 11 de 64 bits, con unos 3 GB libres (dependencias, entorno de Python y ejecutables).
+- [Git](https://git-scm.com/) y [Node.js](https://nodejs.org/) 22.12 o superior (incluye npm).
+- [Python](https://www.python.org/) 3.12 en el PATH, sólo para armar el analizador gramatical.
+- Conexión a internet la primera vez: paquetes de npm, la voz británica (114 MB, de Hugging Face)
+  y los paquetes de Python (spaCy, su modelo y PyInstaller, unos 60 MB).
+
+**Primera vez**
+
+```bash
+git clone https://github.com/Dmcrow00/language-assistant.git
+cd language-assistant
+git checkout develop
+npm install
+npm run fetch-voice
+npm run build:nlp
+npm start
+```
+
+- `npm run fetch-voice` baja la voz a `resources/piper/` y verifica su suma de control.
+- `npm run build:nlp` crea el entorno `nlp/.venv`, instala las versiones fijadas en
+  `nlp/requirements.lock.txt` y arma el analizador en `resources/nlp/` (la primera vez tarda unos
+  minutos; después sólo se rearma si cambió `nlp/nlp_server.py`).
+- `npm start` compila la interfaz y el motor y abre la aplicación.
+
+Sin la voz o sin el analizador la aplicación funciona igual, pero sin voz británica o sin análisis
+gramatical.
+
+**Durante el desarrollo**
+
+- `npm run dev` abre la aplicación con recarga automática de la interfaz (los cambios en
+  `electron/` requieren cerrarla y volver a abrirla).
+- `npm run test:core` (motor) y `npm test` (interfaz) corren las pruebas.
+- Los cambios nuevos se hacen en `develop` (o en ramas que salen de `develop`) y pasan a `main`
+  cuando forman una versión estable.
+
+**Generar el instalador**
+
+1. Si es una versión nueva, actualizar `"version"` en `package.json` (el número va en el nombre de
+   los archivos).
+2. Cerrar la aplicación si está abierta (Windows no deja reemplazar el ejecutable en uso).
+3. Correr `npm run dist`: compila todo, baja la voz y arma el analizador si faltan, y deja en
+   `release/` el instalador y la versión portable.
+
+### Comandos
 
 | Comando | Para qué |
 | --- | --- |
 | `npm install` | Instala dependencias (incluye el binario de Electron). |
-| `npm run fetch-voice` | Baja la voz británica (114 MB) a `resources/piper/` y verifica su MD5. Sin ella la app funciona, pero sin voz sintética. `npm run dist` la baja sola si falta. |
-| `npm run build:nlp` | Arma el analizador gramatical (spaCy) como ejecutable en `resources/nlp/`. La primera vez crea `nlp/.venv` e instala las versiones fijadas en `nlp/requirements.lock.txt`. `npm run dist` lo arma solo si falta. |
+| `npm run fetch-voice` | Baja la voz británica (114 MB) a `resources/piper/` y verifica su MD5. `npm run dist` la baja sola si falta. |
+| `npm run build:nlp` | Arma el analizador gramatical (spaCy) como ejecutable en `resources/nlp/`. Con `-- --force` lo rearma siempre. `npm run dist` lo arma solo si falta. |
 | `npm start` | Compila todo y abre la aplicación. |
-| `npm run dev` | Desarrollo: `ng serve` con recarga automática + Electron apuntando a él. Los cambios en `electron/` requieren reiniciar. |
-| `npm run test:core` | Pruebas del motor (búsquedas, transcripciones, lectura de Longman) con `node --test`. |
+| `npm run dev` | Desarrollo: `ng serve` con recarga automática + Electron apuntando a él. |
+| `npm run test:core` | Pruebas del motor (búsquedas, transcripciones, Longman, oraciones, voz, gramática) con `node --test`. |
 | `npm test` | Pruebas de la interfaz (Vitest). |
 | `npm run dist` | Genera en `release/` el instalador (`FoneticaRP-Setup-x.y.z.exe`) y la versión portable (`FoneticaRP-Portable-x.y.z.exe`), con la voz y el analizador incluidos. |
 
-Si después de `npm install` Electron no arranca porque falta su binario, correr
-`node node_modules/electron/install.js`.
+### Problemas al compilar
+
+| Qué pasa | Qué hacer |
+| --- | --- |
+| Electron no arranca después de `npm install` porque falta su binario | `node node_modules/electron/install.js` |
+| `npm run build:nlp` dice que no encuentra `python` | Instalar Python 3.12 y marcar «Add python.exe to PATH»; abrir una terminal nueva. |
+| `npm run dist` falla porque un archivo está en uso | Cerrar la aplicación (instalada o portable) y repetir. |
+| `npm start` o `npm run dev` no abren ninguna ventana | Ya hay otra instancia abierta (también la instalada): cerrarla. |
 
 ## Cómo está armada
 
