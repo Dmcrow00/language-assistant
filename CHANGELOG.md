@@ -21,6 +21,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado
 
 ### Cambiado
 
+- La versión de ONNX Runtime viene de `dmc00-parent` (#5) y el CI y el release compilan contra su `develop`.
 - El instalador incluye el motor Java con su propio Java mínimo: pasa de 279,5 MB a 300,6 MB.
 - `npm run test:core` pasa a ser `npm run test:sidecar` (motor) y `npm run test:electron` (cliente);
   `npm run dist` ya no publica (`--publish never`).

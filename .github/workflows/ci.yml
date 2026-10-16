@@ -29,8 +29,8 @@ permissions:
   contents: read
 
 env:
-  # develop de dmc00-parent con #1 y #2 (sin tags todavía). Nunca la rama por defecto.
-  DMC00_PARENT_REF: 996125b
+  # develop de dmc00-parent (sin tags todavía; trae ONNX Runtime, #5). Nunca la rama por defecto.
+  DMC00_PARENT_REF: develop
   # Los tests no abren Electron: no hace falta bajar su binario.
   ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
