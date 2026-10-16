@@ -11,7 +11,11 @@ console.log('una línea que no es del protocolo');
 send({ ready: true, version: 'falsa' });
 
 createInterface({ input: process.stdin }).on('line', (line) => {
-  const { id, channel, args } = JSON.parse(line) as { id: number; channel: string; args: unknown[] };
+  const { id, channel, args } = JSON.parse(line) as {
+    id: number;
+    channel: string;
+    args: unknown[];
+  };
   switch (channel) {
     case 'echo':
       return send({ id, result: args });

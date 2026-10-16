@@ -8,7 +8,15 @@
 // Al final le hace unos pedidos al motor recién armado con su propio Java, para comprobar que a jlink no
 // le faltó ningún módulo (si falta uno, el motor arranca pero no responde).
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline';
@@ -27,7 +35,9 @@ const pomVersion = readFileSync(join(sidecarDir, 'pom.xml'), 'utf8').match(
   /<artifactId>fonetica-sidecar<\/artifactId>\s*<version>([^<]+)<\/version>/,
 )?.[1];
 if (pomVersion !== appVersion) {
-  console.error(`La versión de sidecar-java/pom.xml (${pomVersion}) no es la de package.json (${appVersion}).`);
+  console.error(
+    `La versión de sidecar-java/pom.xml (${pomVersion}) no es la de package.json (${appVersion}).`,
+  );
   process.exit(1);
 }
 
@@ -39,7 +49,11 @@ const newestSource = (dir) =>
 const upToDate =
   existsSync(jar) &&
   existsSync(java) &&
-  statSync(jar).mtimeMs > Math.max(newestSource(join(sidecarDir, 'src', 'main')), statSync(join(sidecarDir, 'pom.xml')).mtimeMs);
+  statSync(jar).mtimeMs >
+    Math.max(
+      newestSource(join(sidecarDir, 'src', 'main')),
+      statSync(join(sidecarDir, 'pom.xml')).mtimeMs,
+    );
 
 if (!force && upToDate) {
   console.log('ok (ya estaba)  sidecar-java/target/sidecar');
@@ -57,14 +71,25 @@ console.log('ok  sidecar-java/target/sidecar');
 async function smokeTest() {
   const userData = mkdtempSync(join(tmpdir(), 'fonetica-sidecar-'));
   // Una caché de Longman como la que deja la app: al iniciar, el motor la lee con Jackson.
-  const lookup = { query: 'water', status: 'found', entries: [{ headword: 'water', pronBrE: 'ˈwɔːtə' }] };
+  const lookup = {
+    query: 'water',
+    status: 'found',
+    entries: [{ headword: 'water', pronBrE: 'ˈwɔːtə' }],
+  };
   writeFileSync(
     join(userData, 'ldoce-cache.json'),
-    JSON.stringify({ version: 1, lookups: { water: { ...lookup, suggestions: [], parserVersion: 3 } } }),
+    JSON.stringify({
+      version: 1,
+      lookups: { water: { ...lookup, suggestions: [], parserVersion: 3 } },
+    }),
   );
-  const child = spawn(java, ['-jar', jar, '--resources', join(root, 'resources'), '--user-data', userData], {
-    windowsHide: true,
-  });
+  const child = spawn(
+    java,
+    ['-jar', jar, '--resources', join(root, 'resources'), '--user-data', userData],
+    {
+      windowsHide: true,
+    },
+  );
   const requests = [
     { id: 1, channel: 'lexicon:search-spelling', args: ['watre', 3] },
     { id: 2, channel: 'sentence:analyze', args: ['The idea of it.', { connected: true }] },
@@ -94,7 +119,8 @@ async function smokeTest() {
     });
     const failed = [...answers.values()].filter((a) => a.error !== undefined);
     if (failed.length) throw new Error(failed.map((a) => a.error).join('; '));
-    if (answers.get(5).result.water?.source !== 'ldoce') throw new Error('no leyó la caché de Longman');
+    if (answers.get(5).result.water?.source !== 'ldoce')
+      throw new Error('no leyó la caché de Longman');
     if (answers.get(4).result) {
       const wav = await request(child, { id: 6, channel: 'tts:phonemes', args: ['kæt', {}] });
       if (!wav.bytes) throw new Error(`la voz no respondió: ${wav.error}`);

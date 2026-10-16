@@ -130,7 +130,9 @@ export class SidecarClient {
       child.stdin.setDefaultEncoding('utf8');
       let started = false;
       // Los avisos del motor van por stderr: a la consola de Electron.
-      createInterface({ input: child.stderr }).on('line', (line) => console.error(`[motor] ${line}`));
+      createInterface({ input: child.stderr }).on('line', (line) =>
+        console.error(`[motor] ${line}`),
+      );
       createInterface({ input: child.stdout }).on('line', (line) => {
         let message: Message;
         try {

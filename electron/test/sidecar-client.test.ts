@@ -14,7 +14,10 @@ describe('cliente del motor (con un motor falso)', () => {
 
   it('espera el aviso de listo, ignora las líneas ajenas y empareja cada respuesta con su pedido', async () => {
     const client = fake();
-    const [a, b] = await Promise.all([client.call('echo', 'uno'), client.call('echo', 2, { x: true })]);
+    const [a, b] = await Promise.all([
+      client.call('echo', 'uno'),
+      client.call('echo', 2, { x: true }),
+    ]);
     assert.deepEqual(a, ['uno']);
     assert.deepEqual(b, [2, { x: true }]);
     client.dispose();
@@ -36,7 +39,9 @@ describe('cliente del motor (con un motor falso)', () => {
 
   it('si el motor no responde a tiempo, el pedido falla', async () => {
     const client = fake();
-    await assert.rejects(client.call('silencio'), { message: 'El motor tardó demasiado en responder.' });
+    await assert.rejects(client.call('silencio'), {
+      message: 'El motor tardó demasiado en responder.',
+    });
     client.dispose();
   });
 
@@ -62,7 +67,9 @@ const real = SidecarClient.locate({
   userData,
   userAgent: 'test',
 });
-const jarBuilt = existsSync(join(ROOT, 'sidecar-java', 'target', 'sidecar', 'fonetica-sidecar.jar'));
+const jarBuilt = existsSync(
+  join(ROOT, 'sidecar-java', 'target', 'sidecar', 'fonetica-sidecar.jar'),
+);
 
 describe('motor Java real', { skip: !real || !jarBuilt }, () => {
   after(() => {
@@ -77,7 +84,10 @@ describe('motor Java real', { skip: !real || !jarBuilt }, () => {
 
   it('la oración llega igual que la daba el motor TypeScript (dato dorado)', async () => {
     const golden = JSON.parse(
-      readFileSync(join(ROOT, 'sidecar-java', 'src', 'test', 'resources', 'paridad', 'oraciones.json'), 'utf8'),
+      readFileSync(
+        join(ROOT, 'sidecar-java', 'src', 'test', 'resources', 'paridad', 'oraciones.json'),
+        'utf8',
+      ),
     ) as Array<{ text: string; options: unknown; analysis: SentenceAnalysis }>;
     for (const text of ['Where are you from?', "Don't you know?", 'The idea of it.']) {
       const expected = golden.find(
@@ -89,7 +99,9 @@ describe('motor Java real', { skip: !real || !jarBuilt }, () => {
   });
 
   it('valida la entrada también del lado de Java', async () => {
-    await assert.rejects(real!.call('lexicon:search-spelling', 42), { message: 'Se esperaba un texto' });
+    await assert.rejects(real!.call('lexicon:search-spelling', 42), {
+      message: 'Se esperaba un texto',
+    });
   });
 
   it('la voz devuelve un WAV', async () => {

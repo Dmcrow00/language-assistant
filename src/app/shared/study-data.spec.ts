@@ -1,7 +1,4 @@
-import {
-  exerciseSentence,
-  GRAMMAR_EXERCISES,
-} from '../../../shared/study-data/grammar-exercises';
+import { exerciseSentence, GRAMMAR_EXERCISES } from '../../../shared/study-data/grammar-exercises';
 import { IRREGULAR_VERBS, verbPattern } from '../../../shared/study-data/irregular-verbs';
 
 /**

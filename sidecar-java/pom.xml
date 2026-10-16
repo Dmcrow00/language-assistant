@@ -32,7 +32,7 @@
     <properties>
         <github.repo>language-assistant</github.repo>
         <main.class>com.dmc00.fonetica.SidecarMain</main.class>
-        <!-- TODO mover a dmc00-parent (PR #3). La misma versión que usaba onnxruntime-node. -->
+        <!-- TODO mover a dmc00-parent (PR dmc00-parent#5). La misma versión que usaba onnxruntime-node. -->
         <onnxruntime.version>1.30.0</onnxruntime.version>
         <!-- Plataforma de las librerías nativas de ONNX que van al instalador (la app es sólo para Windows). -->
         <onnxruntime.platform>win-x64</onnxruntime.platform>

@@ -9,7 +9,15 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'dist-electron/**', 'release/**', 'resources/**', 'sidecar-java/**', 'nlp/**', '.angular/**'],
+    ignores: [
+      'dist/**',
+      'dist-electron/**',
+      'release/**',
+      'resources/**',
+      'sidecar-java/**',
+      'nlp/**',
+      '.angular/**',
+    ],
   },
   {
     files: ['**/*.ts'],

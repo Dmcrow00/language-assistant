@@ -12,14 +12,19 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
-const compiled = (name) => require(join(root, 'dist-electron', 'shared', 'study-data', `${name}.js`));
+const compiled = (name) =>
+  require(join(root, 'dist-electron', 'shared', 'study-data', `${name}.js`));
 
 const { DICTATION_LEVELS, MINIMAL_PAIRS } = compiled('phonetics-practice');
 const { IRREGULAR_VERBS } = compiled('irregular-verbs');
 const { GRAMMAR_EXERCISES, exerciseSentence } = compiled('grammar-exercises');
 
 const data = {
-  dictationLevels: DICTATION_LEVELS.map(({ id, items, phrases }) => ({ id, items, phrases: !!phrases })),
+  dictationLevels: DICTATION_LEVELS.map(({ id, items, phrases }) => ({
+    id,
+    items,
+    phrases: !!phrases,
+  })),
   minimalPairs: MINIMAL_PAIRS.map(({ id, pairs }) => ({ id, pairs })),
   irregularVerbs: IRREGULAR_VERBS.map(({ base, past, participle, prons }) => ({
     base,

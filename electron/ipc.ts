@@ -74,7 +74,9 @@ export function registerIpc({ engine, isTrustedSender }: IpcDeps): void {
   handle(IPC.pronsOf, (words) =>
     forward(
       IPC.pronsOf,
-      Array.isArray(words) ? words.filter((w): w is string => typeof w === 'string').slice(0, 500) : [],
+      Array.isArray(words)
+        ? words.filter((w): w is string => typeof w === 'string').slice(0, 500)
+        : [],
     ),
   );
 
@@ -113,7 +115,11 @@ function tokens(value: unknown, max: number): string[] {
 }
 
 function sentenceOptions(options: unknown) {
-  const opts = (options ?? {}) as { connected?: unknown; forcedStrong?: unknown; forcedWeak?: unknown };
+  const opts = (options ?? {}) as {
+    connected?: unknown;
+    forcedStrong?: unknown;
+    forcedWeak?: unknown;
+  };
   return {
     connected: opts.connected !== false,
     forcedStrong: indexes(opts.forcedStrong),
