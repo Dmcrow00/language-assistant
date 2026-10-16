@@ -50,3 +50,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Motor Java: lo que arma Maven (./mvnw package / npm run build:sidecar)
+/sidecar-java/target/

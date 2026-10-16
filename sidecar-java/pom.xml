@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Motor de Fonética RP: el proceso Java que Electron lanza al iniciar (ADR-0002, ADR-0001 del repo).
+
+  Electron le habla por stdin/stdout con una línea JSON por pedido (ver docs/documentacion-tecnica.md).
+  `./mvnw package` deja en target/sidecar/:
+    fonetica-sidecar.jar   todo el motor y sus dependencias en un solo jar (sin las librerías nativas de ONNX)
+    native/                onnxruntime.dll y su puente JNI para Windows x64 (la voz)
+  Con -Pempaquetado agrega runtime/, el Java mínimo que arma jlink y que va dentro del instalador.
+
+  La versión tiene que ser la misma que la de package.json (lo verifica scripts/build-sidecar.mjs).
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.dmc00</groupId>
+        <artifactId>dmc00-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <artifactId>fonetica-sidecar</artifactId>
+    <version>0.0.1</version>
+
+    <name>fonetica-sidecar</name>
+    <description>Motor de Fonética RP (léxico, oraciones, Longman, voz Piper y gramática Quirk) como proceso aparte de Electron.</description>
+    <url>https://github.com/Dmcrow00/language-assistant</url>
+
+    <properties>
+        <github.repo>language-assistant</github.repo>
+        <main.class>com.dmc00.fonetica.SidecarMain</main.class>
+        <!-- TODO mover a dmc00-parent (PR #3). La misma versión que usaba onnxruntime-node. -->
+        <onnxruntime.version>1.30.0</onnxruntime.version>
+        <!-- Plataforma de las librerías nativas de ONNX que van al instalador (la app es sólo para Windows). -->
+        <onnxruntime.platform>win-x64</onnxruntime.platform>
+        <sidecar.dir>${project.build.directory}/sidecar</sidecar.dir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+            <version>${onnxruntime.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>fonetica-sidecar</finalName>
+        <plugins>
+            <!-- El motor no usa Lombok ni MapStruct: no se corren los procesadores de anotaciones del padre. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <proc>none</proc>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Los tests no salen a la red: Longman se reemplaza por un fetch falso (FakeFetcher). -->
+                    <systemPropertyVariables>
+                        <fonetica.proyecto>${project.basedir}/..</fonetica.proyecto>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <!-- Un solo jar ejecutable con las dependencias; las nativas de ONNX van aparte (native/). -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${sidecar.dir}/fonetica-sidecar.jar</outputFile>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters combine.self="override">
+                                <filter>
+                                    <artifact>com.microsoft.onnxruntime:onnxruntime</artifact>
+                                    <excludes>
+                                        <exclude>ai/onnxruntime/native/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers combine.self="override">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${main.class}</mainClass>
+                                    <manifestEntries>
+                                        <Implementation-Version>${project.version}</Implementation-Version>
+                                        <Multi-Release>true</Multi-Release>
+                                        <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- onnxruntime.dll + onnxruntime4j_jni.dll de Windows x64, fuera del jar (SidecarMain apunta a native/). -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>nativas-onnxruntime</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.microsoft.onnxruntime</groupId>
+                                    <artifactId>onnxruntime</artifactId>
+                                    <version>${onnxruntime.version}</version>
+                                    <includes>ai/onnxruntime/native/${onnxruntime.platform}/*</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                    <outputDirectory>${sidecar.dir}/native</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!--
+          Runtime de Java mínimo para el instalador (npm run build:sidecar lo activa).
+          Módulos: java.base, java.logging (ONNX Runtime), java.net.http (Longman) y java.xml (Jackson lo
+          carga al iniciar). jdeps también nombra java.desktop y java.sql, pero sólo los usan clases opcionales
+          de Jackson que el motor no carga (scripts/build-sidecar.mjs lo verifica con pedidos de prueba al
+          runtime armado).
+        -->
+        <profile>
+            <id>empaquetado</id>
+            <build>
+                <plugins>
+                    <!-- jlink no escribe sobre una carpeta que ya existe: se borra la del build anterior. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>borrar-runtime-anterior</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${sidecar.dir}/runtime</directory>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>jlink</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/jlink</executable>
+                                    <arguments>
+                                        <argument>--add-modules</argument>
+                                        <argument>java.base,java.logging,java.net.http,java.xml</argument>
+                                        <argument>--strip-debug</argument>
+                                        <argument>--no-header-files</argument>
+                                        <argument>--no-man-pages</argument>
+                                        <argument>--compress=zip-9</argument>
+                                        <argument>--output</argument>
+                                        <argument>${sidecar.dir}/runtime</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
