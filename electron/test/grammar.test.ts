@@ -231,6 +231,28 @@ describe('grupo verbal', () => {
   });
 });
 
+describe('ejercicios con el análisis guardado de spaCy', () => {
+  // Igual que la prueba con el analizador real de abajo, pero sin Python: el fixture tiene los 38.
+  it('coincide con las respuestas de los 38 ejercicios', () => {
+    const differences: string[] = [];
+    for (const exercise of GRAMMAR_EXERCISES) {
+      const text = exerciseSentence(exercise);
+      const sentence = analyze(text);
+      const clause = exercise.subject === 'elíptico' ? sentence.clauses[1] : sentence.clauses[0];
+      const key = exercise.constituents
+        .map((c) => c.role)
+        .filter((role, i, all) => role !== 'V' || all.indexOf('V') === i)
+        .join(' ');
+      const auto = clause?.elements.map((e) => e.role).join(' ');
+      if (clause?.pattern !== exercise.pattern || auto !== key) {
+        differences.push(`${text}: ${exercise.pattern} ${key} ≠ ${clause?.pattern} ${auto}`);
+      }
+    }
+    assert.equal(GRAMMAR_EXERCISES.length, 38);
+    assert.deepEqual(differences, []);
+  });
+});
+
 describe('analizador spaCy real', () => {
   const client = NlpClient.locate(join(ROOT, 'resources'), ROOT);
   after(() => client?.dispose());
