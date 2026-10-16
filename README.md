@@ -30,9 +30,10 @@ Hay dos versiones; las dos hacen lo mismo:
 | `FoneticaRP-Setup-x.y.z.exe` | Instalador. Queda en el menú Inicio y abre más rápido. Recomendado para la computadora personal. |
 | `FoneticaRP-Portable-x.y.z.exe` | No se instala: se abre con doble clic desde cualquier carpeta o pendrive. Tarda unos segundos más en abrir porque se descomprime cada vez. Útil en computadoras de laboratorio. |
 
-Los dos archivos se generan con `npm run dist` (ver [Compilación](#compilación)) y quedan en la
-carpeta `release/`. Para repartirlos, se pueden publicar como *Release* en GitHub o compartir por
-el campus o una carpeta en la nube.
+Las versiones publicadas están en
+[GitHub Releases](https://github.com/Dmcrow00/language-assistant/releases) (las arma el workflow de
+release al crear un tag). También se pueden generar con `npm run dist` (ver
+[Compilación](#compilación)) y compartir por el campus o una carpeta en la nube.
 
 ### Con el instalador
 

@@ -13,6 +13,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado
 - Actualización automática de la versión instalada contra GitHub Releases (electron-updater).
 - ESLint (`npm run lint`), CI en GitHub Actions (Node + Java 25) y documentación técnica, de entorno y
   despliegue, diagramas y ADR en `docs/`.
+- Workflow de release (`release.yml`): con un tag `vX.Y.Z` arma el instalador en Windows y lo publica en
+  GitHub Releases con las notas del CHANGELOG (Setup, `.blockmap`, `latest.yml` y portable).
 - Capturas de las pantallas principales (`node scripts/capturas.mjs` → `docs/capturas/`).
 - Pruebas: los casos de `node:test` portados a JUnit, los 38 ejercicios de gramática con el análisis
   guardado de spaCy (el fixture suma los 16 que faltaban) y paridad con la versión TypeScript.

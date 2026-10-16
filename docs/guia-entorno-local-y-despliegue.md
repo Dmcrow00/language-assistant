@@ -96,16 +96,31 @@ Pasos comunes en `dmc00-workspace/docs/convenciones/git-y-versionado.md` §6. En
    (`npm version X.Y.Z --no-git-tag-version`) **y** en `sidecar-java/pom.xml`
    (`cd sidecar-java && ./mvnw versions:set -DnewVersion=X.Y.Z -DgenerateBackupPoms=false`);
    pasar "Sin publicar" del CHANGELOG a `[X.Y.Z] - fecha`. PR a `develop`.
-2. **El dueño**: merge a `main`, tag `vX.Y.Z`.
-3. **El dueño**, en una PC con el entorno armado y en `main`: `npm run dist`, y crear la release en
-   GitHub con el tag y los archivos de `release/`:
-   ```bash
-   gh release create vX.Y.Z --title "Fonética RP X.Y.Z" --notes-file <notas del CHANGELOG> release/FoneticaRP-Setup-X.Y.Z.exe release/FoneticaRP-Setup-X.Y.Z.exe.blockmap release/latest.yml release/FoneticaRP-Portable-X.Y.Z.exe
-   ```
+2. **El dueño**: merge a `main`, tag anotado `vX.Y.Z` y `git push --follow-tags`.
+3. El push del tag dispara `.github/workflows/release.yml` (Windows, ~30 min la primera vez):
+   - verifica que el tag sea la versión de `package.json` y de `sidecar-java/pom.xml`;
+   - corre los tests de la interfaz y del motor;
+   - `npm run dist`, con caché de la voz (`resources/piper`) y de spaCy empaquetado (`resources/nlp`, se
+     rearma si cambian `nlp/nlp_server.py`, `nlp/requirements.lock.txt` o `scripts/build-nlp.mjs`);
+   - crea la release en este repo con las notas de `## [X.Y.Z]` del CHANGELOG y adjunta
+     `FoneticaRP-Setup-X.Y.Z.exe`, su `.blockmap`, `latest.yml` y la portable. Un tag con guion
+     (`v1.2.0-beta.1`) sale como *pre-release* y electron-updater no la ofrece.
    Los instaladores ya instalados la detectan la próxima vez que se abran.
 
-Todavía no hay un `release.yml` que lo haga solo: el instalador necesita la voz (114 MB de Hugging Face)
-y spaCy empaquetado con PyInstaller, que tardan y pesan en un runner. Queda como pendiente.
+Para probar el workflow sin publicar: **Actions → Release → Run workflow** sobre una rama. Arma todo y
+deja los archivos como artefacto de la ejecución (7 días), con las notas de "Sin publicar".
+
+Necesita el secret `CROSS_REPO_PAT` (lectura de `dmc00-parent`) mientras ese repo sea privado; la release
+la crea el `GITHUB_TOKEN` del workflow. Si hace falta publicar a mano (por ejemplo, sin Actions), en una PC
+con el entorno armado y en `main`:
+
+```bash
+npm run dist
+```
+
+```bash
+gh release create vX.Y.Z --title "Fonética RP X.Y.Z" --notes-file notas.md release/FoneticaRP-Setup-X.Y.Z.exe release/FoneticaRP-Setup-X.Y.Z.exe.blockmap release/latest.yml release/FoneticaRP-Portable-X.Y.Z.exe
+```
 
 ## 5. Rollback
 

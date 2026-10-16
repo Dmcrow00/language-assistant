@@ -1,0 +1,163 @@
+# Publica el instalador de Fonética RP en GitHub Releases de este mismo repo (público: electron-updater lo
+# lee sin token). Sigue el estilo de dmc00-deploy-templates/templates/github/release-escritorio.yml, con
+# electron-builder en lugar de jpackage.
+#
+# Se dispara cuando el dueño pushea un tag vX.Y.Z (ver git-y-versionado.md del workspace):
+#   1. verifica que el tag coincida con la versión de package.json y de sidecar-java/pom.xml
+#   2. corre los tests de la interfaz y del motor Java
+#   3. npm run dist: baja la voz y arma spaCy (los dos con caché), arma el motor con jlink y genera el
+#      instalador, la portable, el .blockmap y latest.yml
+#   4. crea la release con las notas de esa versión del CHANGELOG.md y esos archivos adjuntos
+# La app instalada (electron/updater.ts) lee latest.yml de la última release, baja el instalador y verifica
+# su SHA-512. Un tag con guion (v1.2.0-beta.1) se publica como pre-release: electron-updater no la ofrece.
+# "Run workflow" (manual) arma todo y lo deja como artefacto, sin publicar: sirve para probar antes del
+# primer tag.
+#
+# Secrets:
+#   CROSS_REPO_PAT  lectura de Dmcrow00/dmc00-parent (mientras sea privado)
+# La release la crea el GITHUB_TOKEN del workflow (permiso contents: write sobre este repo).
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+env:
+  # develop de dmc00-parent con #1 y #2 (sin tags todavía); el mismo que usa ci.yml.
+  DMC00_PARENT_REF: 996125b
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  instalador:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Checkout de dmc00-parent
+        uses: actions/checkout@v7
+        with:
+          repository: Dmcrow00/dmc00-parent
+          ref: ${{ env.DMC00_PARENT_REF }}
+          token: ${{ secrets.CROSS_REPO_PAT || github.token }}
+          path: _dmc00-parent
+
+      - name: Java 25
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Node 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      # spaCy y PyInstaller (npm run build:nlp) están fijados para Python 3.12.
+      - name: Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      # El mismo npm con el que se generó package-lock.json (campo packageManager): el npm 10 que trae Node 22
+      # no acepta un lock escrito por npm 11 (peer dependencies opcionales de @napi-rs/wasm-runtime).
+      - name: npm de package.json
+        run: npm install -g (node -p "require('./package.json').packageManager")
+
+      - name: Versión (de package.json y sidecar-java/pom.xml)
+        run: |
+          $version = node -p "require('./package.json').version"
+          $pom = [xml](Get-Content sidecar-java/pom.xml -Raw)
+          if ($pom.project.version -ne $version) {
+            throw "sidecar-java/pom.xml dice $($pom.project.version) y package.json $version"
+          }
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and "v$version" -ne $env:GITHUB_REF_NAME) {
+            throw "El tag $env:GITHUB_REF_NAME no coincide con la versión $version de package.json"
+          }
+          "VERSION=$version" >> $env:GITHUB_ENV
+
+      # En los pasos pwsh de Actions solo se mira el código de salida del ÚLTIMO comando: sin esta variable, un
+      # comando que falla en la primera línea deja pasar el paso.
+      - name: dmc00-parent en el repositorio Maven local
+        working-directory: _dmc00-parent
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          ./mvnw.cmd -B -ntp -q install -N
+
+      - name: Dependencias
+        run: npm ci
+
+      # Un paso por comando: npm es un script de PowerShell y sólo cuenta el código del último comando.
+      - name: Tests de la interfaz
+        run: npm test
+
+      - name: Tests del motor Java
+        run: npm run test:sidecar
+
+      - name: Caché de la voz (114 MB)
+        uses: actions/cache@v6
+        with:
+          path: resources/piper
+          key: voz-piper-${{ hashFiles('scripts/fetch-voice.mjs') }}
+
+      - name: Caché del analizador spaCy empaquetado
+        id: cache-nlp
+        uses: actions/cache@v6
+        with:
+          path: resources/nlp
+          key: nlp-${{ runner.os }}-${{ hashFiles('nlp/nlp_server.py', 'nlp/requirements.lock.txt', 'scripts/build-nlp.mjs') }}
+
+      # build-nlp.mjs lo rearma si el ejecutable es más viejo que nlp_server.py; el checkout deja los fuentes
+      # con la fecha de hoy y la caché restaura la fecha original: se actualiza la del ejecutable.
+      - name: Fecha del analizador restaurado
+        if: steps.cache-nlp.outputs.cache-hit == 'true'
+        run: (Get-Item resources/nlp/nlp-server/nlp-server.exe).LastWriteTime = Get-Date
+
+      - name: Instalador (npm run dist)
+        run: npm run dist
+
+      - name: Notas de la versión (sección del CHANGELOG)
+        run: |
+          $texto = Get-Content CHANGELOG.md -Raw
+          $seccion = if ($env:GITHUB_REF_TYPE -eq 'tag') { [regex]::Escape($env:VERSION) } else { 'Sin publicar' }
+          $m = [regex]::Match($texto, "(?ms)^## \[$seccion\][^\n]*\n(.*?)(?=^## \[|\z)")
+          if (-not $m.Success) { throw "El CHANGELOG no tiene la sección [$seccion]" }
+          $m.Groups[1].Value.Trim() | Set-Content notas.md -Encoding utf8
+
+      - name: Instalador como artefacto de la ejecución
+        uses: actions/upload-artifact@v7
+        with:
+          name: instalador-${{ env.VERSION }}
+          path: |
+            release/FoneticaRP-Setup-${{ env.VERSION }}.exe
+            release/FoneticaRP-Setup-${{ env.VERSION }}.exe.blockmap
+            release/latest.yml
+            release/FoneticaRP-Portable-${{ env.VERSION }}.exe
+            notas.md
+          retention-days: 7
+
+      # Los tres primeros archivos son los que necesita electron-updater; la portable, para quien la use.
+      - name: Publicar en GitHub Releases
+        if: github.ref_type == 'tag'
+        run: |
+          $extra = @()
+          if ($env:VERSION -like '*-*') { $extra += '--prerelease' }
+          gh release create $env:GITHUB_REF_NAME `
+            "release/FoneticaRP-Setup-$env:VERSION.exe" `
+            "release/FoneticaRP-Setup-$env:VERSION.exe.blockmap" `
+            release/latest.yml `
+            "release/FoneticaRP-Portable-$env:VERSION.exe" `
+            --title "Fonética RP $env:VERSION" --notes-file notas.md @extra
+          if ($LASTEXITCODE -ne 0) { throw "gh release create terminó con código $LASTEXITCODE" }
+        env:
+          GH_TOKEN: ${{ github.token }}
