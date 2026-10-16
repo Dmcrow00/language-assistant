@@ -13,13 +13,13 @@ Pronunciation) y la gramática del inglés en el profesorado. Tiene dos menús:
   subordinadas), grupo verbal, verbos irregulares y ejercicios de análisis.
 
 Contenido: [Instalación](#instalación) · [Uso](#uso) · [Compilación](#compilación) ·
-[Cómo está armada](#cómo-está-armada)
+[Cómo está armada](#cómo-está-armada) · [Documentación técnica](docs/README.md) · [CHANGELOG](CHANGELOG.md)
 
 ## Instalación
 
 Para alumnos y docentes que sólo quieren usar la aplicación.
 
-**Requisitos**: Windows 10 u 11 de 64 bits y unos 700 MB libres. Hace falta conexión a internet
+**Requisitos**: Windows 10 u 11 de 64 bits y unos 750 MB libres. Hace falta conexión a internet
 sólo para consultar en Longman palabras que todavía no se buscaron; lo ya consultado, la voz
 británica, el análisis gramatical y las prácticas funcionan sin conexión.
 
@@ -44,10 +44,14 @@ el campus o una carpeta en la nube.
 
 Para desinstalar: **Configuración de Windows → Aplicaciones → Fonética RP → Desinstalar**.
 
+La versión instalada se actualiza sola: al abrirla se fija si hay una versión nueva publicada en
+GitHub, la baja en segundo plano, avisa con una notificación y la instala al cerrar la aplicación.
+
 ### Con la versión portable
 
 Copiar `FoneticaRP-Portable-x.y.z.exe` donde se quiera y abrirlo con doble clic (la primera vez
-puede aparecer el mismo aviso de Windows). Para quitarla alcanza con borrar el archivo.
+puede aparecer el mismo aviso de Windows). Para quitarla alcanza con borrar el archivo. La versión
+portable no se actualiza sola: hay que bajar la nueva.
 
 ### Datos que guarda
 
@@ -223,15 +227,20 @@ Los 38 ejercicios salen en orden aleatorio y arriba se lleva la cuenta de aciert
 
 ## Compilación
 
-Para quien vaya a modificar la aplicación o generar el instalador.
+Para quien vaya a modificar la aplicación o generar el instalador. El detalle técnico (arquitectura,
+protocolo con el motor, tests, trampas) está en [docs/](docs/README.md).
 
 **Requisitos**
 
 - Windows 10 u 11 de 64 bits, con unos 3 GB libres (dependencias, entorno de Python y ejecutables).
 - [Git](https://git-scm.com/) y [Node.js](https://nodejs.org/) 22.12 o superior (incluye npm).
+- [JDK 25](https://adoptium.net/) con la variable `JAVA_HOME` apuntando a él: el motor está en Java
+  (`sidecar-java/`). No hace falta instalar Maven: se usa el wrapper `mvnw` del proyecto.
+- `dmc00-parent` (el POM padre de los proyectos Java del workspace) instalado en el repositorio Maven
+  local: `cd dmc00-parent && ./mvnw install -N` (ver [la guía](docs/guia-entorno-local-y-despliegue.md)).
 - [Python](https://www.python.org/) 3.12 en el PATH, sólo para armar el analizador gramatical.
-- Conexión a internet la primera vez: paquetes de npm, la voz británica (114 MB, de Hugging Face)
-  y los paquetes de Python (spaCy, su modelo y PyInstaller, unos 60 MB).
+- Conexión a internet la primera vez: paquetes de npm y de Maven, la voz británica (114 MB, de
+  Hugging Face) y los paquetes de Python (spaCy, su modelo y PyInstaller, unos 60 MB).
 
 **Primera vez**
 
@@ -249,26 +258,31 @@ npm start
 - `npm run build:nlp` crea el entorno `nlp/.venv`, instala las versiones fijadas en
   `nlp/requirements.lock.txt` y arma el analizador en `resources/nlp/` (la primera vez tarda unos
   minutos; después sólo se rearma si cambió `nlp/nlp_server.py`).
-- `npm start` compila la interfaz y el motor y abre la aplicación.
+- `npm start` compila la interfaz, Electron y el motor Java (`npm run build:sidecar`) y abre la
+  aplicación.
 
 Sin la voz o sin el analizador la aplicación funciona igual, pero sin voz británica o sin análisis
-gramatical.
+gramatical. Sin el motor Java compilado la interfaz abre pero no responde (la consola avisa
+«npm run build:sidecar»).
 
 **Durante el desarrollo**
 
 - `npm run dev` abre la aplicación con recarga automática de la interfaz (los cambios en
-  `electron/` requieren cerrarla y volver a abrirla).
-- `npm run test:core` (motor) y `npm test` (interfaz) corren las pruebas.
-- Los cambios nuevos se hacen en `develop` (o en ramas que salen de `develop`) y pasan a `main`
-  cuando forman una versión estable.
+  `electron/` o en `sidecar-java/` requieren cerrarla y volver a abrirla; `npm run dev` rearma el
+  motor si cambió).
+- `npm run test:sidecar` (motor Java), `npm run test:electron` (cliente del motor) y `npm test`
+  (interfaz) corren las pruebas; `npm run lint` revisa el TypeScript y las plantillas.
+- Los cambios nuevos se hacen en ramas que salen de `develop` y pasan a `main` cuando forman una
+  versión estable (ver `dmc00-workspace/docs/convenciones/git-y-versionado.md`).
 
 **Generar el instalador**
 
-1. Si es una versión nueva, actualizar `"version"` en `package.json` (el número va en el nombre de
-   los archivos).
+1. Si es una versión nueva, actualizar la versión en `package.json` **y** en `sidecar-java/pom.xml`
+   (tienen que coincidir: `npm run build:sidecar` lo verifica).
 2. Cerrar la aplicación si está abierta (Windows no deja reemplazar el ejecutable en uso).
-3. Correr `npm run dist`: compila todo, baja la voz y arma el analizador si faltan, y deja en
-   `release/` el instalador y la versión portable.
+3. Correr `npm run dist`: compila todo, baja la voz y arma el analizador si faltan, arma el motor con
+   su Java mínimo (jlink) y deja en `release/` el instalador, la versión portable y `latest.yml`
+   (lo que lee la actualización automática). No publica nada en GitHub.
 
 ### Comandos
 
@@ -277,11 +291,16 @@ gramatical.
 | `npm install` | Instala dependencias (incluye el binario de Electron). |
 | `npm run fetch-voice` | Baja la voz británica (114 MB) a `resources/piper/` y verifica su MD5. `npm run dist` la baja sola si falta. |
 | `npm run build:nlp` | Arma el analizador gramatical (spaCy) como ejecutable en `resources/nlp/`. Con `-- --force` lo rearma siempre. `npm run dist` lo arma solo si falta. |
+| `npm run build:sidecar` | Arma el motor Java en `sidecar-java/target/sidecar/` (jar, librerías nativas de ONNX Runtime y Java mínimo con jlink) y le hace unos pedidos de prueba. Sólo si cambió algo; con `-- --force`, siempre. |
 | `npm start` | Compila todo y abre la aplicación. |
 | `npm run dev` | Desarrollo: `ng serve` con recarga automática + Electron apuntando a él. |
-| `npm run test:core` | Pruebas del motor (búsquedas, transcripciones, Longman, oraciones, voz, gramática) con `node --test`. |
+| `npm run test:sidecar` | Pruebas del motor Java (JUnit): búsquedas, transcripciones, Longman (sin red), oraciones, voz, gramática, protocolo y paridad con la versión TypeScript. |
+| `npm run test:electron` | Pruebas del cliente del motor (`node --test`); si el motor está compilado, también de punta a punta. |
 | `npm test` | Pruebas de la interfaz (Vitest). |
-| `npm run dist` | Genera en `release/` el instalador (`FoneticaRP-Setup-x.y.z.exe`) y la versión portable (`FoneticaRP-Portable-x.y.z.exe`), con la voz y el analizador incluidos. |
+| `npm run lint` | ESLint (TypeScript de Electron, código compartido, scripts e interfaz Angular). |
+| `npm run export:study-data` | Copia el material de estudio de `shared/study-data` a JSON para los tests del motor (el CI verifica que esté al día). |
+| `npm run dist` | Genera en `release/` el instalador (`FoneticaRP-Setup-x.y.z.exe`) y la versión portable (`FoneticaRP-Portable-x.y.z.exe`), con la voz, el analizador y el motor incluidos. |
+| `node scripts/capturas.mjs` | Abre la app y guarda una captura de cada pantalla en `docs/capturas/` (después de `npm run build` y `npm run build:sidecar`). |
 
 ### Problemas al compilar
 
@@ -289,33 +308,38 @@ gramatical.
 | --- | --- |
 | Electron no arranca después de `npm install` porque falta su binario | `node node_modules/electron/install.js` |
 | `npm run build:nlp` dice que no encuentra `python` | Instalar Python 3.12 y marcar «Add python.exe to PATH»; abrir una terminal nueva. |
+| `npm run build:sidecar` dice que el JDK es viejo, o `java` es la versión 8 | Instalar el JDK 25 y apuntar `JAVA_HOME` a él (el `java` del PATH no se usa). |
+| `npm run build:sidecar` no encuentra `com.dmc00:dmc00-parent` | Instalar el POM padre: `cd ../dmc00-parent && ./mvnw install -N`. |
 | `npm run dist` falla porque un archivo está en uso | Cerrar la aplicación (instalada o portable) y repetir. |
 | `npm start` o `npm run dev` no abren ninguna ventana | Ya hay otra instancia abierta (también la instalada): cerrarla. |
 
 ## Cómo está armada
 
+La interfaz (Angular) corre dentro de Electron; toda la lógica corre en un **motor Java** aparte
+(`sidecar-java/`) que Electron lanza al iniciar y con el que habla por stdin/stdout, una línea JSON
+por pedido. El análisis sintáctico lo hace spaCy (Python), otro proceso que lanza el motor. Ver
+[docs/documentacion-tecnica.md](docs/documentacion-tecnica.md) y los
+[diagramas](docs/diagramas/secuencias.md).
+
 ```
-electron/                 Proceso principal (Node): motor y acceso a Longman
-  main.ts                 Ventana, protocolo app:// para servir la interfaz, arranque
+electron/                 Proceso principal de Electron: ventana y puente con el motor
+  main.ts                 Ventana, protocolo app:// para servir la interfaz, arranque del motor
   preload.ts              Puente seguro: expone window.fonetica a la interfaz
-  ipc.ts                  Handlers IPC; valida todo lo que llega de la interfaz
-  core/ipa.ts             Normalización de notación y separación en fonemas
-  core/transcription.ts   Alternativas abreviadas de Longman, sonidos opcionales, Britfone → Longman
-  core/distance.ts        Distancias ortográfica y fonémica (tabla de costos ajustable)
-  core/lexicon.ts         Índice local de palabras y las dos búsquedas
-  ldoce/ldoce-parser.ts   Lectura del HTML de Longman (único archivo a tocar si cambia el sitio)
-  ldoce/ldoce-client.ts   Consultas a Longman con caché y una consulta por segundo como máximo
-  ldoce/ldoce-cache.ts    Caché en disco de consultas y audios
-  core/function-words.ts  Formas fuertes y débiles: tabla de referencia y reglas de contexto
-  core/sentence.ts        Transcripción de oraciones (pausas, r de enlace, palabras derivadas)
-  tts/piper-voice.ts      Voz británica: ejecuta el modelo de Piper con ONNX Runtime
-  core/connected-speech.ts  Procesos del habla conectada (asimilación, elisión, coalescencia, r)
-  core/study-tools.ts     Corrección del dictado y terminaciones -s / -ed
-  tts/espeak-notation.ts  Notación Longman → notación con la que se entrenó la voz
-  grammar/nlp-client.ts   Lanza y habla con el analizador spaCy (proceso aparte)
-  grammar/quirk-analysis.ts  Árbol de dependencias de spaCy → análisis de Quirk / Greenbaum
-  test/                   Pruebas del motor
-shared/                   Código común a los dos procesos
+  ipc.ts                  Handlers IPC: valida todo lo que llega de la interfaz y lo reenvía al motor
+  sidecar-client.ts       Lanza el motor Java y le habla (JSON por línea, id, timeout, reinicio)
+  updater.ts              Actualización automática contra GitHub Releases (electron-updater)
+  test/                   Pruebas del cliente (con un motor falso y contra el motor real)
+sidecar-java/             Motor (Java 25, Maven sobre dmc00-parent) — paquete com.dmc00.fonetica
+  SidecarMain.java        Arranque: diccionario, caché de Longman, voz, spaCy; atiende pedidos
+  ipc/                    Protocolo JSON por línea y los 14 canales (Handlers), con su validación
+  api/                    El contrato JSON (mismas formas que shared/fonetica-api.ts)
+  core/                   Fonemas, transcripciones de Longman, distancias, léxico y búsquedas,
+                          oraciones, formas fuertes y débiles, habla conectada, dictado, -s / -ed
+  ldoce/                  Longman: lectura del HTML con jsoup, cliente (1 consulta por segundo), caché
+  tts/                    Voz británica: notación eSpeak y modelo de Piper con ONNX Runtime
+  grammar/                Cliente de spaCy y análisis de Quirk / Greenbaum
+  src/test/               Pruebas JUnit, fixture de spaCy y datos de paridad con la versión TypeScript
+shared/                   Código común a Electron y la interfaz
   fonetica-api.ts         Contrato entre interfaz y motor (tipos y canales IPC)
   phoneme-inventory.ts    Inventario de fonemas RP con palabras de ejemplo
   grammar.ts              Tipos del análisis gramatical (SVOCA, frases, cláusulas, grupo verbal)
@@ -338,8 +362,8 @@ nlp/requirements.lock.txt Versiones fijadas de spaCy, el modelo y PyInstaller
 resources/britfone/       Diccionario abierto Britfone (MIT) que se empaqueta con la app
 resources/piper/          Voz británica (se baja con npm run fetch-voice; no va al repositorio)
 resources/nlp/            Analizador empaquetado (se arma con npm run build:nlp; no va al repositorio)
-scripts/fetch-voice.mjs   Descarga y verificación de la voz
-scripts/build-nlp.mjs     Empaquetado del analizador con PyInstaller
+scripts/                  fetch-voice, build-nlp, build-sidecar, mvnw, export-study-data, capturas
+docs/                     Documentación técnica, guía de entorno y despliegue, diagramas, ADR, capturas
 ```
 
 ### De dónde salen las transcripciones
@@ -361,7 +385,7 @@ La caché queda en `%APPDATA%\dmc00-language-assistant` (`ldoce-cache.json` y la
 ### Formas fuertes y débiles en la oración
 
 Las reglas siguen a Roach (*English Phonetics and Phonology*, cap. 12) y están en
-`electron/core/function-words.ts`:
+`sidecar-java/src/main/java/com/dmc00/fonetica/core/FunctionWords.java`:
 
 - En habla conectada y sin énfasis, la function word va en **forma débil**.
 - Va en **forma fuerte** al final de la oración o antes de una pausa («Where are you *from*?»),
@@ -382,16 +406,16 @@ palabras que no están en ningún diccionario (sobre todo formas flexionadas) se
 ### La voz británica
 
 Es **Cori**, una voz del proyecto Piper (femenina, del sur de Inglaterra, alta calidad), entrenada
-con grabaciones de LibriVox de dominio público. Corre dentro de la app con ONNX Runtime (Microsoft,
-MIT): no usa servicios externos ni necesita conexión. La primera lectura tarda un poco más de un
+con grabaciones de LibriVox de dominio público. Corre dentro de la app con ONNX Runtime para Java
+(Microsoft, MIT): no usa servicios externos ni necesita conexión. La primera lectura tarda un poco más de un
 segundo porque carga el modelo; después cada oración se genera en menos de 0,1 s.
 
 Piper recibe fonemas, no texto, así que la voz pronuncia **la transcripción que muestra la app**:
 si el alumno enfatiza una function word, se oye la forma fuerte. Como la voz se entrenó con la
 notación de eSpeak, la transcripción se convierte antes (TRAP /a/, DRESS /ɛ/, NEAR /iə/, /ɹ/, y el
 acento justo antes de la vocal). Esa conversión se calibró contra eSpeak con las palabras de la tabla
-fonémica y hay una prueba que lo verifica (`electron/test/tts.test.ts`, usa el paquete `phonemizer`
-sólo en desarrollo).
+fonémica y hay una prueba que lo verifica (`TtsTest`, contra lo que escribe eSpeak para esas palabras,
+guardado en `sidecar-java/src/test/resources/espeak-calibracion.json`).
 
 Es una voz sintética: suena natural pero no es una grabación. Las grabaciones reales de Longman
 siguen disponibles palabra por palabra (cada una pronunciada aislada, en su forma de diccionario).
@@ -401,7 +425,7 @@ siguen disponibles palabra por palabra (cada una pronunciada aislada, en su form
 Lo hace **spaCy** (MIT) con su modelo `en_core_web_sm` (MIT), empaquetado con PyInstaller como un
 programa aparte que la app lanza la primera vez que se analiza algo (tarda alrededor de un segundo
 en cargar; después, cada oración es instantánea). spaCy devuelve el árbol de dependencias y
-`electron/grammar/quirk-analysis.ts` lo traduce a Quirk / Greenbaum:
+`QuirkAnalysis.java` (paquete `grammar` del motor) lo traduce a Quirk / Greenbaum:
 
 | spaCy | Quirk |
 | --- | --- |
@@ -428,7 +452,7 @@ analizador coincide con las 38.
 Distancia de edición entre secuencias de fonemas, donde cambiar un fonema por otro parecido
 cuesta menos (/ɪ/ por /iː/ cuesta 0,4; /ɪ/ por /ɑː/, 0,85) y algunos agregados u omisiones
 frecuentes también (/ə/, /r/, /j/). Los valores están en tablas al principio de
-`electron/core/distance.ts` para poder ajustarlos con criterio docente. El acento sólo se tiene
+`Distance.java` (paquete `core` del motor) para poder ajustarlos con criterio docente. El acento sólo se tiene
 en cuenta si el alumno lo activa; en ese caso, marcarlo en otra sílaba suma 0,5.
 
 ## Aviso sobre el uso de Longman
@@ -436,7 +460,7 @@ en cuenta si el alumno lo activa; en ese caso, marcarlo en otra sílaba suma 0,5
 Las transcripciones, definiciones y audios son de Pearson (Longman). Los términos de uso del sitio
 pueden no permitir el acceso automatizado aunque sea a pedido del usuario y con caché. Antes de
 distribuir la aplicación a la institución conviene consultarlo con Pearson o pedir una licencia.
-Todo el acceso a Longman está aislado en `electron/ldoce/`, así que se puede reemplazar por otra
+Todo el acceso a Longman está aislado en el paquete `ldoce` del motor Java, así que se puede reemplazar por otra
 fuente sin tocar la interfaz.
 
 ## Pendiente
