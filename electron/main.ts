@@ -6,22 +6,19 @@ import {
   nativeTheme,
   net,
   protocol,
+  session,
   shell,
 } from 'electron';
-import { readFileSync } from 'node:fs';
 import { join, normalize, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { Lexicon } from './core/lexicon';
-import { applyLookupToLexicon, registerIpc } from './ipc';
-import { AudioCache, LdoceCache } from './ldoce/ldoce-cache';
-import { LDOCE_ORIGIN, LdoceClient } from './ldoce/ldoce-client';
-import { PiperVoice } from './tts/piper-voice';
-import { NlpClient } from './grammar/nlp-client';
+import { LDOCE_ORIGIN, registerIpc } from './ipc';
+import { SidecarClient } from './sidecar-client';
+import { checkForUpdates } from './updater';
 
 /**
- * Proceso principal: arma el diccionario local, conecta Longman y abre la ventana.
- * La interfaz (Angular) se sirve con el protocolo propio app://bundle/ en producción,
- * o desde `ng serve` en desarrollo (npm run dev pasa --dev-url).
+ * Proceso principal: lanza el motor Java (sidecar-java/), registra los canales IPC y abre la ventana.
+ * La interfaz (Angular) se sirve con el protocolo propio app://bundle/ en producción, o desde `ng serve`
+ * en desarrollo (npm run dev pasa --dev-url).
  */
 
 const APP_ORIGIN = 'app://bundle';
@@ -46,8 +43,7 @@ protocol.registerSchemesAsPrivileged([
 if (!app.requestSingleInstanceLock()) app.quit();
 
 let mainWindow: BrowserWindow | null = null;
-let ldoceCache: LdoceCache | null = null;
-let nlp: NlpClient | null = null;
+let engine: SidecarClient | null = null;
 
 function resourcesDir(): string {
   return app.isPackaged ? process.resourcesPath : join(app.getAppPath(), 'resources');
@@ -116,30 +112,21 @@ app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
   serveAngularBuild();
 
-  const lexicon = new Lexicon();
-  lexicon.loadBritfone(
-    readFileSync(join(resourcesDir(), 'britfone', 'britfone.main.3.0.1.csv'), 'utf8'),
-  );
-
-  const userData = app.getPath('userData');
-  ldoceCache = new LdoceCache(join(userData, 'ldoce-cache.json'));
-  for (const lookup of ldoceCache.all()) applyLookupToLexicon(lexicon, lookup);
-
-  const ldoce = new LdoceClient(
-    (url, init) => net.fetch(url, init),
-    ldoceCache,
-    new AudioCache(join(userData, 'audio')),
-  );
-  const voiceModel = join(resourcesDir(), 'piper', 'en_GB-cori-high.onnx');
-  const voice = PiperVoice.isInstalled(voiceModel) ? new PiperVoice(voiceModel) : null;
-  // Analizador gramatical (spaCy): empaquetado en resources/nlp o, en desarrollo, el Python de nlp/.venv.
-  nlp = NlpClient.locate(resourcesDir(), app.getAppPath());
-  registerIpc({ lexicon, ldoce, voice, nlp, isTrustedSender });
+  // El motor (léxico, Longman, voz, gramática) corre en Java; carga el diccionario mientras se abre la ventana.
+  engine = SidecarClient.locate({
+    resourcesDir: resourcesDir(),
+    projectDir: app.getAppPath(),
+    packaged: app.isPackaged,
+    userData: app.getPath('userData'),
+    userAgent: session.defaultSession.getUserAgent(),
+  });
+  if (engine) engine.warmUp();
+  else console.error('[motor] No está compilado: npm run build:sidecar');
+  registerIpc({ engine, isTrustedSender });
   createWindow();
+  checkForUpdates();
 });
 
-app.on('before-quit', () => {
-  ldoceCache?.flush();
-  nlp?.dispose();
-});
+// Al cerrar la entrada del motor, guarda la caché de Longman, cierra spaCy y termina.
+app.on('before-quit', () => engine?.dispose());
 app.on('window-all-closed', () => app.quit());

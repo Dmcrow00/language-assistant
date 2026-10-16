@@ -12,21 +12,27 @@
     "ng": "ng",
     "build:web": "ng build",
     "build:electron": "tsc -p electron/tsconfig.json",
+    "build:sidecar": "node scripts/build-sidecar.mjs",
     "build": "npm run build:web && npm run build:electron",
-    "start": "npm run build && electron .",
-    "dev": "npm run build:electron && concurrently -k -n web,app -c blue,green \"ng serve --port 4200\" \"wait-on http-get://localhost:4200 && electron . --dev-url=http://localhost:4200\"",
+    "start": "npm run build && npm run build:sidecar && electron .",
+    "dev": "npm run build:electron && npm run build:sidecar && concurrently -k -n web,app -c blue,green \"ng serve --port 4200\" \"wait-on http-get://localhost:4200 && electron . --dev-url=http://localhost:4200\"",
     "test": "ng test --watch=false",
-    "test:core": "npm run build:electron && node --test \"dist-electron/electron/test/*.test.js\"",
+    "test:electron": "npm run build:electron && node --test \"dist-electron/electron/test/*.test.js\"",
+    "test:sidecar": "node scripts/mvnw.mjs -B -ntp verify",
+    "lint": "eslint .",
+    "export:study-data": "npm run build:electron && node scripts/export-study-data.mjs",
     "fetch-voice": "node scripts/fetch-voice.mjs",
     "build:nlp": "node scripts/build-nlp.mjs",
-    "dist": "npm run fetch-voice && npm run build:nlp && npm run build && electron-builder --win"
+    "dist": "npm run fetch-voice && npm run build:nlp && npm run build:sidecar && npm run build && electron-builder --win --publish never"
   },
   "packageManager": "npm@11.6.0",
   "dependencies": {
-    "node-html-parser": "^9.0.4",
-    "onnxruntime-node": "^1.30.0"
+    "electron-updater": "^6.8.9"
   },
   "devDependencies": {
+    "@angular-eslint/eslint-plugin": "^22.3.0",
+    "@angular-eslint/eslint-plugin-template": "^22.3.0",
+    "@angular-eslint/template-parser": "^22.3.0",
     "@angular/build": "^21.2.26",
     "@angular/cli": "^21.2.26",
     "@angular/common": "^21.2.0",
@@ -34,18 +40,21 @@
     "@angular/compiler-cli": "^21.2.0",
     "@angular/core": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
+    "@eslint/js": "^10.0.1",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/charis-sil": "^5.3.0",
     "@types/node": "^22.20.5",
     "concurrently": "^10.0.6",
     "electron": "^44.7.2",
     "electron-builder": "^26.15.3",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
     "jsdom": "^28.0.0",
-    "phonemizer": "^1.2.1",
     "prettier": "^3.8.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "typescript": "~5.9.2",
+    "typescript-eslint": "^8.70.1",
     "vitest": "^4.0.8",
     "wait-on": "^9.5.1"
   },
@@ -61,10 +70,7 @@
       "dist-electron/**",
       "!dist-electron/electron/test/**",
       "!**/*.map",
-      "package.json",
-      "!node_modules/onnxruntime-node/bin/napi-v6/{darwin,linux}/**",
-      "!node_modules/onnxruntime-node/bin/napi-v6/win32/arm64/**",
-      "!node_modules/onnxruntime-node/bin/napi-v6/win32/x64/{DirectML,dxcompiler,dxil}.dll"
+      "package.json"
     ],
     "extraResources": [
       {
@@ -83,6 +89,15 @@
       {
         "from": "resources/nlp",
         "to": "nlp"
+      },
+      {
+        "from": "sidecar-java/target/sidecar",
+        "to": "sidecar",
+        "filter": [
+          "fonetica-sidecar.jar",
+          "native/**",
+          "runtime/**"
+        ]
       }
     ],
     "win": {
@@ -101,8 +116,12 @@
     "portable": {
       "artifactName": "FoneticaRP-Portable-${version}.${ext}"
     },
-    "asarUnpack": [
-      "node_modules/onnxruntime-node/**"
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Dmcrow00",
+        "repo": "language-assistant"
+      }
     ]
   }
 }
