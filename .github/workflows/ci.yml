@@ -47,6 +47,11 @@ jobs:
           node-version: '22'
           cache: npm
 
+      # El mismo npm con el que se generó package-lock.json (campo packageManager): el npm 10 que trae Node 22
+      # no acepta un lock escrito por npm 11 (peer dependencies opcionales de @napi-rs/wasm-runtime).
+      - name: npm de package.json
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
       - name: Dependencias
         run: npm ci
 
@@ -101,6 +106,11 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+
+      # El mismo npm con el que se generó package-lock.json (campo packageManager): el npm 10 que trae Node 22
+      # no acepta un lock escrito por npm 11 (peer dependencies opcionales de @napi-rs/wasm-runtime).
+      - name: npm de package.json
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
 
       - name: Tests de Electron contra el motor compilado
         run: |

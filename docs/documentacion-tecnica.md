@@ -140,6 +140,11 @@ errores · el código nuevo tiene tests · docs y diagramas actualizados en la m
 - **ONNX Runtime**: el jar de Maven trae las librerías nativas de todas las plataformas (55 MB). El jar
   único las excluye y `native/` tiene sólo las de Windows x64; `SidecarMain` apunta
   `onnxruntime.native.path` ahí. En los tests se usan las del jar de Maven.
+- **package-lock.json y la versión de npm.** El lock lo escribe npm 11.6 (`packageManager` de
+  `package.json`). El npm 10 que trae Node 22 pide además, en el lock, las peer dependencies opcionales de
+  `@napi-rs/wasm-runtime` (`@emnapi/*`) y npm 11 las borra al reescribirlo. Por eso el CI y el release
+  instalan primero el npm de `packageManager`. Si alguien tiene que usar npm 10, el lock se regenera con
+  `npx npm@10 install --package-lock-only` (lo aceptan los dos).
 - **Un `.cmd` desde Node 20+** necesita `shell: true` (y la ruta completa entre comillas): ver
   `scripts/mvnw.mjs`.
 - **"constructor"**: la versión TypeScript fallaba con cualquier oración que tuviera esa palabra
