@@ -1,25 +1,39 @@
 <div class="layout">
-  <section class="search-panel" aria-label="Búsqueda por ortografía">
+  <section class="search-panel" aria-label="Buscar por cómo se escribe">
     <label class="search-label" for="spelling-input">Palabra en inglés</label>
-    <input
-      id="spelling-input"
-      class="search-input"
-      type="search"
-      autocomplete="off"
-      spellcheck="false"
-      placeholder="p. ej. thought, schedule, recieve…"
-      [value]="query()"
-      (input)="onInput($any($event.target).value)"
-      (keydown)="onKeydown($event)"
-      autofocus
-    />
-    <p class="hint">Enter busca en Longman · ↑ ↓ para moverse por la lista</p>
+    <div class="search-box">
+      <app-icon name="search" />
+      <input
+        id="spelling-input"
+        class="search-input"
+        type="search"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="por ejemplo, thought"
+        [value]="query()"
+        (input)="onInput($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+        autofocus
+      />
+    </div>
+    <p class="hint">Usá ↑ ↓ para moverte por la lista y Enter para elegir.</p>
 
-    @if (query().trim() && !hits().length) {
+    @if (!query().trim()) {
+      <div class="try">
+        <p>Probá con:</p>
+        <div class="chips">
+          @for (example of examples; track example) {
+            <button type="button" class="chip" (click)="useExample(example)">{{ example }}</button>
+          }
+        </div>
+        <p class="muted small">
+          No hace falta escribirla bien: con «recieve» o «thougt» también la encontrás.
+        </p>
+      </div>
+    } @else if (!hits().length) {
       <p class="empty">
-        No hay palabras parecidas en el diccionario local. Probá con Enter para buscar «{{
-          query().trim()
-        }}» en Longman.
+        No encontramos palabras parecidas. Apretá Enter para buscar «{{ query().trim() }}» en el
+        diccionario.
       </p>
     }
 
@@ -41,26 +55,27 @@
           <span class="hit-pron">
             <app-ipa-text [pron]="hit.prons[0]" />
             @if (hit.prons.length > 1) {
-              <span class="more" [title]="hit.prons.slice(1).join('  ·  ')"
+              <span
+                class="more"
+                [title]="'Otras pronunciaciones: ' + hit.prons.slice(1).join('  ·  ')"
                 >+{{ hit.prons.length - 1 }}</span
               >
             }
           </span>
-          @if (hit.source === 'ldoce') {
-            <span class="badge badge--ldoce" title="Transcripción verificada en Longman"
-              >Longman</span
-            >
-          } @else {
-            <span class="badge" title="Transcripción aproximada del diccionario abierto Britfone"
-              >aprox.</span
-            >
-          }
+          <app-source-badge [source]="hit.source" />
         </li>
       }
     </ul>
+
+    @if (hasEstimated()) {
+      <p class="footnote">
+        <span class="badge badge--warn">Estimada</span> todavía no se confirmó con el diccionario:
+        se confirma al abrirla.
+      </p>
+    }
   </section>
 
-  <section class="detail-panel" aria-label="Detalle de la palabra">
+  <section class="detail-panel" aria-label="Pronunciación de la palabra">
     <app-word-detail
       [word]="selected()"
       [fallbackPron]="selectedFallback()"

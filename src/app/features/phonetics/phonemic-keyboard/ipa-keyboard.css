@@ -7,11 +7,12 @@
   gap: 12px;
 }
 
+/* Monoptongos y diptongos lado a lado; si no entran, las vocales débiles bajan de renglón. */
 .vowels {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .block {
@@ -23,6 +24,9 @@
 }
 
 legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 0 6px;
   color: var(--muted);
   font-size: 0.78rem;
@@ -111,22 +115,14 @@ legend {
   gap: 8px;
 }
 
-.action {
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.action:hover {
-  border-color: var(--accent);
-}
-
-.action--danger:hover {
+.danger:hover:not(:disabled) {
   border-color: var(--bad);
   color: var(--bad);
+}
+
+/* Si baja de renglón, sus dos filas quedan una al lado de la otra. */
+.block--extra {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 12px;
 }

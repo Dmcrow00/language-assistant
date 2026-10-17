@@ -3,16 +3,19 @@
     <div class="toolbar">
       <input
         type="search"
-        placeholder="Buscar verbo o significado…"
+        placeholder="Buscar un verbo o su significado…"
+        aria-label="Buscar un verbo o su significado"
         [value]="filter()"
         (input)="filter.set($any($event.target).value)"
       />
-      <div class="patterns">
+      <div class="patterns" role="group" aria-label="Filtrar por patrón">
+        <span class="muted">Patrón:</span>
         @for (p of patterns; track p) {
           <button
             type="button"
             class="chip"
             [class.chip--active]="pattern() === p"
+            [attr.aria-pressed]="pattern() === p"
             (click)="togglePattern(p)"
           >
             {{ patternLabels[p] }}
@@ -20,9 +23,7 @@
         }
       </div>
     </div>
-    <p class="muted small">
-      {{ visible().length }} verbos. Clic en una forma para escucharla con la voz británica.
-    </p>
+    <p class="count">{{ visible().length }} verbos. Clic en una forma para escucharla.</p>
 
     <table>
       <thead>
@@ -62,7 +63,12 @@
 
   <aside class="side">
     <section class="panel" aria-label="Práctica">
-      <h3>Práctica</h3>
+      <div class="practice-header">
+        <h3>Práctica</h3>
+        @if (score().total) {
+          <app-session-score [right]="score().right" [total]="score().total" />
+        }
+      </div>
       @if (practice(); as p) {
         <p class="prompt">
           <strong>{{ p.row.verb.base }}</strong>
@@ -87,31 +93,39 @@
           /></label>
         </div>
         @if (p.checked) {
-          <p class="result">
-            <span
-              [class.ok]="isRight(p.row.verb.past, p.past)"
-              [class.bad]="!isRight(p.row.verb.past, p.past)"
-            >
-              {{ p.row.verb.past }}
-            </span>
-            ·
-            <span
-              [class.ok]="isRight(p.row.verb.participle, p.participle)"
-              [class.bad]="!isRight(p.row.verb.participle, p.participle)"
-            >
-              {{ p.row.verb.participle }}
-            </span>
-          </p>
-          <button type="button" class="primary" (click)="nextPractice()">Siguiente</button>
+          @let pastRight = isRight(p.row.verb.past, p.past);
+          @let participleRight = isRight(p.row.verb.participle, p.participle);
+          <div class="feedback" [class.feedback--ok]="pastRight && participleRight" role="status">
+            <p class="verdict">
+              <app-icon [name]="pastRight && participleRight ? 'check' : 'info'" />
+              <span>{{
+                pastRight && participleRight ? '¡Muy bien!' : 'Revisá las formas en rojo:'
+              }}</span>
+            </p>
+            <p class="result">
+              {{ p.row.verb.base }} ·
+              <span [class.ok]="pastRight" [class.bad]="!pastRight">{{ p.row.verb.past }}</span>
+              ·
+              <span [class.ok]="participleRight" [class.bad]="!participleRight">{{
+                p.row.verb.participle
+              }}</span>
+            </p>
+          </div>
+          <button type="button" class="primary" (click)="nextPractice()">
+            Siguiente <app-icon name="arrow-right" size="1em" />
+          </button>
         } @else {
-          <button type="button" class="primary" (click)="checkPractice()">Corregir</button>
+          <button type="button" class="primary" (click)="checkPractice()">
+            <app-icon name="check" size="1em" /> Comprobar
+          </button>
         }
-        <p class="muted small">Aciertos: {{ score().right }} de {{ score().total }}</p>
       } @else {
         <p class="muted small">
-          Se muestra un verbo (de la lista filtrada) y escribís el pasado y el participio.
+          Te mostramos un verbo (de la lista filtrada) y escribís el pasado y el participio.
         </p>
-        <button type="button" class="primary" (click)="nextPractice()">Empezar</button>
+        <button type="button" class="primary" (click)="nextPractice()">
+          <app-icon name="play" size="1em" /> Empezar
+        </button>
       }
     </section>
 
@@ -119,7 +133,8 @@
       <h3>Pronunciación de -s y -ed</h3>
       <div class="inflect-row">
         <input
-          placeholder="Verbo regular, p. ej. watch"
+          placeholder="por ejemplo, watch"
+          aria-label="Verbo regular"
           [value]="regular()"
           (input)="regular.set($any($event.target).value)"
           (keydown.enter)="inflect()"
@@ -151,7 +166,7 @@
             }
           </div>
         } @else {
-          <p class="muted small">«{{ inf.base }}» no está en el diccionario local.</p>
+          <p class="muted small">No encontramos «{{ inf.base }}» en el diccionario de la app.</p>
         }
       }
     </section>

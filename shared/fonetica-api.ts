@@ -212,6 +212,9 @@ export interface InflectionInfo {
   ed: InflectedForm | null;
 }
 
+/** Tema de la ventana: el del sistema, claro u oscuro (incluye la barra de título). */
+export type ThemeSource = 'system' | 'light' | 'dark';
+
 export interface LexiconInfo {
   total: number;
   fromLdoce: number;
@@ -244,6 +247,8 @@ export interface FoneticaApi {
   grammarAvailable(): Promise<boolean>;
   /** Análisis gramatical según Quirk / Greenbaum. */
   analyzeGrammar(text: string): Promise<GrammarAnalysis>;
+  /** Cambia el tema de la ventana para que la barra de título acompañe al de la interfaz. */
+  setTheme(theme: ThemeSource): Promise<void>;
 }
 
 /** Nombres de los canales IPC. El preload no puede importar este valor (corre en sandbox), sólo el tipo. */
@@ -263,6 +268,7 @@ export const IPC = {
   inflections: 'lexicon:inflections',
   grammarAvailable: 'grammar:available',
   analyzeGrammar: 'grammar:analyze',
+  setTheme: 'window:set-theme',
 } as const;
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC];

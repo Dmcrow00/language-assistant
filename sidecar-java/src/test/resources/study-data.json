@@ -1,0 +1,1774 @@
+{
+ "dictationLevels": [
+  {
+   "id": "vowels",
+   "items": [
+    "ship",
+    "sheep",
+    "bed",
+    "bad",
+    "cup",
+    "cart",
+    "hot",
+    "caught",
+    "put",
+    "food",
+    "bird",
+    "face",
+    "price",
+    "choice",
+    "goat",
+    "mouth",
+    "near",
+    "hair",
+    "cure",
+    "heart"
+   ],
+   "phrases": false
+  },
+  {
+   "id": "consonants",
+   "items": [
+    "think",
+    "this",
+    "measure",
+    "judge",
+    "church",
+    "sing",
+    "yes",
+    "wet",
+    "red",
+    "very",
+    "zoo",
+    "shoe",
+    "hat",
+    "thin",
+    "then",
+    "vision",
+    "jam",
+    "young",
+    "whale",
+    "lamb"
+   ],
+   "phrases": false
+  },
+  {
+   "id": "spelling",
+   "items": [
+    "island",
+    "knee",
+    "castle",
+    "Wednesday",
+    "answer",
+    "listen",
+    "half",
+    "walk",
+    "could",
+    "women",
+    "busy",
+    "said",
+    "again",
+    "laugh",
+    "cough",
+    "daughter",
+    "thought",
+    "though",
+    "through",
+    "enough",
+    "comfortable",
+    "vegetable",
+    "chocolate",
+    "colleague"
+   ],
+   "phrases": false
+  },
+  {
+   "id": "stress",
+   "items": [
+    "photograph",
+    "photographer",
+    "photographic",
+    "economy",
+    "economic",
+    "banana",
+    "potato",
+    "computer",
+    "particular",
+    "university",
+    "information",
+    "necessary",
+    "interesting",
+    "development",
+    "hotel",
+    "record"
+   ],
+   "phrases": false
+  },
+  {
+   "id": "phrases",
+   "items": [
+    "a cup of tea",
+    "fish and chips",
+    "at the station",
+    "I want to go",
+    "for an hour",
+    "from London to Paris",
+    "some bread and butter",
+    "Where are you from?",
+    "Tell her to wait.",
+    "There are two of them.",
+    "He was at home.",
+    "What do you want?",
+    "I can swim."
+   ],
+   "phrases": true
+  }
+ ],
+ "minimalPairs": [
+  {
+   "id": "i-ii",
+   "pairs": [
+    [
+     "sheep",
+     "ship"
+    ],
+    [
+     "leave",
+     "live"
+    ],
+    [
+     "feel",
+     "fill"
+    ],
+    [
+     "seat",
+     "sit"
+    ],
+    [
+     "beat",
+     "bit"
+    ],
+    [
+     "heel",
+     "hill"
+    ]
+   ]
+  },
+  {
+   "id": "ae-uh",
+   "pairs": [
+    [
+     "cat",
+     "cut"
+    ],
+    [
+     "bag",
+     "bug"
+    ],
+    [
+     "hat",
+     "hut"
+    ],
+    [
+     "match",
+     "much"
+    ],
+    [
+     "ran",
+     "run"
+    ],
+    [
+     "cap",
+     "cup"
+    ]
+   ]
+  },
+  {
+   "id": "ae-e",
+   "pairs": [
+    [
+     "bad",
+     "bed"
+    ],
+    [
+     "man",
+     "men"
+    ],
+    [
+     "sat",
+     "set"
+    ],
+    [
+     "had",
+     "head"
+    ],
+    [
+     "pan",
+     "pen"
+    ]
+   ]
+  },
+  {
+   "id": "aa-uh",
+   "pairs": [
+    [
+     "cart",
+     "cut"
+    ],
+    [
+     "heart",
+     "hut"
+    ],
+    [
+     "calm",
+     "come"
+    ],
+    [
+     "march",
+     "much"
+    ],
+    [
+     "dark",
+     "duck"
+    ]
+   ]
+  },
+  {
+   "id": "o-oo",
+   "pairs": [
+    [
+     "cot",
+     "caught"
+    ],
+    [
+     "pot",
+     "port"
+    ],
+    [
+     "shot",
+     "short"
+    ],
+    [
+     "spot",
+     "sport"
+    ],
+    [
+     "fox",
+     "forks"
+    ]
+   ]
+  },
+  {
+   "id": "u-uu",
+   "pairs": [
+    [
+     "full",
+     "fool"
+    ],
+    [
+     "pull",
+     "pool"
+    ],
+    [
+     "soot",
+     "suit"
+    ]
+   ]
+  },
+  {
+   "id": "er-ar",
+   "pairs": [
+    [
+     "heard",
+     "hard"
+    ],
+    [
+     "firm",
+     "farm"
+    ],
+    [
+     "hurt",
+     "heart"
+    ],
+    [
+     "burn",
+     "barn"
+    ],
+    [
+     "curt",
+     "cart"
+    ]
+   ]
+  },
+  {
+   "id": "ou-oo",
+   "pairs": [
+    [
+     "coat",
+     "caught"
+    ],
+    [
+     "boat",
+     "bought"
+    ],
+    [
+     "low",
+     "law"
+    ],
+    [
+     "so",
+     "saw"
+    ],
+    [
+     "hole",
+     "hall"
+    ]
+   ]
+  },
+  {
+   "id": "b-v",
+   "pairs": [
+    [
+     "berry",
+     "very"
+    ],
+    [
+     "ban",
+     "van"
+    ],
+    [
+     "best",
+     "vest"
+    ],
+    [
+     "boat",
+     "vote"
+    ],
+    [
+     "bet",
+     "vet"
+    ]
+   ]
+  },
+  {
+   "id": "s-th",
+   "pairs": [
+    [
+     "sink",
+     "think"
+    ],
+    [
+     "sick",
+     "thick"
+    ],
+    [
+     "mouse",
+     "mouth"
+    ],
+    [
+     "pass",
+     "path"
+    ],
+    [
+     "sum",
+     "thumb"
+    ]
+   ]
+  },
+  {
+   "id": "d-dh",
+   "pairs": [
+    [
+     "day",
+     "they"
+    ],
+    [
+     "dare",
+     "there"
+    ],
+    [
+     "den",
+     "then"
+    ],
+    [
+     "dough",
+     "though"
+    ],
+    [
+     "doze",
+     "those"
+    ]
+   ]
+  },
+  {
+   "id": "s-z",
+   "pairs": [
+    [
+     "sip",
+     "zip"
+    ],
+    [
+     "price",
+     "prize"
+    ],
+    [
+     "bus",
+     "buzz"
+    ],
+    [
+     "place",
+     "plays"
+    ],
+    [
+     "loose",
+     "lose"
+    ]
+   ]
+  },
+  {
+   "id": "sh-ch",
+   "pairs": [
+    [
+     "ship",
+     "chip"
+    ],
+    [
+     "share",
+     "chair"
+    ],
+    [
+     "wash",
+     "watch"
+    ],
+    [
+     "sheep",
+     "cheap"
+    ],
+    [
+     "cash",
+     "catch"
+    ]
+   ]
+  },
+  {
+   "id": "j-dj",
+   "pairs": [
+    [
+     "yet",
+     "jet"
+    ],
+    [
+     "yell",
+     "gel"
+    ],
+    [
+     "year",
+     "jeer"
+    ],
+    [
+     "yam",
+     "jam"
+    ],
+    [
+     "yolk",
+     "joke"
+    ]
+   ]
+  },
+  {
+   "id": "n-ng",
+   "pairs": [
+    [
+     "thin",
+     "thing"
+    ],
+    [
+     "ban",
+     "bang"
+    ],
+    [
+     "sin",
+     "sing"
+    ],
+    [
+     "ran",
+     "rang"
+    ],
+    [
+     "win",
+     "wing"
+    ]
+   ]
+  },
+  {
+   "id": "h-0",
+   "pairs": [
+    [
+     "hear",
+     "ear"
+    ],
+    [
+     "heat",
+     "eat"
+    ],
+    [
+     "hair",
+     "air"
+    ],
+    [
+     "hold",
+     "old"
+    ],
+    [
+     "hill",
+     "ill"
+    ]
+   ]
+  }
+ ],
+ "irregularVerbs": [
+  {
+   "base": "arise",
+   "past": "arose",
+   "participle": "arisen",
+   "prons": {}
+  },
+  {
+   "base": "awake",
+   "past": "awoke",
+   "participle": "awoken",
+   "prons": {}
+  },
+  {
+   "base": "be",
+   "past": "was / were",
+   "participle": "been",
+   "prons": {}
+  },
+  {
+   "base": "bear",
+   "past": "bore",
+   "participle": "borne",
+   "prons": {}
+  },
+  {
+   "base": "beat",
+   "past": "beat",
+   "participle": "beaten",
+   "prons": {}
+  },
+  {
+   "base": "become",
+   "past": "became",
+   "participle": "become",
+   "prons": {}
+  },
+  {
+   "base": "begin",
+   "past": "began",
+   "participle": "begun",
+   "prons": {}
+  },
+  {
+   "base": "bend",
+   "past": "bent",
+   "participle": "bent",
+   "prons": {}
+  },
+  {
+   "base": "bet",
+   "past": "bet",
+   "participle": "bet",
+   "prons": {}
+  },
+  {
+   "base": "bind",
+   "past": "bound",
+   "participle": "bound",
+   "prons": {}
+  },
+  {
+   "base": "bite",
+   "past": "bit",
+   "participle": "bitten",
+   "prons": {}
+  },
+  {
+   "base": "bleed",
+   "past": "bled",
+   "participle": "bled",
+   "prons": {}
+  },
+  {
+   "base": "blow",
+   "past": "blew",
+   "participle": "blown",
+   "prons": {}
+  },
+  {
+   "base": "break",
+   "past": "broke",
+   "participle": "broken",
+   "prons": {}
+  },
+  {
+   "base": "breed",
+   "past": "bred",
+   "participle": "bred",
+   "prons": {}
+  },
+  {
+   "base": "bring",
+   "past": "brought",
+   "participle": "brought",
+   "prons": {}
+  },
+  {
+   "base": "broadcast",
+   "past": "broadcast",
+   "participle": "broadcast",
+   "prons": {}
+  },
+  {
+   "base": "build",
+   "past": "built",
+   "participle": "built",
+   "prons": {}
+  },
+  {
+   "base": "burn",
+   "past": "burnt / burned",
+   "participle": "burnt / burned",
+   "prons": {}
+  },
+  {
+   "base": "burst",
+   "past": "burst",
+   "participle": "burst",
+   "prons": {}
+  },
+  {
+   "base": "buy",
+   "past": "bought",
+   "participle": "bought",
+   "prons": {}
+  },
+  {
+   "base": "catch",
+   "past": "caught",
+   "participle": "caught",
+   "prons": {}
+  },
+  {
+   "base": "choose",
+   "past": "chose",
+   "participle": "chosen",
+   "prons": {}
+  },
+  {
+   "base": "cling",
+   "past": "clung",
+   "participle": "clung",
+   "prons": {}
+  },
+  {
+   "base": "come",
+   "past": "came",
+   "participle": "come",
+   "prons": {}
+  },
+  {
+   "base": "cost",
+   "past": "cost",
+   "participle": "cost",
+   "prons": {}
+  },
+  {
+   "base": "creep",
+   "past": "crept",
+   "participle": "crept",
+   "prons": {}
+  },
+  {
+   "base": "cut",
+   "past": "cut",
+   "participle": "cut",
+   "prons": {}
+  },
+  {
+   "base": "deal",
+   "past": "dealt",
+   "participle": "dealt",
+   "prons": {}
+  },
+  {
+   "base": "dig",
+   "past": "dug",
+   "participle": "dug",
+   "prons": {}
+  },
+  {
+   "base": "do",
+   "past": "did",
+   "participle": "done",
+   "prons": {}
+  },
+  {
+   "base": "draw",
+   "past": "drew",
+   "participle": "drawn",
+   "prons": {}
+  },
+  {
+   "base": "dream",
+   "past": "dreamt / dreamed",
+   "participle": "dreamt / dreamed",
+   "prons": {}
+  },
+  {
+   "base": "drink",
+   "past": "drank",
+   "participle": "drunk",
+   "prons": {}
+  },
+  {
+   "base": "drive",
+   "past": "drove",
+   "participle": "driven",
+   "prons": {}
+  },
+  {
+   "base": "eat",
+   "past": "ate",
+   "participle": "eaten",
+   "prons": {}
+  },
+  {
+   "base": "fall",
+   "past": "fell",
+   "participle": "fallen",
+   "prons": {}
+  },
+  {
+   "base": "feed",
+   "past": "fed",
+   "participle": "fed",
+   "prons": {}
+  },
+  {
+   "base": "feel",
+   "past": "felt",
+   "participle": "felt",
+   "prons": {}
+  },
+  {
+   "base": "fight",
+   "past": "fought",
+   "participle": "fought",
+   "prons": {}
+  },
+  {
+   "base": "find",
+   "past": "found",
+   "participle": "found",
+   "prons": {}
+  },
+  {
+   "base": "flee",
+   "past": "fled",
+   "participle": "fled",
+   "prons": {}
+  },
+  {
+   "base": "fly",
+   "past": "flew",
+   "participle": "flown",
+   "prons": {}
+  },
+  {
+   "base": "forbid",
+   "past": "forbade",
+   "participle": "forbidden",
+   "prons": {}
+  },
+  {
+   "base": "forget",
+   "past": "forgot",
+   "participle": "forgotten",
+   "prons": {}
+  },
+  {
+   "base": "forgive",
+   "past": "forgave",
+   "participle": "forgiven",
+   "prons": {}
+  },
+  {
+   "base": "freeze",
+   "past": "froze",
+   "participle": "frozen",
+   "prons": {}
+  },
+  {
+   "base": "get",
+   "past": "got",
+   "participle": "got",
+   "prons": {}
+  },
+  {
+   "base": "give",
+   "past": "gave",
+   "participle": "given",
+   "prons": {}
+  },
+  {
+   "base": "go",
+   "past": "went",
+   "participle": "gone",
+   "prons": {}
+  },
+  {
+   "base": "grind",
+   "past": "ground",
+   "participle": "ground",
+   "prons": {}
+  },
+  {
+   "base": "grow",
+   "past": "grew",
+   "participle": "grown",
+   "prons": {}
+  },
+  {
+   "base": "hang",
+   "past": "hung",
+   "participle": "hung",
+   "prons": {}
+  },
+  {
+   "base": "have",
+   "past": "had",
+   "participle": "had",
+   "prons": {}
+  },
+  {
+   "base": "hear",
+   "past": "heard",
+   "participle": "heard",
+   "prons": {}
+  },
+  {
+   "base": "hide",
+   "past": "hid",
+   "participle": "hidden",
+   "prons": {}
+  },
+  {
+   "base": "hit",
+   "past": "hit",
+   "participle": "hit",
+   "prons": {}
+  },
+  {
+   "base": "hold",
+   "past": "held",
+   "participle": "held",
+   "prons": {}
+  },
+  {
+   "base": "hurt",
+   "past": "hurt",
+   "participle": "hurt",
+   "prons": {}
+  },
+  {
+   "base": "keep",
+   "past": "kept",
+   "participle": "kept",
+   "prons": {}
+  },
+  {
+   "base": "kneel",
+   "past": "knelt",
+   "participle": "knelt",
+   "prons": {}
+  },
+  {
+   "base": "know",
+   "past": "knew",
+   "participle": "known",
+   "prons": {}
+  },
+  {
+   "base": "lay",
+   "past": "laid",
+   "participle": "laid",
+   "prons": {}
+  },
+  {
+   "base": "lead",
+   "past": "led",
+   "participle": "led",
+   "prons": {
+    "base": "liːd"
+   }
+  },
+  {
+   "base": "lean",
+   "past": "leant / leaned",
+   "participle": "leant / leaned",
+   "prons": {}
+  },
+  {
+   "base": "leap",
+   "past": "leapt / leaped",
+   "participle": "leapt / leaped",
+   "prons": {}
+  },
+  {
+   "base": "learn",
+   "past": "learnt / learned",
+   "participle": "learnt / learned",
+   "prons": {}
+  },
+  {
+   "base": "leave",
+   "past": "left",
+   "participle": "left",
+   "prons": {}
+  },
+  {
+   "base": "lend",
+   "past": "lent",
+   "participle": "lent",
+   "prons": {}
+  },
+  {
+   "base": "let",
+   "past": "let",
+   "participle": "let",
+   "prons": {}
+  },
+  {
+   "base": "lie",
+   "past": "lay",
+   "participle": "lain",
+   "prons": {}
+  },
+  {
+   "base": "light",
+   "past": "lit",
+   "participle": "lit",
+   "prons": {}
+  },
+  {
+   "base": "lose",
+   "past": "lost",
+   "participle": "lost",
+   "prons": {}
+  },
+  {
+   "base": "make",
+   "past": "made",
+   "participle": "made",
+   "prons": {}
+  },
+  {
+   "base": "mean",
+   "past": "meant",
+   "participle": "meant",
+   "prons": {}
+  },
+  {
+   "base": "meet",
+   "past": "met",
+   "participle": "met",
+   "prons": {}
+  },
+  {
+   "base": "pay",
+   "past": "paid",
+   "participle": "paid",
+   "prons": {}
+  },
+  {
+   "base": "put",
+   "past": "put",
+   "participle": "put",
+   "prons": {}
+  },
+  {
+   "base": "quit",
+   "past": "quit",
+   "participle": "quit",
+   "prons": {}
+  },
+  {
+   "base": "read",
+   "past": "read",
+   "participle": "read",
+   "prons": {
+    "base": "riːd",
+    "past": "red",
+    "participle": "red"
+   }
+  },
+  {
+   "base": "ride",
+   "past": "rode",
+   "participle": "ridden",
+   "prons": {}
+  },
+  {
+   "base": "ring",
+   "past": "rang",
+   "participle": "rung",
+   "prons": {}
+  },
+  {
+   "base": "rise",
+   "past": "rose",
+   "participle": "risen",
+   "prons": {}
+  },
+  {
+   "base": "run",
+   "past": "ran",
+   "participle": "run",
+   "prons": {}
+  },
+  {
+   "base": "say",
+   "past": "said",
+   "participle": "said",
+   "prons": {}
+  },
+  {
+   "base": "see",
+   "past": "saw",
+   "participle": "seen",
+   "prons": {}
+  },
+  {
+   "base": "seek",
+   "past": "sought",
+   "participle": "sought",
+   "prons": {}
+  },
+  {
+   "base": "sell",
+   "past": "sold",
+   "participle": "sold",
+   "prons": {}
+  },
+  {
+   "base": "send",
+   "past": "sent",
+   "participle": "sent",
+   "prons": {}
+  },
+  {
+   "base": "set",
+   "past": "set",
+   "participle": "set",
+   "prons": {}
+  },
+  {
+   "base": "sew",
+   "past": "sewed",
+   "participle": "sewn",
+   "prons": {
+    "base": "səʊ",
+    "past": "səʊd",
+    "participle": "səʊn"
+   }
+  },
+  {
+   "base": "shake",
+   "past": "shook",
+   "participle": "shaken",
+   "prons": {}
+  },
+  {
+   "base": "shine",
+   "past": "shone",
+   "participle": "shone",
+   "prons": {}
+  },
+  {
+   "base": "shoot",
+   "past": "shot",
+   "participle": "shot",
+   "prons": {}
+  },
+  {
+   "base": "show",
+   "past": "showed",
+   "participle": "shown",
+   "prons": {}
+  },
+  {
+   "base": "shrink",
+   "past": "shrank",
+   "participle": "shrunk",
+   "prons": {}
+  },
+  {
+   "base": "shut",
+   "past": "shut",
+   "participle": "shut",
+   "prons": {}
+  },
+  {
+   "base": "sing",
+   "past": "sang",
+   "participle": "sung",
+   "prons": {}
+  },
+  {
+   "base": "sink",
+   "past": "sank",
+   "participle": "sunk",
+   "prons": {}
+  },
+  {
+   "base": "sit",
+   "past": "sat",
+   "participle": "sat",
+   "prons": {}
+  },
+  {
+   "base": "sleep",
+   "past": "slept",
+   "participle": "slept",
+   "prons": {}
+  },
+  {
+   "base": "slide",
+   "past": "slid",
+   "participle": "slid",
+   "prons": {}
+  },
+  {
+   "base": "smell",
+   "past": "smelt / smelled",
+   "participle": "smelt / smelled",
+   "prons": {}
+  },
+  {
+   "base": "speak",
+   "past": "spoke",
+   "participle": "spoken",
+   "prons": {}
+  },
+  {
+   "base": "spell",
+   "past": "spelt / spelled",
+   "participle": "spelt / spelled",
+   "prons": {}
+  },
+  {
+   "base": "spend",
+   "past": "spent",
+   "participle": "spent",
+   "prons": {}
+  },
+  {
+   "base": "spill",
+   "past": "spilt / spilled",
+   "participle": "spilt / spilled",
+   "prons": {}
+  },
+  {
+   "base": "spin",
+   "past": "spun",
+   "participle": "spun",
+   "prons": {}
+  },
+  {
+   "base": "spit",
+   "past": "spat",
+   "participle": "spat",
+   "prons": {}
+  },
+  {
+   "base": "split",
+   "past": "split",
+   "participle": "split",
+   "prons": {}
+  },
+  {
+   "base": "spoil",
+   "past": "spoilt / spoiled",
+   "participle": "spoilt / spoiled",
+   "prons": {}
+  },
+  {
+   "base": "spread",
+   "past": "spread",
+   "participle": "spread",
+   "prons": {}
+  },
+  {
+   "base": "spring",
+   "past": "sprang",
+   "participle": "sprung",
+   "prons": {}
+  },
+  {
+   "base": "stand",
+   "past": "stood",
+   "participle": "stood",
+   "prons": {}
+  },
+  {
+   "base": "steal",
+   "past": "stole",
+   "participle": "stolen",
+   "prons": {}
+  },
+  {
+   "base": "stick",
+   "past": "stuck",
+   "participle": "stuck",
+   "prons": {}
+  },
+  {
+   "base": "sting",
+   "past": "stung",
+   "participle": "stung",
+   "prons": {}
+  },
+  {
+   "base": "stink",
+   "past": "stank",
+   "participle": "stunk",
+   "prons": {}
+  },
+  {
+   "base": "strike",
+   "past": "struck",
+   "participle": "struck",
+   "prons": {}
+  },
+  {
+   "base": "swear",
+   "past": "swore",
+   "participle": "sworn",
+   "prons": {}
+  },
+  {
+   "base": "sweep",
+   "past": "swept",
+   "participle": "swept",
+   "prons": {}
+  },
+  {
+   "base": "swim",
+   "past": "swam",
+   "participle": "swum",
+   "prons": {}
+  },
+  {
+   "base": "swing",
+   "past": "swung",
+   "participle": "swung",
+   "prons": {}
+  },
+  {
+   "base": "take",
+   "past": "took",
+   "participle": "taken",
+   "prons": {}
+  },
+  {
+   "base": "teach",
+   "past": "taught",
+   "participle": "taught",
+   "prons": {}
+  },
+  {
+   "base": "tear",
+   "past": "tore",
+   "participle": "torn",
+   "prons": {
+    "base": "teə"
+   }
+  },
+  {
+   "base": "tell",
+   "past": "told",
+   "participle": "told",
+   "prons": {}
+  },
+  {
+   "base": "think",
+   "past": "thought",
+   "participle": "thought",
+   "prons": {}
+  },
+  {
+   "base": "throw",
+   "past": "threw",
+   "participle": "thrown",
+   "prons": {}
+  },
+  {
+   "base": "tread",
+   "past": "trod",
+   "participle": "trodden",
+   "prons": {}
+  },
+  {
+   "base": "understand",
+   "past": "understood",
+   "participle": "understood",
+   "prons": {}
+  },
+  {
+   "base": "wake",
+   "past": "woke",
+   "participle": "woken",
+   "prons": {}
+  },
+  {
+   "base": "wear",
+   "past": "wore",
+   "participle": "worn",
+   "prons": {}
+  },
+  {
+   "base": "weave",
+   "past": "wove",
+   "participle": "woven",
+   "prons": {}
+  },
+  {
+   "base": "weep",
+   "past": "wept",
+   "participle": "wept",
+   "prons": {}
+  },
+  {
+   "base": "win",
+   "past": "won",
+   "participle": "won",
+   "prons": {
+    "past": "wʌn",
+    "participle": "wʌn"
+   }
+  },
+  {
+   "base": "wind",
+   "past": "wound",
+   "participle": "wound",
+   "prons": {
+    "base": "waɪnd",
+    "past": "waʊnd",
+    "participle": "waʊnd"
+   }
+  },
+  {
+   "base": "write",
+   "past": "wrote",
+   "participle": "written",
+   "prons": {}
+  }
+ ],
+ "grammarExercises": [
+  {
+   "sentence": "The baby is sleeping.",
+   "subject": "expreso",
+   "pattern": "SV",
+   "roles": [
+    "S",
+    "V"
+   ]
+  },
+  {
+   "sentence": "Our guests arrived late.",
+   "subject": "expreso",
+   "pattern": "SV",
+   "roles": [
+    "S",
+    "V",
+    "A"
+   ]
+  },
+  {
+   "sentence": "The sun was shining brightly.",
+   "subject": "expreso",
+   "pattern": "SV",
+   "roles": [
+    "S",
+    "V",
+    "A"
+   ]
+  },
+  {
+   "sentence": "My brother plays the guitar.",
+   "subject": "expreso",
+   "pattern": "SVO",
+   "roles": [
+    "S",
+    "V",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "She has written three novels.",
+   "subject": "expreso",
+   "pattern": "SVO",
+   "roles": [
+    "S",
+    "V",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "We watched a film last night.",
+   "subject": "expreso",
+   "pattern": "SVO",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "A"
+   ]
+  },
+  {
+   "sentence": "Your idea sounds interesting.",
+   "subject": "expreso",
+   "pattern": "SVC",
+   "roles": [
+    "S",
+    "V",
+    "Cs"
+   ]
+  },
+  {
+   "sentence": "Her father is a doctor.",
+   "subject": "expreso",
+   "pattern": "SVC",
+   "roles": [
+    "S",
+    "V",
+    "Cs"
+   ]
+  },
+  {
+   "sentence": "The weather became very cold.",
+   "subject": "expreso",
+   "pattern": "SVC",
+   "roles": [
+    "S",
+    "V",
+    "Cs"
+   ]
+  },
+  {
+   "sentence": "The children are in the garden.",
+   "subject": "expreso",
+   "pattern": "SVA",
+   "roles": [
+    "S",
+    "V",
+    "A"
+   ]
+  },
+  {
+   "sentence": "My parents live in Rosario.",
+   "subject": "expreso",
+   "pattern": "SVA",
+   "roles": [
+    "S",
+    "V",
+    "A"
+   ]
+  },
+  {
+   "sentence": "The meeting is on Monday.",
+   "subject": "expreso",
+   "pattern": "SVA",
+   "roles": [
+    "S",
+    "V",
+    "A"
+   ]
+  },
+  {
+   "sentence": "She gave her son a bicycle.",
+   "subject": "expreso",
+   "pattern": "SVOO",
+   "roles": [
+    "S",
+    "V",
+    "Oi",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "The teacher showed the class some photos.",
+   "subject": "expreso",
+   "pattern": "SVOO",
+   "roles": [
+    "S",
+    "V",
+    "Oi",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "My aunt sent me a letter.",
+   "subject": "expreso",
+   "pattern": "SVOO",
+   "roles": [
+    "S",
+    "V",
+    "Oi",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "The news made everyone happy.",
+   "subject": "expreso",
+   "pattern": "SVOC",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "Co"
+   ]
+  },
+  {
+   "sentence": "They named their daughter Lucy.",
+   "subject": "expreso",
+   "pattern": "SVOC",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "Co"
+   ]
+  },
+  {
+   "sentence": "I find this book boring.",
+   "subject": "expreso",
+   "pattern": "SVOC",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "Co"
+   ]
+  },
+  {
+   "sentence": "He put his keys in his pocket.",
+   "subject": "expreso",
+   "pattern": "SVOA",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "A"
+   ]
+  },
+  {
+   "sentence": "She placed the vase on the table.",
+   "subject": "expreso",
+   "pattern": "SVOA",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "A"
+   ]
+  },
+  {
+   "sentence": "You should keep the milk in the fridge.",
+   "subject": "expreso",
+   "pattern": "SVOA",
+   "roles": [
+    "S",
+    "V",
+    "Od",
+    "A"
+   ]
+  },
+  {
+   "sentence": "Did you send her the letter?",
+   "subject": "expreso",
+   "pattern": "SVOO",
+   "roles": [
+    "V",
+    "S",
+    "V",
+    "Oi",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "Where did you put my glasses?",
+   "subject": "expreso",
+   "pattern": "SVOA",
+   "roles": [
+    "A",
+    "V",
+    "S",
+    "V",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "What does your sister do?",
+   "subject": "expreso",
+   "pattern": "SVO",
+   "roles": [
+    "Od",
+    "V",
+    "S",
+    "V"
+   ]
+  },
+  {
+   "sentence": "Is the museum open on Sundays?",
+   "subject": "expreso",
+   "pattern": "SVC",
+   "roles": [
+    "V",
+    "S",
+    "Cs",
+    "A"
+   ]
+  },
+  {
+   "sentence": "Last summer we visited our grandparents.",
+   "subject": "expreso",
+   "pattern": "SVO",
+   "roles": [
+    "A",
+    "S",
+    "V",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "In the corner stood an old piano.",
+   "subject": "expreso",
+   "pattern": "SVA",
+   "roles": [
+    "A",
+    "V",
+    "S"
+   ]
+  },
+  {
+   "sentence": "Here comes the bus!",
+   "subject": "expreso",
+   "pattern": "SVA",
+   "roles": [
+    "A",
+    "V",
+    "S"
+   ]
+  },
+  {
+   "sentence": "Never have I seen such a mess.",
+   "subject": "expreso",
+   "pattern": "SVO",
+   "roles": [
+    "A",
+    "V",
+    "S",
+    "V",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "It is raining.",
+   "subject": "expreso",
+   "pattern": "SV",
+   "roles": [
+    "S",
+    "V"
+   ]
+  },
+  {
+   "sentence": "It was very cold yesterday.",
+   "subject": "expreso",
+   "pattern": "SVC",
+   "roles": [
+    "S",
+    "V",
+    "Cs",
+    "A"
+   ]
+  },
+  {
+   "sentence": "Put the milk in the fridge.",
+   "subject": "implícito",
+   "pattern": "SVOA",
+   "roles": [
+    "V",
+    "Od",
+    "A"
+   ]
+  },
+  {
+   "sentence": "Be quiet!",
+   "subject": "implícito",
+   "pattern": "SVC",
+   "roles": [
+    "V",
+    "Cs"
+   ]
+  },
+  {
+   "sentence": "Give me a hand.",
+   "subject": "implícito",
+   "pattern": "SVOO",
+   "roles": [
+    "V",
+    "Oi",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "Don't leave the door open.",
+   "subject": "implícito",
+   "pattern": "SVOC",
+   "roles": [
+    "V",
+    "Od",
+    "Co"
+   ]
+  },
+  {
+   "sentence": "She closed the window and turned off the lights.",
+   "subject": "elíptico",
+   "pattern": "SVO",
+   "roles": [
+    "V",
+    "Od"
+   ]
+  },
+  {
+   "sentence": "He came home late and went straight to bed.",
+   "subject": "elíptico",
+   "pattern": "SVA",
+   "roles": [
+    "V",
+    "A"
+   ]
+  },
+  {
+   "sentence": "My brother plays the guitar but never sings.",
+   "subject": "elíptico",
+   "pattern": "SV",
+   "roles": [
+    "A",
+    "V"
+   ]
+  }
+ ]
+}

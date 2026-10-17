@@ -18,10 +18,10 @@
 .input-panel,
 .results-panel,
 .detail-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
   padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
 }
 
 .display {
@@ -54,21 +54,7 @@
 
 .speak {
   margin-left: auto;
-  padding: 8px 14px;
-  border: 2px solid var(--accent);
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.speak:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 
 .caret {
@@ -88,26 +74,38 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 8px 12px;
   margin: 10px 0 12px;
   font-size: 0.9rem;
 }
 
 .toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.hint {
-  color: var(--muted);
+  font-weight: 700;
 }
 
 .example-msg {
+  margin-left: 8px;
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.empty {
+  margin: 0 0 12px;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.try {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.ipa-chip {
+  font-family: var(--font-ipa);
+  font-size: 1.05rem;
 }
 
 .side {
@@ -142,8 +140,9 @@
   grid-template-columns: minmax(90px, 0.5fr) 1fr auto auto;
   align-items: center;
   gap: 10px;
-  padding: 7px 10px;
-  border-radius: 8px;
+  min-height: 2.6rem;
+  padding: 4px 10px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 1.05rem;
 }
@@ -161,30 +160,13 @@
 }
 
 .match-word {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .closeness {
   color: var(--muted);
   font-size: 0.78rem;
   white-space: nowrap;
-}
-
-.tag {
-  padding: 1px 7px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.tag--warn {
-  background: var(--warn-bg);
-  color: var(--warn);
-}
-
-.tag--ldoce {
-  background: var(--accent-soft);
-  color: var(--accent);
 }
 
 .legend {
@@ -218,8 +200,4 @@
 
 .lg--extra {
   text-decoration: line-through;
-}
-
-.muted {
-  color: var(--muted);
 }

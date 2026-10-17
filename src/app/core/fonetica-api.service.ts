@@ -11,6 +11,7 @@ import type {
   SentenceOptions,
   SpeechOptions,
   SpellingHit,
+  ThemeSource,
   TranscriptionCheck,
 } from '../../../shared/fonetica-api';
 
@@ -85,6 +86,11 @@ export class FoneticaApiService {
 
   analyzeGrammar(text: string): Promise<GrammarAnalysis> {
     return this.require().analyzeGrammar(text);
+  }
+
+  /** Fuera de Electron no hay ventana que cambiar: no hace nada. */
+  setTheme(theme: ThemeSource): Promise<void> {
+    return this.api?.setTheme(theme) ?? Promise.resolve();
   }
 
   private async refreshLexiconInfo(): Promise<void> {

@@ -96,3 +96,31 @@ export function isVowel(symbol: string): boolean {
 export function phonemeInfo(symbol: string): PhonemeInfo | undefined {
   return PHONEMES.find((p) => p.symbol === symbol);
 }
+
+const SYMBOLS_LONGEST_FIRST = PHONEMES.map((p) => p.symbol).sort((a, b) => b.length - a.length);
+
+/**
+ * Los fonemas distintos de una transcripción en notación Longman, en el orden en que aparecen
+ * (sólo la primera variante si hay varias separadas por coma). Sirve para explicar los sonidos
+ * de una palabra uno por uno; los acentos y los símbolos desconocidos se ignoran.
+ */
+export function phonemesOf(pron: string): string[] {
+  const text = pron
+    .split(',')[0]
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/g/g, 'ɡ')
+    .replace(/:/g, LENGTH_MARK);
+  const found: string[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const symbol = SYMBOLS_LONGEST_FIRST.find((s) => text.startsWith(s, i));
+    if (symbol) {
+      if (!found.includes(symbol)) found.push(symbol);
+      i += symbol.length;
+    } else {
+      i++;
+    }
+  }
+  return found;
+}

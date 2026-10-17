@@ -1,7 +1,7 @@
 <div class="keyboard" role="group" aria-label="Teclado fonético RP">
   <div class="vowels">
     <fieldset class="block">
-      <legend>Monoptongos</legend>
+      <legend>Monoptongos <app-term key="monoptongo" /></legend>
       @for (row of monophthongs; track $index) {
         <div class="row">
           @for (p of row; track p.symbol) {
@@ -12,7 +12,7 @@
     </fieldset>
 
     <fieldset class="block">
-      <legend>Diptongos</legend>
+      <legend>Diptongos <app-term key="diptongo" /></legend>
       @for (row of diphthongs; track $index) {
         <div class="row">
           @for (p of row; track p.symbol) {
@@ -23,7 +23,7 @@
     </fieldset>
 
     <fieldset class="block block--extra">
-      <legend>Débiles y acento</legend>
+      <legend>Vocales débiles y acento <app-term key="acento" /></legend>
       <div class="row">
         @for (p of weakVowels; track p.symbol) {
           <ng-container *ngTemplateOutlet="key; context: { $implicit: p }" />
@@ -55,6 +55,7 @@
   <fieldset class="block">
     <legend>
       Consonantes <span class="legend-note">(claras: sordas · oscuras: sonoras)</span>
+      <app-term key="sorda-sonora" />
     </legend>
     @for (row of consonants; track $index) {
       <div class="row">
@@ -68,19 +69,19 @@
   <div class="actions">
     <button
       type="button"
-      class="action"
+      class="secondary small"
       (click)="backspace.emit()"
-      title="Borrar el último fonema (tecla Retroceso)"
+      title="Borrar el último símbolo (tecla Retroceso)"
     >
-      ⌫ Borrar
+      <app-icon name="backspace" size="1.1em" /> Borrar
     </button>
     <button
       type="button"
-      class="action action--danger"
+      class="secondary small danger"
       (click)="clear.emit()"
       title="Empezar de nuevo (tecla Esc)"
     >
-      Limpiar
+      Borrar todo
     </button>
   </div>
 </div>

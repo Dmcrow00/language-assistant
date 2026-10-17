@@ -26,6 +26,7 @@ const api: FoneticaApi = {
   inflections: (verb) => invoke('lexicon:inflections', verb),
   grammarAvailable: () => invoke('grammar:available'),
   analyzeGrammar: (text) => invoke('grammar:analyze', text),
+  setTheme: (theme) => invoke('window:set-theme', theme),
 };
 
 contextBridge.exposeInMainWorld('fonetica', api);

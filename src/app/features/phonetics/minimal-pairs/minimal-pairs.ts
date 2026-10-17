@@ -2,7 +2,10 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { MINIMAL_PAIRS, MinimalPairSet } from '../../../../../shared/study-data/phonetics-practice';
 import { AudioPlayerService } from '../../../core/audio-player.service';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { Icon } from '../../../shared/icon';
 import { IpaText } from '../../../shared/ipa-text';
+import { SessionScore } from '../../../shared/session-score';
+import { Term } from '../../../shared/term';
 
 interface Round {
   pair: [string, string];
@@ -17,7 +20,7 @@ interface Round {
  */
 @Component({
   selector: 'app-minimal-pairs',
-  imports: [IpaText],
+  imports: [IpaText, Icon, SessionScore, Term],
   templateUrl: './minimal-pairs.html',
   styleUrl: './minimal-pairs.css',
 })
@@ -74,6 +77,14 @@ export class MinimalPairs implements OnInit {
       right: s.right + (index === round.answer ? 1 : 0),
       total: s.total + 1,
     }));
+  }
+
+  /** «lleva /iː/» o, en el contraste con /h/, «va sin /h/». */
+  protected soundNote(index: number): string {
+    const [first, second] = this.set().contrast;
+    const symbol = index === 0 ? first : second;
+    const other = index === 0 ? second : first;
+    return symbol === '∅' ? `va sin /${other}/` : `lleva /${symbol}/`;
   }
 
   /** Grabación real de Longman si existe; si no (o si se pidió), la voz británica. */

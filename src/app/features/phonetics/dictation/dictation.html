@@ -1,39 +1,49 @@
 <div class="layout">
   <section class="panel main" aria-label="Dictado fonético">
-    <div class="levels">
-      @for (l of levels; track l.id) {
-        <button
-          type="button"
-          class="chip"
-          [class.chip--active]="l.id === level().id"
-          [title]="l.description"
-          (click)="chooseLevel(l)"
+    <div class="top">
+      <div class="level">
+        <label class="levels-label" for="dictation-level">Nivel</label>
+        <select
+          id="dictation-level"
+          class="level-select"
+          [value]="level().id"
+          (change)="chooseLevelById($any($event.target).value)"
         >
-          {{ l.label }}
-        </button>
+          @for (l of levels; track l.id) {
+            <option [value]="l.id">{{ l.label }}</option>
+          }
+        </select>
+        <p class="muted small level-description">{{ level().description }}</p>
+      </div>
+      @if (score().total) {
+        <app-session-score [right]="score().right" [total]="score().total" />
       }
     </div>
-    <p class="muted small">{{ level().description }}</p>
 
     @if (!item() && !loading()) {
       <div class="start">
         <p>
-          Escuchá {{ level().phrases ? 'la frase' : 'la palabra' }} y transcribila con el teclado.
-          Enter corrige y pasa a la siguiente.
+          Escuchá {{ level().phrases ? 'la frase' : 'la palabra' }} y escribí cómo suena con el
+          teclado de símbolos. Enter comprueba tu respuesta.
         </p>
-        <button type="button" class="primary" (click)="next()">Empezar</button>
+        <button type="button" class="primary" (click)="next()">
+          <app-icon name="play" size="1em" /> Empezar
+        </button>
       </div>
     } @else {
       <div class="controls">
         <button type="button" class="primary" [disabled]="loading()" (click)="play()">
-          {{ loading() ? 'Preparando…' : '▶ Escuchar de nuevo' }}
+          @if (loading()) {
+            Preparando…
+          } @else {
+            <app-icon name="play" size="1em" /> Escuchar de nuevo
+          }
         </button>
         <span class="muted small">
           @if (item(); as it) {
-            {{ it.audioUrl ? 'Grabación real de Longman' : 'Voz británica sintética' }}
+            {{ it.audioUrl ? 'Grabación del diccionario' : 'Voz de la app' }}
           }
         </span>
-        <span class="score">Aciertos: {{ score().right }} de {{ score().total }}</span>
       </div>
 
       <div class="display" aria-live="polite">
@@ -41,44 +51,113 @@
         @if (tokens().length) {
           <span class="written">{{ written() }}</span>
         } @else {
-          <span class="placeholder">transcribí lo que escuchás…</span>
+          <span class="placeholder">escribí lo que escuchás…</span>
         }
         <span class="slash">/</span>
       </div>
 
-      @if (result(); as r) {
-        <div class="result" [class.result--ok]="r.exact">
+      @if (phase() === 'hint' && result(); as r) {
+        <div class="feedback feedback--hint" role="status">
           <p class="verdict">
-            {{ r.exact ? '¡Exacto!' : 'Casi: mirá qué fonemas cambian.' }}
-            <span class="answer">«{{ item()?.text }}»</span>
+            <app-icon name="lightbulb" />
+            <span>¡Casi! Revisá los sonidos marcados en naranja.</span>
+          </p>
+          <p class="mine" aria-label="Tu transcripción, con los sonidos para revisar marcados">
+            @for (step of r.alignment; track $index) {
+              @switch (step.op) {
+                @case ('match') {
+                  <span class="ph ph--ok">{{ step.written }}</span>
+                }
+                @case ('missing') {
+                  <span class="ph ph--gap" title="Acá falta un sonido">_</span>
+                }
+                @case ('extra') {
+                  <span class="ph ph--check ph--extra" title="Este sonido sobra">{{
+                    step.written
+                  }}</span>
+                }
+                @default {
+                  <span class="ph ph--check" title="Revisá este sonido">{{ step.written }}</span>
+                }
+              }
+            }
+          </p>
+          <p class="muted small">
+            Pista: {{ item()?.phrase ? 'la frase' : 'la palabra' }} tiene {{ soundCount() }}
+            sonidos. Corregí con el teclado (Borrar quita el último símbolo) y volvé a comprobar.
+          </p>
+          <div class="actions">
+            <button type="button" class="secondary" (click)="play()">
+              <app-icon name="play" size="1em" /> Escuchar otra vez
+            </button>
+            <button type="button" class="secondary" (click)="reveal()">
+              <app-icon name="eye" size="1em" /> Ver la respuesta
+            </button>
+          </div>
+        </div>
+      } @else if (phase() === 'done' && result(); as r) {
+        <div class="feedback" [class.feedback--ok]="solved()" role="status">
+          <p class="verdict">
+            <app-icon [name]="solved() ? 'check' : 'info'" />
+            <span>
+              @if (solved()) {
+                {{ attempts() > 1 ? '¡Bien! Lo corregiste:' : '¡Muy bien!' }}
+              } @else {
+                Esta era la respuesta:
+              }
+              <span class="answer">«{{ item()?.text }}»</span>
+            </span>
           </p>
           <div class="row">
-            <span class="label">Correcta</span>
+            <span class="label">Respuesta</span>
             <app-ipa-text [pron]="item()?.target ?? ''" size="large" />
             @if (!item()?.verified) {
-              <span class="tag" title="Transcripción del diccionario local o armada por la app"
-                >aprox.</span
-              >
+              <app-source-badge source="britfone" />
             }
           </div>
-          @if (!r.exact) {
+          @if (!solved()) {
             <div class="row">
               <span class="label">Tu transcripción</span>
               <app-alignment-view [steps]="r.alignment" />
             </div>
           }
-          <button type="button" class="primary" (click)="next()">Siguiente</button>
+          <div class="actions">
+            <button type="button" class="primary" (click)="next()">
+              Siguiente <app-icon name="arrow-right" size="1em" />
+            </button>
+            <button type="button" class="secondary" (click)="play()">
+              <app-icon name="play" size="1em" /> Escuchar otra vez
+            </button>
+          </div>
         </div>
       } @else {
+        @if (attempts() === 1) {
+          <p class="second-try">Segundo intento: corregí lo marcado y comprobá de nuevo.</p>
+        }
         <div class="actions">
           <button type="button" class="primary" [disabled]="!tokens().length" (click)="check()">
-            Corregir
+            <app-icon name="check" size="1em" /> Comprobar
           </button>
-          <button type="button" class="secondary" (click)="next()">Saltear</button>
+          @if (attempts() === 1) {
+            <button type="button" class="secondary" (click)="reveal()">
+              <app-icon name="eye" size="1em" /> Ver la respuesta
+            </button>
+          } @else {
+            <button type="button" class="secondary" (click)="next()">Pasar a otra</button>
+          }
         </div>
       }
       @if (message()) {
         <p class="error">{{ message() }}</p>
+      }
+
+      @if (toReview().length) {
+        <p class="review">
+          Para repasar:
+          @for (symbol of toReview(); track symbol) {
+            <span class="review-symbol">/{{ symbol }}/</span>
+          }
+        </p>
       }
     }
   </section>

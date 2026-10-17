@@ -8,16 +8,20 @@
   overflow: auto;
   padding: 20px 24px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--surface);
 }
 
 .header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 10px 20px;
+}
+
+.header p {
+  margin: 2px 0 0;
 }
 
 h2 {
@@ -26,15 +30,32 @@ h2 {
 }
 
 h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 22px 0 8px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: 1rem;
 }
 
 .instructions {
-  margin: 6px 0 18px;
+  max-width: 760px;
+  margin: 12px 0 6px;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.roles-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.role-color {
+  color: var(--role-color);
 }
 
 .constituents {
@@ -63,6 +84,17 @@ h3 {
   background: var(--bad-bg);
 }
 
+.constituent--check {
+  border-color: var(--warn);
+  background: var(--warn-bg);
+}
+
+.check-note {
+  color: var(--warn);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .text {
   font-size: 1.3rem;
   font-weight: 700;
@@ -76,7 +108,8 @@ h3 {
 }
 
 .role {
-  min-width: 34px;
+  min-width: 2.3rem;
+  min-height: 2rem;
   padding: 4px 6px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -84,8 +117,12 @@ h3 {
   color: var(--role-color, var(--text));
   font: inherit;
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.role:hover:not(:disabled) {
+  border-color: var(--role-color, var(--accent));
 }
 
 .role--chosen {
@@ -120,7 +157,7 @@ h3 {
 .correction {
   color: var(--bad);
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .choices {
@@ -130,7 +167,8 @@ h3 {
 }
 
 .choice {
-  padding: 8px 14px;
+  min-height: 2.5rem;
+  padding: 6px 14px;
   border: 2px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
@@ -141,8 +179,11 @@ h3 {
 }
 
 .choice--pattern {
-  font-weight: 800;
   letter-spacing: 0.04em;
+}
+
+.choice:hover:not(:disabled) {
+  border-color: var(--accent);
 }
 
 .choice--chosen {
@@ -163,6 +204,12 @@ h3 {
   color: var(--bad);
 }
 
+.choice--check {
+  border-color: var(--warn);
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
 .context {
   align-self: center;
   color: var(--muted);
@@ -175,48 +222,51 @@ h3 {
 }
 
 .actions {
+  display: grid;
+  gap: 12px;
   margin-top: 22px;
 }
 
-.primary {
-  padding: 10px 20px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
 }
 
-.primary:disabled {
-  opacity: 0.5;
-  cursor: default;
+.feedback {
+  max-width: 760px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--surface-2);
 }
 
-.verdict {
-  font-size: 1.1rem;
-  font-weight: 800;
+.feedback--hint {
+  background: var(--warn-bg);
 }
 
-.explanation {
-  max-width: 720px;
-  line-height: 1.5;
+.feedback--ok {
+  background: var(--ok-bg);
 }
 
-.ok {
+.feedback--hint .verdict {
+  color: var(--warn);
+}
+
+.feedback--ok .verdict {
   color: var(--ok);
 }
 
-.bad {
-  color: var(--bad);
+.verdict {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-.muted {
-  color: var(--muted);
-}
-
-.small {
-  margin-left: 10px;
-  font-size: 0.85rem;
+.explanation {
+  margin: 8px 0 0;
+  line-height: 1.5;
 }

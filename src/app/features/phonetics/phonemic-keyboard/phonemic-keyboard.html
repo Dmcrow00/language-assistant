@@ -1,23 +1,23 @@
 <div class="layout">
-  <section class="input-panel" aria-label="Escritura fonémica">
+  <section class="input-panel" aria-label="Escribir con símbolos">
     <div class="display" aria-live="polite">
       <span class="slash">/</span>
       @if (tokens().length) {
         <span class="written">{{ written() }}</span>
       } @else {
-        <span class="placeholder">tocá los fonemas…</span>
+        <span class="placeholder">tocá los símbolos…</span>
       }
       <span class="caret" aria-hidden="true"></span>
       <span class="slash">/</span>
       @if (api.voiceAvailable()) {
         <button
           type="button"
-          class="speak"
+          class="primary-outline small speak"
           [disabled]="!tokens().length"
           (click)="speakWritten()"
-          title="La voz británica pronuncia exactamente lo que escribiste"
+          title="La voz de la app pronuncia exactamente lo que escribiste"
         >
-          ▶ Escuchar lo que escribí
+          <app-icon name="play" size="1em" /> Escuchar lo que escribí
         </button>
       }
     </div>
@@ -27,7 +27,7 @@
         <input type="checkbox" [checked]="useStress()" (change)="toggleStress()" />
         Tener en cuenta el acento (ˈ)
       </label>
-      <span class="hint">Clic derecho sobre una tecla: escuchar la palabra de ejemplo</span>
+      <app-term key="acento" />
       @if (exampleMessage()) {
         <span class="example-msg">{{ exampleMessage() }}</span>
       }
@@ -44,9 +44,17 @@
   <div class="side">
     <section class="results-panel" aria-label="Palabras que suenan así">
       @if (!tokens().length) {
-        <p class="muted">
-          Escribí cómo creés que suena una palabra. Se compara con todo el diccionario y se muestran
-          las que suenan igual y las más parecidas.
+        <p class="empty">
+          Escribí cómo creés que suena una palabra: la comparamos con todo el diccionario y te
+          mostramos las que suenan igual y las más parecidas.
+        </p>
+        <p class="try">
+          Probá con:
+          @for (example of examples; track example.join('')) {
+            <button type="button" class="chip ipa-chip" (click)="useExample(example)">
+              /{{ example.join('') }}/
+            </button>
+          }
         </p>
       } @else {
         @if (exact().length) {
@@ -61,13 +69,11 @@
                 <span class="match-word">{{ m.word }}</span>
                 <app-ipa-text [pron]="m.pron" />
                 @if (m.stressMismatch) {
-                  <span class="tag tag--warn" title="Marcaste el acento en otra sílaba"
-                    >acento</span
+                  <span class="badge badge--warn" title="Marcaste el acento en otra sílaba"
+                    >otro acento</span
                   >
                 }
-                @if (m.source === 'ldoce') {
-                  <span class="tag tag--ldoce">Longman</span>
-                }
+                <app-source-badge [source]="m.source" />
               </li>
             }
           </ul>
@@ -86,11 +92,13 @@
             >
               <span class="match-word">{{ m.word }}</span>
               <app-alignment-view [steps]="m.alignment" />
-              <span class="closeness" [title]="'Distancia ' + m.distance">{{
+              <span class="closeness" title="Qué tan parecida es a lo que escribiste">{{
                 closeness(m.distance)
               }}</span>
               @if (m.stressMismatch) {
-                <span class="tag tag--warn" title="Marcaste el acento en otra sílaba">acento</span>
+                <span class="badge badge--warn" title="Marcaste el acento en otra sílaba"
+                  >otro acento</span
+                >
               }
             </li>
           }
@@ -98,14 +106,14 @@
 
         <p class="legend">
           <span class="lg lg--match">coincide</span>
-          <span class="lg lg--sub">cambiado<sub>lo que escribiste</sub></span>
-          <span class="lg lg--missing">faltó</span>
+          <span class="lg lg--sub">cambia<sub>lo que escribiste</sub></span>
+          <span class="lg lg--missing">falta</span>
           <span class="lg lg--extra">sobra</span>
         </p>
       }
     </section>
 
-    <section class="detail-panel" aria-label="Detalle de la palabra">
+    <section class="detail-panel" aria-label="Pronunciación de la palabra">
       <app-word-detail
         [word]="selected()?.word ?? null"
         [fallbackPron]="selected()?.pron ?? null"

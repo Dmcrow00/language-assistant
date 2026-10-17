@@ -1,4 +1,12 @@
 # Finales de línea LF en el repositorio y en la copia de trabajo (Prettier escribe LF).
 * text=auto eol=lf
+# Los scripts de Windows quedan en CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
 *.ico binary
 *.png binary
+*.jar binary
+*.onnx binary
+*.dll binary
+*.exe binary

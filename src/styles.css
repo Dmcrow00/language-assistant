@@ -1,109 +1,327 @@
 /*
- * Charis SIL: tipografía de SIL pensada para IPA. Se importan los archivos con todos los
- * subconjuntos (traen unicode-range; los de un solo subconjunto no). No incluye griego, así
- * que /θ/ sale de la siguiente fuente con serifa de la lista (Cambria en Windows).
+ * Tipografías incluidas en la app (funcionan sin conexión):
+ * - Atkinson Hyperlegible para la interfaz: diseñada para que no se confundan letras parecidas.
+ * - Charis SIL para los símbolos fonéticos. Se importan los archivos con todos los subconjuntos
+ *   (traen unicode-range; los de un solo subconjunto no). No incluye griego, así que /θ/ sale de
+ *   la siguiente fuente con serifa de la lista (Cambria en Windows).
  */
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
 @import '@fontsource/charis-sil/400.css';
 @import '@fontsource/charis-sil/400-italic.css';
 
+/*
+ * Tema: claro, oscuro o automático (el del sistema). Cada color se define una sola vez con
+ * light-dark(); data-theme en <html> fija el color-scheme cuando el alumno elige uno.
+ */
 :root {
   color-scheme: light dark;
-  --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
   --font-ipa: 'Charis SIL', 'Doulos SIL', Cambria, 'Times New Roman', serif;
+  /* A− / A+: todo el texto está en rem, así que alcanza con cambiar la letra de la raíz. */
+  --font-scale: 1;
+  --radius: 16px;
 
-  --bg: #f6f4ef;
-  --surface: #ffffff;
-  --surface-2: #efece4;
-  --border: #ddd8cc;
-  --text: #1f2328;
-  --text-soft: #3d434b;
-  --muted: #6b6f76;
-  --accent: #1d4e89;
-  --accent-soft: #dde8f6;
-  --on-accent: #ffffff;
-  --ok: #1d7a46;
-  --ok-bg: #e3f3e8;
-  --warn: #9a5a00;
-  --warn-bg: #fdefd8;
-  --bad: #b3261e;
-  --bad-bg: #fbe4e2;
-  --weak: #6a3fa0;
-  --weak-bg: #efe6fa;
-  --strong: #b4500c;
-  --strong-bg: #fde9da;
+  --bg: light-dark(#f2f5f9, #0e1724);
+  --surface: light-dark(#ffffff, #162236);
+  --surface-2: light-dark(#eef2f7, #1c2b42);
+  --border: light-dark(#dce2ea, #26364f);
+  --text: light-dark(#1b2430, #e6ecf5);
+  --text-soft: light-dark(#3e4959, #c3cddb);
+  --muted: light-dark(#5c6878, #9aa8bc);
+  --accent: light-dark(#1e3a5f, #8dbbea);
+  --accent-hover: light-dark(#132840, #a9cdf1);
+  --accent-soft: light-dark(#e7eef7, #1e3150);
+  --on-accent: light-dark(#ffffff, #0b1a2c);
+  --info-bg: light-dark(#eaf1f8, #18283f);
+  --ok: light-dark(#0e6b5f, #6fd3c4);
+  --ok-bg: light-dark(#ddf2ee, #123a36);
+  --warn: light-dark(#8a5300, #f0b765);
+  --warn-bg: light-dark(#fcefd8, #3a2c14);
+  --bad: light-dark(#b3261e, #f2948d);
+  --bad-bg: light-dark(#fbe4e2, #3d1f1d);
+  --weak: light-dark(#6a3fa0, #c6a6f2);
+  --weak-bg: light-dark(#efe6fa, #2e2440);
+  --strong: light-dark(#b4500c, #f4a46b);
+  --strong-bg: light-dark(#fde9da, #3d2617);
+
+  /* Colores de cada sección (íconos de la pantalla de inicio). */
+  --phon: light-dark(#b4500c, #f4a46b);
+  --phon-bg: light-dark(#fcebdd, #3a2617);
+  --gram: light-dark(#3f3cb8, #b4b2ff);
+  --gram-bg: light-dark(#e7e6fa, #24234a);
+
+  /* Barra lateral */
+  --nav-bg: light-dark(#1e3a5f, #0a1220);
+  --nav-ink: light-dark(#e8eef6, #dde6f2);
+  --nav-muted: light-dark(#b3c3d6, #8ea1bb);
+  --nav-hover: light-dark(#2a4a73, #142036);
+  --nav-active-bg: light-dark(#ffffff, #25406a);
+  --nav-active-ink: light-dark(#1e3a5f, #ffffff);
+  --nav-tag-bg: light-dark(#2f5480, #1d3150);
+  --nav-tag-ink: light-dark(#e8eef6, #c9d7ea);
+  --nav-line: light-dark(#30507a, #1e2c44);
 
   /* Elementos de la cláusula (Quirk): S, V, O, C, A */
-  --role-S: #1d4e89;
-  --role-V: #b3261e;
-  --role-O: #1d7a46;
-  --role-Oi: #0f766e;
-  --role-C: #6a3fa0;
-  --role-A: #b4500c;
+  --role-S: light-dark(#1d4e89, #8db7ec);
+  --role-V: light-dark(#b3261e, #f2948d);
+  --role-O: light-dark(#1d7a46, #7fd3a0);
+  --role-Oi: light-dark(#0f766e, #6fd6cb);
+  --role-C: light-dark(#6a3fa0, #c6a6f2);
+  --role-A: light-dark(#b4500c, #f4a46b);
 
   /* Colores de las teclas, como en la tabla fonémica */
-  --vowel-bg: #fdf6e3;
-  --diphthong-bg: #f3eefb;
-  --voiceless-bg: #f4f8fd;
-  --voiced-bg: #dfeaf8;
+  --vowel-bg: light-dark(#fdf6e3, #2a2719);
+  --diphthong-bg: light-dark(#f3eefb, #282236);
+  --voiceless-bg: light-dark(#f4f8fd, #1a2333);
+  --voiced-bg: light-dark(#dfeaf8, #22324a);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #15171a;
-    --surface: #1d2024;
-    --surface-2: #272b30;
-    --border: #353a41;
-    --text: #e8e6e1;
-    --text-soft: #c9c6bf;
-    --muted: #979ca3;
-    --accent: #8db7ec;
-    --accent-soft: #23344a;
-    --on-accent: #0f1b2b;
-    --ok: #7fd3a0;
-    --ok-bg: #1d3326;
-    --warn: #f0b765;
-    --warn-bg: #3a2c16;
-    --bad: #f2948d;
-    --bad-bg: #3d1f1d;
-    --weak: #c6a6f2;
-    --weak-bg: #2e2440;
-    --strong: #f4a46b;
-    --strong-bg: #3d2617;
+:root[data-theme='light'] {
+  color-scheme: light;
+}
 
-    --role-S: #8db7ec;
-    --role-V: #f2948d;
-    --role-O: #7fd3a0;
-    --role-Oi: #6fd6cb;
-    --role-C: #c6a6f2;
-    --role-A: #f4a46b;
-
-    --vowel-bg: #2a2719;
-    --diphthong-bg: #282236;
-    --voiceless-bg: #1f252d;
-    --voiced-bg: #22324a;
-  }
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-color: var(--border) transparent;
 }
 
-html,
+html {
+  height: 100%;
+  font-size: calc(16px * var(--font-scale));
+}
+
 body {
   height: 100%;
   margin: 0;
-}
-
-body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: 15px;
+  font-size: 1rem;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
 }
 
 button:focus-visible,
-input:focus-visible {
-  outline: 2px solid var(--accent);
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--accent);
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* ---------- Piezas comunes a todas las pantallas ---------- */
+
+.primary,
+.secondary,
+.primary-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 2.6rem;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.primary {
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.secondary {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.secondary:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.primary-outline {
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+}
+
+.primary-outline:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.primary:disabled,
+.secondary:disabled,
+.primary-outline:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.primary.small,
+.secondary.small,
+.primary-outline.small {
+  min-height: 2.1rem;
+  padding: 0 0.8rem;
+  font-size: 0.9rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.chip--active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.notice {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: var(--info-bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.notice p {
+  margin: 0;
+}
+
+.notice p + p {
+  margin-top: 6px;
+}
+
+.notice--bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.notice--warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.12rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge--ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.badge--warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.badge--info {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
 }

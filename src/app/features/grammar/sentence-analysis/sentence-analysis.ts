@@ -7,6 +7,8 @@ import {
   GrammarToken,
 } from '../../../../../shared/grammar';
 import { FoneticaApiService } from '../../../core/fonetica-api.service';
+import { Icon } from '../../../shared/icon';
+import { Term } from '../../../shared/term';
 import { ClauseView } from '../shared/clause-view';
 import { VerbPhraseView } from '../shared/verb-phrase-view';
 
@@ -24,7 +26,7 @@ const STRUCTURE_LABELS: Readonly<Record<string, string>> = {
  */
 @Component({
   selector: 'app-sentence-analysis',
-  imports: [ClauseView, VerbPhraseView],
+  imports: [ClauseView, VerbPhraseView, Icon, Term],
   templateUrl: './sentence-analysis.html',
   styleUrl: './sentence-analysis.css',
 })
@@ -35,6 +37,8 @@ export class SentenceAnalysis {
   protected readonly analysis = signal<GrammarAnalysis | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** El error técnico, sólo para el globo de ayuda. */
+  protected readonly errorDetail = signal<string | null>(null);
   protected readonly showWordClasses = signal(false);
   protected readonly patterns = CLAUSE_PATTERNS;
   protected readonly roles = (Object.keys(ELEMENT_NAMES) as ElementRole[]).map((role) => ({
@@ -75,8 +79,10 @@ export class SentenceAnalysis {
       const result = await this.api.analyzeGrammar(text);
       if (id === this.requestId) this.analysis.set(result);
     } catch (error) {
-      if (id === this.requestId)
-        this.error.set(error instanceof Error ? error.message : String(error));
+      if (id === this.requestId) {
+        this.error.set('No se pudo analizar la oración. Probá de nuevo en un momento.');
+        this.errorDetail.set(error instanceof Error ? error.message : String(error));
+      }
     } finally {
       if (id === this.requestId) this.loading.set(false);
     }

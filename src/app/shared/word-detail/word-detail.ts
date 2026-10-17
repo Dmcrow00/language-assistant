@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -9,9 +10,14 @@ import {
   untracked,
 } from '@angular/core';
 import type { LdocePronForm, LdoceEntry, LdoceLookup } from '../../../../shared/fonetica-api';
+import { PhonemeInfo, phonemeInfo, phonemesOf } from '../../../../shared/phoneme-inventory';
 import { AudioPlayerService } from '../../core/audio-player.service';
 import { FoneticaApiService } from '../../core/fonetica-api.service';
+import { describePhoneme, PhonemeExamplesService } from '../../core/phoneme-examples.service';
+import { Icon } from '../icon';
 import { IpaText } from '../ipa-text';
+import { SourceBadge } from '../source-badge';
+import { Term } from '../term';
 
 /** Entradas de Longman con la misma pronunciación (p. ej. "water" sustantivo y verbo) se muestran juntas. */
 interface EntryGroup {
@@ -32,18 +38,20 @@ type DetailState =
   | { status: 'error'; word: string; message: string };
 
 /**
- * Ficha de una palabra según Longman: palabra, transcripción RP (y la americana), audio y
- * una definición corta para distinguir homófonos. Se usa en las dos pestañas.
+ * Ficha de una palabra según Longman: palabra, transcripción RP (y la americana), audio, sus
+ * sonidos uno por uno con una palabra de ejemplo y una definición corta para distinguir
+ * homófonos. Se usa en varias pantallas.
  */
 @Component({
   selector: 'app-word-detail',
-  imports: [IpaText],
+  imports: [NgTemplateOutlet, IpaText, Icon, SourceBadge, Term],
   templateUrl: './word-detail.html',
   styleUrl: './word-detail.css',
 })
 export class WordDetail {
   protected readonly api = inject(FoneticaApiService);
   protected readonly audio = inject(AudioPlayerService);
+  protected readonly examples = inject(PhonemeExamplesService);
 
   /** Palabra a consultar en Longman. */
   readonly word = input<string | null>(null);
@@ -56,6 +64,7 @@ export class WordDetail {
 
   protected readonly state = signal<DetailState>({ status: 'idle' });
   protected readonly audioError = signal<string | null>(null);
+  protected readonly exampleError = signal<string | null>(null);
   private requestId = 0;
 
   protected readonly groups = computed<EntryGroup[]>(() => {
@@ -104,6 +113,34 @@ export class WordDetail {
     }
   }
 
+  /** Los sonidos de la transcripción, sin repetir, para explicarlos de a uno. */
+  protected soundsOf(pron: string): PhonemeInfo[] {
+    return phonemesOf(pron)
+      .map((symbol) => phonemeInfo(symbol))
+      .filter((p): p is PhonemeInfo => !!p);
+  }
+
+  protected soundTitle(p: PhonemeInfo): string {
+    return `/${p.symbol}/: ${describePhoneme(p)}. Clic para escuchar «${p.example}».`;
+  }
+
+  protected async playExample(p: PhonemeInfo): Promise<void> {
+    this.exampleError.set(null);
+    try {
+      await this.examples.play(p);
+    } catch {
+      this.exampleError.set(`No se pudo reproducir «${p.example}».`);
+    }
+  }
+
+  protected hasSenses(group: EntryGroup): boolean {
+    return group.senses.some((s) => s.pos || s.definition);
+  }
+
+  protected retry(): void {
+    void this.load(this.word());
+  }
+
   protected openInBrowser(url: string): void {
     void this.api.openInBrowser(url);
   }
@@ -111,6 +148,7 @@ export class WordDetail {
   private async load(word: string | null): Promise<void> {
     const id = ++this.requestId;
     this.audioError.set(null);
+    this.exampleError.set(null);
     if (!word?.trim()) {
       this.state.set({ status: 'idle' });
       return;
